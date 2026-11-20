@@ -34,5 +34,9 @@ describe('verifyPass', () => {
     const forged = `${h}.${btoa(JSON.stringify({ sub: 'acc', iss: 'pikul', email: 'x', plan: 'paid', until: T * 2, iat: 1 })).replace(/=+$/, '')}.${s}`;
     expect(await verifyPass(forged, pub)).toBeNull();
     expect(await verifyPass(await sign(kp.privateKey, { email: 'x', plan: 'gold', until: T }), pub)).toBeNull();
+    const legacy = await new SignJWT({ email: 'x@y.id', plan: 'trial', until: T }).setProtectedHeader({ alg: 'ES256' }).setSubject('acc').setIssuer('kasirku').setIssuedAt().sign(kp.privateKey);
+    expect(await verifyPass(legacy, pub)).toMatchObject({ plan: 'trial' });
+    const stranger = await new SignJWT({ email: 'x@y.id', plan: 'paid', until: T }).setProtectedHeader({ alg: 'ES256' }).setSubject('acc').setIssuer('other').setIssuedAt().sign(kp.privateKey);
+    expect(await verifyPass(stranger, pub)).toBeNull();
   });
 });

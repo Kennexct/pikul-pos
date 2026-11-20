@@ -17,11 +17,14 @@ export type AccessState =
   | { kind: 'grace'; plan: 'trial' | 'paid'; until: number; graceEnds: number }
   | { kind: 'expired'; plan: 'trial' | 'paid'; until: number };
 
+/** Issuers accepted on device. 'kasirku' = passes issued before the rename (ADR-016); same signing key, so still trusted. */
+const PASS_ISSUERS = ['pikul', 'kasirku'];
+
 /** Verifies the ES256 signature with the public key built into the app. Expired-JWT is fine: `until` decides. */
 export async function verifyPass(token: string, publicJwk: JWK): Promise<PassClaims | null> {
   try {
     const key = await importJWK(publicJwk, 'ES256');
-    const { payload } = await jwtVerify(token, key, { issuer: 'pikul', algorithms: ['ES256'], clockTolerance: 400 * 86_400 });
+    const { payload } = await jwtVerify(token, key, { issuer: PASS_ISSUERS, algorithms: ['ES256'], clockTolerance: 400 * 86_400 });
     if (typeof payload.sub !== 'string' || typeof payload.email !== 'string' || typeof payload.until !== 'number' || typeof payload.iat !== 'number') return null;
     if (payload.plan !== 'trial' && payload.plan !== 'paid') return null;
     return { sub: payload.sub, email: payload.email, plan: payload.plan, until: payload.until, iat: payload.iat * 1000 };
