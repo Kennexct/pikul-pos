@@ -18,6 +18,7 @@
 - v0.12 flexible price, sell by weight — ADR-011 → `v12-flex-price-weight.md`
 - v0.13 variants + add-on rename — ADR-012 → `v13-variants-addons.md`
 - v0.14 accounts, trial, billing — ADR-013 → `accounts-billing.md`; landing page → `landing-page.md`
+- rebrand to Pikul — ADR-016 → `rebrand-pikul.md`
 
 ## Update 2026-11-20
 - Server code lives in `server/` (framework-free, `Deps` injection); `functions/api/[[path]].ts` only wires Cloudflare env.
