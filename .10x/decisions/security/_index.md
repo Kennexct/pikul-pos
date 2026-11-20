@@ -9,3 +9,4 @@
 - staff-pin — PASS with documented limits → `staff-pin.md`
 - customers — PASS; first PII, ADR-005 → `reviews/2026-11-18-customers-review.md`
 - accounts-billing (v0.14) — see `accounts-billing.md`; open: rate limit on `/api/auth/code`, CSP header
+- rebrand-pikul → `rebrand-pikul.md` (PASS)

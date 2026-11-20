@@ -1,11 +1,10 @@
-# Handoff — after v0.15 (2026-11-20)
+# Handoff — after the Pikul rebrand (2026-11-20)
 
-**Where things stand:** v0.15 is built and reviewed (`reviews/2026-11-20-v15-review.md`) on branch `feat/v0.15-admin-console` (in `kasirku-history.bundle`); nothing is deployed. Midtrans was removed at Kenny's request (ADR-015): there is no online payment.
+**Where things stand:** the product is now **Pikul** (formerly KasirKu, ADR-016) on branch `feat/rebrand-pikul`, stacked on `feat/v0.15-admin-console` (both in `kasirku-history.bundle`, renamed copy `pikul-history.bundle`). Nothing is deployed. Reviews: `reviews/2026-11-20-v15-review.md`, `reviews/2026-11-20-rebrand-review.md`.
 
-Shipped in code: accounts (email code, optional Google), 14-day trial, offline ES256 access pass with 3-day grace, read-only on expiry, app at `/app`, landing at `/`, owner console at `/admin/` (plans + scheduled promo pop-up banners for the landing page and/or the merchant app, optional promo price, ADR-014).
+**Never rename:** IndexedDB `kasirku`, localStorage `kasirku-cart|lang|active-member`, backup marker `app: "kasirku"` (data on sellers' devices).
 
-**To go live:** `docs/runbooks/deploy-cloudflare.md` (migrations 001 + 002, `ADMIN_EMAILS`), then `docs/runbooks/admin-console.md`.
-**Open items:** payment provider, rate-limit rule, CSP, real prices (set in `/admin/`).
-**Next candidates:** payment provider (new ADR; reuse `priceNow()`), grant-days in the console, multi-device sync + cloud backup (Neon + R2), photo upload, item-level discount, receipt as image, split payment.
+**To go live:** `docs/runbooks/rename-cloudflare-github.md` (GitHub repo → `pikul`, Pages project `pikul`, domain, Resend), then `docs/runbooks/deploy-cloudflare.md` and `docs/runbooks/admin-console.md`.
+**Open items:** payment provider, rate-limit rule, CSP, real prices (set in `/admin/`), re-shoot landing screenshots, trademark search.
 
-**For any new thread:** read `status.md`, the relevant `decisions/<role>/_index.md`, the latest ADRs (013–015) and `design-system/MASTER.md` before proposing changes. Interface text is Indonesian-first with English in `src/i18n/en.ts` (`npm run i18n:check`).
+**For any new thread:** read `status.md`, the relevant `decisions/<role>/_index.md`, ADRs 013–016 and `design-system/MASTER.md`. Next ADR: 017.

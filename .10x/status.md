@@ -1,7 +1,7 @@
 # Status
 
-**Phase:** Delivery docs complete — v0.15 admin console (plans, scheduled promo pop-ups); Midtrans removed (ADR-015). Not deployed.
-**Branch:** `feat/v0.15-admin-console` (on top of `main` `aaac4dc`). Delivered as a git bundle in the project folder; GitHub repo not reachable from the build session.
+**Phase:** Delivery docs complete — rebrand KasirKu → **Pikul** (ADR-016) on top of v0.15 admin console. Not deployed.
+**Branch:** `feat/rebrand-pikul` (on top of `feat/v0.15-admin-console`, on top of `main` `aaac4dc`). Delivered as a git bundle in the project folder; GitHub repo not reachable from the build session.
 **Repo:** GitHub `Kennexct/kasirku` (per deploy runbook). Project folder copy: `kasirku-full/` + `kasirku-history.bundle`.
 **Last refreshed:** 2026-11-20 (v0.15)
 
@@ -11,6 +11,8 @@
 - `/admin/` owner console (ADR-014): plans in Neon drive the landing page and the app; campaigns = scheduled pop-up banners (upload, optional link, on/off, landing and/or app once per account, optional promo price). Access: `ADMIN_EMAILS` + 12-hour session; `admin_audit` log.
 
 ### Waiting on Kenny (blocks go-live)
+- [ ] Rename GitHub repo to `Kennexct/pikul`, create the Cloudflare Pages project as `pikul` (docs/runbooks/rename-cloudflare-github.md)
+- [ ] Trademark search "Pikul" (PDKI classes 9, 42) and buy the domain
 - [ ] Neon project (Singapore) + run `db/migrations/001_accounts_billing.sql` and `002_admin_console.sql`
 - [ ] Resend account + verified sending domain
 - [ ] Cloudflare Pages project connected to the GitHub repo + variables from `.env.example` (incl. `ADMIN_EMAILS`)
@@ -18,6 +20,7 @@
 - [ ] Choose a payment provider (or keep extending accounts by hand in Neon)
 
 ### Open engineering items
+- [ ] Re-shoot landing screenshots (`public/landing/*.png` still show the old logo in the side rail)
 - [ ] Cloudflare WAF rate-limit rule on `/api/auth/code` (5 / 10 min / IP)
 - [ ] CSP header in `public/_headers`
 - [ ] Expired banner says "Perpanjang" but there is no online payment (ADR-015)
@@ -101,3 +104,6 @@ Built and verified (see reviews/2026-11-19-v14-review.md). Waiting on the user f
 
 ## v0.15 admin console — Delivery docs complete (2026-11-20)
 Spec `specs/2026-11-20-admin-console-design.md`, ADR-014, ADR-015 (Midtrans removed), review `reviews/2026-11-20-v15-review.md`, runbook `docs/runbooks/admin-console.md`.
+
+## Rebrand to Pikul — Delivery docs complete (2026-11-20)
+Spec `specs/2026-11-20-rebrand-pikul-design.md`, ADR-016, review `reviews/2026-11-20-rebrand-review.md`, runbook `docs/runbooks/rename-cloudflare-github.md`. Device identifiers `kasirku` are frozen.
