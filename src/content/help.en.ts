@@ -119,9 +119,9 @@ export const HELP_EN: HelpContent = {
       title: 'Cash, expenses and closing the register',
       summary: 'The Cash screen answers "how much should be in the drawer?" and records money going out.',
       steps: [
-        'In the morning, enter the Opening cash: the change already in the drawer.',
+        'Before the first sale, the register asks you to "Open register": count the change in the drawer and type the amount. "Count by note and coin" adds up notes and coins for you.',
         'Whenever money goes out (ingredients, gas, wages), tap "Record expense". Turn off "Paid from the drawer" if the money did not come from the drawer.',
-        'At night, tap "Close register", count the cash in the drawer and type the amount.',
+        'At night, tap "Close register", count the cash in the drawer (by note and coin if you like) and type the amount.',
         'The app records the difference. The summary can be sent to the owner by WhatsApp.',
       ],
       notes: [
@@ -129,7 +129,7 @@ export const HELP_EN: HelpContent = {
         'A sale after closing? The owner can "Reopen" and close again.',
         'When closing, items marked Sold out can be made available again automatically for tomorrow.',
       ],
-      keywords: 'drawer deposit difference short over closing shift cost shopping till',
+      keywords: 'drawer deposit difference short over closing shift cost shopping till open register float notes coins',
     },
     produk: {
       title: 'Products, cost price and sold out',
@@ -139,7 +139,7 @@ export const HELP_EN: HelpContent = {
         'Fill in "Cost price" (what one portion costs to make) if you want to see profit in Reports.',
         'Item run out today? In the Register, tap the crossed-box button next to search and switch the item on.',
       ],
-      notes: ['A Sold out item stays visible in the register but cannot be sold. Cashiers may change it too.', 'Inactive products are hidden from the register but stay in history.', 'Changing a cost price does not change the profit of past sales.'],
+      notes: ['Category tab: add, rename, reorder or delete categories. Products of a deleted category move to No category.', 'Products with variants have an arrow button in the list to see each variant\'s prices.', 'A Sold out item stays visible in the register but cannot be sold. Cashiers may change it too.', 'Inactive products are hidden from the register but stay in history.', 'Changing a cost price does not change the profit of past sales.'],
       keywords: 'menu item photo category cogs sold out empty stock',
     },
     timbang: {

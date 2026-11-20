@@ -5,7 +5,7 @@ import { getBusinessDate } from '../lib/businessDate';
 import type { OrderItem } from '../types';
 import { ensureLocalStore } from './bootstrap';
 import { setProductSoldOut } from './catalog';
-import { closeDay, getOpeningCash, reopenDay, setOpeningCash } from './dayClosing';
+import { closeDay, getOpeningCash, hasOpening, reopenDay, setOpeningCash } from './dayClosing';
 import { addExpense, deleteExpense } from './expenses';
 import { completeOrder } from './orders';
 
@@ -48,7 +48,7 @@ describe('expenses', () => {
 describe('closeDay', () => {
   it('stores the drawer figures, the difference, and resets sold-out items', async () => {
     const { store, owner, ctx, cart, cash, qris, today } = await setup();
-    await setOpeningCash(store.id, today, 100_000);
+    await setOpeningCash(store.id, today, 100_000, owner.id);
     await completeOrder(cart, ctx, { method: cash, amount: 30_000, cashReceived: 50_000 });
     await completeOrder(cart, ctx, { method: qris, amount: 30_000 });
     await addExpense(store.id, { businessDate: today, category: 'ingredients', amount: 12_000, note: '', isFromDrawer: true, actorId: owner.id });
@@ -78,7 +78,7 @@ describe('closeDay', () => {
 
     // One closing per day; opening cash is frozen while closed.
     await expect(closeDay({ ...input, countedCash: 118_000 })).rejects.toThrow(/sudah ditutup/);
-    await expect(setOpeningCash(store.id, today, 0)).rejects.toThrow(/sudah ditutup/);
+    await expect(setOpeningCash(store.id, today, 0, owner.id)).rejects.toThrow(/sudah ditutup/);
 
     // Reopen (audited), then close again with the right count.
     await reopenDay(closing.id, owner.id, null);
@@ -90,9 +90,22 @@ describe('closeDay', () => {
 
   it('suggests the opening cash of the previous closing for a new day', async () => {
     const { store, owner } = await setup();
-    await setOpeningCash(store.id, '2026-11-18', 150_000);
+    await setOpeningCash(store.id, '2026-11-18', 150_000, owner.id);
     await closeDay({ storeId: store.id, businessDate: '2026-11-18', countedCash: 150_000, note: '', actorId: owner.id, shouldResetSoldOut: false });
     expect(await getOpeningCash(store.id, '2026-11-19')).toBe(150_000);
     expect(await getOpeningCash(store.id, '2026-11-17')).toBe(0);
+  });
+
+  it('opens the register once, then audits changes with the old and new amount', async () => {
+    const { store, owner, today } = await setup();
+    expect(await hasOpening(store.id, today)).toBe(false);
+    await expect(setOpeningCash(store.id, today, -1, owner.id)).rejects.toThrow(/tidak valid/);
+    await setOpeningCash(store.id, today, 0, owner.id);
+    expect(await hasOpening(store.id, today)).toBe(true);
+    await setOpeningCash(store.id, today, 75_000, owner.id);
+    const events = await localDb.auditEvents.filter((e) => e.entity === 'register').toArray();
+    expect(events.map((e) => e.action).sort()).toEqual(['opening_cash_changed', 'register_opened']);
+    expect(events.find((e) => e.action === 'opening_cash_changed')?.payload).toMatchObject({ from: 0, to: 75_000 });
+    expect(await getOpeningCash(store.id, today)).toBe(75_000);
   });
 });

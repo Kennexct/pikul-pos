@@ -118,9 +118,9 @@ export const HELP_ID: HelpContent = {
       title: 'Kas, pengeluaran, dan tutup kasir',
       summary: 'Layar Kas menjawab pertanyaan "uang di laci harusnya berapa?" dan mencatat uang yang keluar.',
       steps: [
-        'Pagi hari, isi Modal awal: uang kembalian yang sudah ada di laci.',
+        'Sebelum penjualan pertama, kasir meminta "Buka kasir": hitung uang kembalian di laci dan ketik jumlahnya. "Hitung per pecahan" membantu menjumlah lembar dan koin.',
         'Setiap ada uang keluar (belanja bahan, gas, upah), ketuk "Catat pengeluaran". Matikan "Dibayar dari uang laci" kalau uangnya bukan dari laci.',
-        'Malam hari, ketuk "Tutup kasir", hitung uang di laci, dan ketik jumlahnya.',
+        'Malam hari, ketuk "Tutup kasir", hitung uang di laci (boleh per pecahan), dan ketik jumlahnya.',
         'Aplikasi mencatat selisihnya. Ringkasan bisa dikirim ke pemilik lewat WhatsApp.',
       ],
       notes: [
@@ -128,7 +128,7 @@ export const HELP_ID: HelpContent = {
         'Ada penjualan setelah kasir ditutup? Pemilik bisa "Buka kembali" lalu menutup lagi.',
         'Saat menutup, menu bertanda Habis bisa dikembalikan otomatis untuk besok.',
       ],
-      keywords: 'laci setoran selisih kurang lebih closing shift biaya belanja',
+      keywords: 'laci setoran selisih kurang lebih closing shift biaya belanja buka kasir modal pecahan',
     },
     produk: {
       title: 'Produk, harga modal, dan stok habis',
@@ -138,7 +138,7 @@ export const HELP_ID: HelpContent = {
         'Isi "Harga modal" (biaya membuat satu porsi) kalau ingin melihat laba di Laporan.',
         'Menu habis hari ini? Di Kasir, ketuk tombol kotak bersilang di samping pencarian, lalu nyalakan menunya.',
       ],
-      notes: ['Menu Habis tetap terlihat di kasir tetapi tidak bisa dijual. Kasir juga boleh mengubahnya.', 'Produk nonaktif disembunyikan dari kasir, tetapi tetap ada di riwayat.', 'Mengubah harga modal tidak mengubah laba penjualan yang sudah lewat.'],
+      notes: ['Tab Kategori: tambah, ganti nama, ubah urutan, atau hapus kategori. Produk dari kategori yang dihapus pindah ke Tanpa kategori.', 'Produk dengan varian punya tombol panah di daftar untuk melihat harga tiap varian.', 'Menu Habis tetap terlihat di kasir tetapi tidak bisa dijual. Kasir juga boleh mengubahnya.', 'Produk nonaktif disembunyikan dari kasir, tetapi tetap ada di riwayat.', 'Mengubah harga modal tidak mengubah laba penjualan yang sudah lewat.'],
       keywords: 'menu barang foto kategori hpp sold out kosong stok',
     },
     timbang: {

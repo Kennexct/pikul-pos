@@ -12,7 +12,6 @@ import { Tabs } from '../../components/ui/Tabs';
 import { useAppData } from '../../hooks/useAppData';
 import { useChecklist } from '../../hooks/useChecklist';
 import { useCustomer } from '../../hooks/useCustomers';
-import { formatRupiah } from '../../lib/money';
 import { calculateTotals, resolveModePrice, unitPriceWithOptions } from '../../lib/pricing';
 import { uuidv7 } from '../../lib/id';
 import { writeAudit } from '../../services/audit';
@@ -22,7 +21,9 @@ import { useCartStore } from '../../store/useCartStore';
 import { hasVariants, isProductSoldOut, lineName, priceTarget, variantPrice } from '../../lib/productVariants';
 import { countUnits, isMeasured } from '../../lib/quantity';
 import type { AppliedDiscount, Id, Order, OrderItem, Product, ProductVariant, SalesMode, SaleUnit, SelectedOption } from '../../types';
+import { CartBar } from './components/CartBar';
 import { CartPanel } from './components/CartPanel';
+import { useRegisterGate } from './useRegisterGate';
 import { CustomerPicker } from './components/CustomerPicker';
 import { DiscountSheet } from './components/DiscountSheet';
 import { PaymentSheet } from './components/PaymentSheet';
@@ -68,6 +69,7 @@ export function POSPage() {
   const [categoryId, setCategoryId] = useState<Id>(ALL_CATEGORIES);
   const [search, setSearch] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const gate = useRegisterGate(store, cashierId);
 
   const activeModes = useMemo(() => catalog?.salesModes.filter((m) => m.isActive) ?? [], [catalog]);
   const mode: SalesMode | undefined =
@@ -123,7 +125,9 @@ export function POSPage() {
   const groupsFor = (product: Product) =>
     product.variantGroupIds.flatMap((id) => catalog.variantGroups.filter((g) => g.id === id));
 
-  const handleSelectProduct = (product: Product) => {
+  /** The first item of a sale checks the register is open (ADR-017). */
+  const handleSelectProduct = (product: Product) => (cart.items.length === 0 ? gate.guard(() => selectProduct(product)) : selectProduct(product));
+  const selectProduct = (product: Product) => {
     if (isProductSoldOut(product)) {
       setPanel('soldOut');
       return;
@@ -230,6 +234,8 @@ export function POSPage() {
     setPanel(next);
   };
   const closeSub = () => setPanel(isFromCart ? 'cart' : 'none');
+  const openPay = () => gate.guard(() => setPanel('payment'));
+  const openSave = () => gate.guard(() => setPanel('save'));
 
   const cartPanel = (
     <CartPanel
@@ -239,14 +245,15 @@ export function POSPage() {
       onEditItem={handleEditItem}
       onOpenCustomer={() => openSub('customer')}
       onOpenDiscount={() => openSub('discount')}
-      onSave={() => setPanel('save')}
-      onPay={() => setPanel('payment')}
+      onSave={openSave}
+      onPay={openPay}
     />
   );
 
   return (
     <div className="flex min-h-0 flex-1">
       <section aria-label={t('Produk')} className="flex min-w-0 flex-1 flex-col">
+        {gate.banner}
         {checklist && <ChecklistBanner checklist={checklist} />}
         <div className="flex flex-col gap-3 border-b border-line bg-surface px-3 pt-3 md:px-5 md:pt-4">
           <div className="flex flex-col gap-2 md:flex-row md:items-center md:gap-3">
@@ -289,19 +296,7 @@ export function POSPage() {
         {cartPanel}
       </aside>
 
-      {itemCount > 0 && (
-        <div className="fixed inset-x-0 bottom-[calc(64px+env(safe-area-inset-bottom))] z-20 px-3 pb-2 md:hidden">
-          <button
-            type="button"
-            onClick={() => setPanel('cart')}
-            className="animate-sheet flex h-14 w-full items-center gap-3 rounded-xl bg-ink px-4 text-white shadow-pop active:translate-y-px"
-          >
-            <span key={itemCount} className="num animate-pop flex h-7 min-w-7 items-center justify-center rounded-md bg-brand-500 px-1.5 text-[13px] font-bold">{itemCount}</span>
-            <span className="text-[15px] font-semibold">{t('Lihat pesanan')}</span>
-            <span className="num ml-auto text-[16px] font-bold">{formatRupiah(totals.grandTotal)}</span>
-          </button>
-        </div>
-      )}
+      <CartBar itemCount={itemCount} total={totals.grandTotal} onOpen={() => setPanel('cart')} />
 
       <Sheet title={cart.openOrderId ? cart.label : t('Pesanan baru')} isOpen={panel === 'cart'} onClose={() => setPanel('none')} isFlush>
         <CartPanel
@@ -312,8 +307,8 @@ export function POSPage() {
           customerName={customerName}
           onOpenCustomer={() => openSub('customer')}
           onOpenDiscount={() => openSub('discount')}
-          onSave={() => setPanel('save')}
-          onPay={() => setPanel('payment')}
+          onSave={openSave}
+          onPay={openPay}
         />
       </Sheet>
 
@@ -392,6 +387,7 @@ export function POSPage() {
       {panel === 'save' && (
         <SaveOrderSheet initialLabel={cart.label} isSubmitting={isSubmitting} onSave={(label) => void handleSave(label)} onClose={() => setPanel('none')} />
       )}
+      {gate.sheet}
       {receiptOrder && (
         <ReceiptSheet order={receiptOrder} store={store} cashierName={cashierName} onClose={() => setReceiptOrder(null)} />
       )}
