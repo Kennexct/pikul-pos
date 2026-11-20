@@ -99,7 +99,7 @@ export function buildPdf(storeName: string, report: Report, generatedAt: Date, p
   const pages = doc.getNumberOfPages();
   for (let page = 1; page <= pages; page += 1) {
     doc.setPage(page).setFont('helvetica', 'normal').setFontSize(8).setTextColor(...MUTED);
-    doc.text(t('Dibuat {0} - KasirKu', generatedAt.toLocaleString(DATE_LOCALE)), MARGIN, 290);
+    doc.text(t('Dibuat {0} - Pikul', generatedAt.toLocaleString(DATE_LOCALE)), MARGIN, 290);
     doc.text(`${page}/${pages}`, 196, 290, { align: 'right' });
   }
   return doc.output('blob');

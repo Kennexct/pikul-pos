@@ -8,7 +8,7 @@ const ERRORS: Record<string, string> = {
   code_expired: t('Kode sudah kedaluwarsa. Minta kode baru.'),
   too_many_attempts: t('Terlalu banyak percobaan. Minta kode baru.'),
   offline: t('Tidak ada internet.'),
-  forbidden: t('Akun ini bukan admin KasirKu.'),
+  forbidden: t('Akun ini bukan admin Pikul.'),
   signed_out: t('Sesi berakhir. Masuk lagi.'),
   session_too_old: t('Demi keamanan, masuk lagi setiap 12 jam.'),
   invalid_plan_id: t('Kode paket hanya huruf kecil, angka, dan tanda minus (2–24 karakter).'),

@@ -41,7 +41,7 @@ export function AdminSignIn({ onSignedIn, notice }: { onSignedIn: () => void; no
           <ShieldCheck aria-hidden size={22} className="text-brand-600" />
           {t('Konsol admin')}
         </h1>
-        <p className="mt-1 text-[14px] text-muted">{t('Paket harga dan kampanye promo. Khusus pemilik KasirKu.')}</p>
+        <p className="mt-1 text-[14px] text-muted">{t('Paket harga dan kampanye promo. Khusus pemilik Pikul.')}</p>
         {step === 'email' ? (
           <div className="mt-6">
             <label htmlFor="admin-email" className={labelBase}>

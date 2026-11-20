@@ -1,4 +1,4 @@
--- KasirKu initial schema
+-- Pikul initial schema
 -- Principles:
 --   * every row is scoped by store_id and protected by RLS
 --   * ids are client-generated UUIDv7 (offline-first) -> upserts are idempotent

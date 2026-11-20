@@ -50,7 +50,7 @@ def run(p, name, viewport, is_mobile):
     page.get_by_text('Transfer bank', exact=True).click()  # switch it off
     shot(page, f'{name}-x2-payments')
     page.get_by_role('button', name='Lanjut').click()
-    page.get_by_role('heading', name='Cara kerja KasirKu').wait_for()
+    page.get_by_role('heading', name='Cara kerja Pikul').wait_for()
     shot(page, f'{name}-x3-intro')
     page.get_by_role('button', name='Mulai jualan').click()
 

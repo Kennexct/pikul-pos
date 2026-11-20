@@ -99,7 +99,7 @@ describe('pdf', () => {
 
 describe('exportFileName', () => {
   it('slugs the store and includes range + dataset', () => {
-    expect(exportFileName({ format: 'csv', dataset: 'items', storeName: 'Bakso Pak Budi!', report })).toBe('kasirku-bakso-pak-budi-2026-11-18_2026-11-18-item.csv');
-    expect(exportFileName({ format: 'xlsx', dataset: 'items', storeName: 'Bakso Pak Budi', report })).toBe('kasirku-bakso-pak-budi-2026-11-18_2026-11-18.xlsx');
+    expect(exportFileName({ format: 'csv', dataset: 'items', storeName: 'Bakso Pak Budi!', report })).toBe('pikul-bakso-pak-budi-2026-11-18_2026-11-18-item.csv');
+    expect(exportFileName({ format: 'xlsx', dataset: 'items', storeName: 'Bakso Pak Budi', report })).toBe('pikul-bakso-pak-budi-2026-11-18_2026-11-18.xlsx');
   });
 });

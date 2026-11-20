@@ -7,7 +7,7 @@ import { route } from './router';
 import { DAY_MS, type Deps } from './types';
 
 const T0 = Date.UTC(2026, 10, 20, 3);
-const ADMIN = 'owner@kasirku.test';
+const ADMIN = 'owner@pikul.test';
 let now = T0;
 let mail: { email: string; code: string }[];
 let repo: ReturnType<typeof memoryRepo>;
@@ -24,7 +24,7 @@ beforeEach(async () => {
     signer: await passSigner({ ...(await exportJWK(kp.privateKey)), kid: 't1' }),
     google: null,
     now: () => now,
-    appOrigin: 'https://kasirku.test',
+    appOrigin: 'https://pikul.test',
     adminEmails: [ADMIN],
   };
 });

@@ -1,7 +1,9 @@
-# KasirKu — Project Infrastructure
+# Pikul — Project Infrastructure
+
+> Formerly **KasirKu** (renamed 2026-11-20, ADR-016). A few device-side identifiers keep the old name on purpose: see "Legacy identifiers" in `design-system/MASTER.md`.
 
 Offline-first, web-based POS for Indonesian UMKM and street food sellers. Built mobile and tablet first, installable as a PWA.
-This repo implements the infrastructure for the PRD *"KasirKu — PRD: Simple POS for UMKM & Street Food Sellers"* (module refs M1–M15).
+This repo implements the infrastructure for the PRD *"KasirKu (now Pikul) — PRD: Simple POS for UMKM & Street Food Sellers"* (module refs M1–M15).
 
 ## 1. Architecture
 
@@ -47,9 +49,9 @@ reference schema for future multi-device sync and is not applied anywhere.
 ## 2. Folder structure
 
 ```
-kasirku/
+pikul/                           # GitHub repo: Kennexct/kasirku (rename: docs/runbooks/rename-cloudflare-github.md)
 ├── .github/workflows/ci.yml     # typecheck → test → build on every PR
-├── public/icons/                # PWA icons (placeholder "K" — replace with brand)
+├── public/icons/                # PWA icons from the Pikul brand kit v1
 ├── supabase/migrations/         # reference sync schema (RLS, triggers, views) — not applied anywhere
 ├── db/migrations/               # Neon schema: accounts (v0.14), plans + campaigns (v0.15)
 ├── server/                      # framework-free API handlers: auth, subscription overview, admin, catalog, pass, repos

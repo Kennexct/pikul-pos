@@ -2,7 +2,7 @@
 @import 'tailwindcss';
 
 /*
- * KasirKu design tokens — see design-system/MASTER.md.
+ * Pikul design tokens — see design-system/MASTER.md.
  * Components use ONLY these semantic names (no raw slate/orange/hex).
  */
 @theme {
@@ -19,6 +19,10 @@
   --color-brand-700: #08654a;
   --color-brand-800: #06503b;
   --color-brand-900: #053e2e;
+
+  /* Logo only (ADR-016): Pikul head dot and mark on the pandan tile. Never use in UI. */
+  --color-kunyit: #f2a93b;
+  --color-santan: #f6f1e7;
 
   /* Neutrals (green-tinted so they sit with the brand) */
   --color-canvas: #f7f9f8;

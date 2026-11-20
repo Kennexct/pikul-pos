@@ -13,7 +13,7 @@ import { t } from '../../i18n';
 
 const TEMPLATE_ICON: Record<TemplateId, LucideIcon> = { bakso: Soup, kopi: Coffee, gorengan: Cookie, warung: UtensilsCrossed, kosong: SquareDashed };
 /** The first title is shown in both languages: the reader has not chosen one yet. */
-const STEP_TITLES = ['Bahasa / Language', t('Toko Anda'), t('Cara pembayaran'), t('Cara kerja KasirKu')] as const;
+const STEP_TITLES = ['Bahasa / Language', t('Toko Anda'), t('Cara pembayaran'), t('Cara kerja Pikul')] as const;
 const LAST_STEP = STEP_TITLES.length - 1;
 
 interface OnboardingPageProps {

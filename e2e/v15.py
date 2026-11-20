@@ -1,4 +1,4 @@
-"""v0.15 admin console against `wrangler pages dev` (DEV_MODE=1, ADMIN_EMAILS=admin@kasirku.test):
+"""v0.15 admin console against `wrangler pages dev` (DEV_MODE=1, ADMIN_EMAILS=admin@pikul.test):
 a merchant is refused; the admin edits a plan and schedules a campaign (banner upload, link, promo price, landing + app);
 the landing page shows live prices and the pop-up once; a merchant sees the in-app pop-up once and the promo price.
 Usage: python3 e2e/v15.py http://localhost:8788 OUT /tmp/wrangler.log [skip-setup]
@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 from playwright.sync_api import sync_playwright
 
 BASE, OUT, LOG = sys.argv[1:4]
-ADMIN = 'admin@kasirku.test'
+ADMIN = 'admin@pikul.test'
 FIXTURE = os.path.join(os.path.dirname(__file__), 'fixtures', 'photo.jpg')
 errors = []
 
@@ -63,7 +63,7 @@ def admin_flow(p, viewport, is_mobile, name, first):
     # 2. Admin signs in, sees the seeded plans
     time.sleep(61 if not first else 0)  # resend limit per email
     admin_sign_in(page, ADMIN)
-    page.get_by_role('heading', name='Konsol admin KasirKu').wait_for()
+    page.get_by_role('heading', name='Konsol admin Pikul').wait_for()
     page.locator('#monthly-name').wait_for()
     shot(page, f'{name}-b2-plans')
     if first:

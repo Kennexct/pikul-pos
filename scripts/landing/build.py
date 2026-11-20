@@ -87,21 +87,22 @@ pricing = (plan_card('Coba gratis', 'Rp0', '14 hari', 'Semua fitur, tanpa kartu 
 
 soon = ['Cadangan otomatis ke cloud','Data tersinkron antar perangkat','Laporan gabungan semua kasir']
 
-faqs = [('Benar-benar bisa tanpa internet?','Ya. Daftar dan masuk pertama kali butuh internet. Setelah itu KasirKu menyimpan semua data di perangkat: penjualan, struk, laporan, dan tutup kasir tetap jalan saat sinyal hilang.'),
+faqs = [('Benar-benar bisa tanpa internet?','Ya. Daftar dan masuk pertama kali butuh internet. Setelah itu Pikul menyimpan semua data di perangkat: penjualan, struk, laporan, dan tutup kasir tetap jalan saat sinyal hilang.'),
         ('Apa yang terjadi kalau masa coba habis?','Laporan, riwayat, ekspor, dan cadangan data tetap bisa dibuka. Hanya penjualan baru yang berhenti sampai Anda memperpanjang. Data tidak pernah dihapus.'),
         ('Bagaimana cara membayar?','Pembayaran langganan online sedang kami siapkan. Selama masa coba, semua fitur bisa dipakai gratis tanpa kartu kredit.'),
         ('Data saya aman di mana?','Di perangkat Anda sendiri. Akun hanya dipakai untuk masuk dan langganan. Simpan cadangan rutin lewat Pengaturan → Cadangan; cadangan otomatis ke cloud sedang disiapkan.'),
         ('Perangkat apa yang dibutuhkan?','Tablet atau HP Android/iPhone dengan browser modern, atau laptop. Untuk cetak struk, pakai printer yang sudah terpasang di perangkat.'),
-        ('Apakah QRIS-nya otomatis terkonfirmasi?','Belum. KasirKu menampilkan QRIS statis toko Anda; kasir menekan "Sudah dibayar" setelah melihat notifikasi dari bank.')]
+        ('Apakah QRIS-nya otomatis terkonfirmasi?','Belum. Pikul menampilkan QRIS statis toko Anda; kasir menekan "Sudah dibayar" setelah melihat notifikasi dari bank.')]
 faq_html = ''.join(f'<details style="border-bottom: 1px solid {LINE}; padding: 4px 0"><summary style="cursor: pointer; list-style: none; padding: 18px 0; font-size: 17px; font-weight: 700; color: {INK}">{q}</summary><p style="margin: 0 0 20px; font-size: 16px; line-height: 1.65; color: {SOFT}; max-width: 760px">{a}</p></details>' for q,a in faqs)
 
-logo = f'<span style="display: inline-flex; align-items: center; gap: 10px"><span style="width: 34px; height: 34px; border-radius: 9px; background: {G}; display: inline-flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg></span><span style="font-size: 20px; font-weight: 800; letter-spacing: -0.02em; color: {INK}">Kasir<span style="color: {G}">Ku</span></span></span>'
+# Pikul logo (ADR-016, brand kit v1): mark on a pandan tile + ExtraBold wordmark.
+logo = f'<span style="display: inline-flex; align-items: center; gap: 10px"><svg aria-hidden="true" width="34" height="34" viewBox="0 0 64 64"><rect width="64" height="64" rx="14.4" fill="{G}"/><g transform="translate(7.86 10.13) scale(0.7543)"><circle cx="32" cy="14" r="6.5" fill="#f2a93b"/><path d="M7 32Q32 22 57 32" fill="none" stroke="#f6f1e7" stroke-width="6" stroke-linecap="round"/><rect x="13" y="29" width="4" height="11" fill="#f6f1e7"/><rect x="47" y="29" width="4" height="11" fill="#f6f1e7"/><path d="M4 39.5h22a11 11 0 0 1-22 0z" fill="#f6f1e7"/><path d="M38 39.5h22a11 11 0 0 1-22 0z" fill="#f6f1e7"/></g></svg><span style="font-size: 22px; font-weight: 800; letter-spacing: -0.03em; color: {INK}">Pikul</span></span>'
 navlink = f'color: {SOFT}; text-decoration: none; font-size: 15px; font-weight: 600; padding: 10px 0'
 
 body = f'''<div style="font-family: 'Plus Jakarta Sans', system-ui, sans-serif; background: {CANVAS}; color: {INK}; min-width: 0">
 <header style="position: sticky; top: 0; z-index: 10; background: rgba(246,248,247,.92); backdrop-filter: blur(8px); border-bottom: 1px solid {LINE}">
 <div style="{wrap}; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px; min-height: 68px">
-<a href="#top" aria-label="KasirKu, ke atas" style="text-decoration: none">{logo}</a>
+<a href="#top" aria-label="Pikul, ke atas" style="text-decoration: none">{logo}</a>
 <nav aria-label="Navigasi halaman" style="display: flex; flex-wrap: wrap; gap: 4px 24px; flex: 1 1 auto"><a href="#fitur" style="{navlink}">Fitur</a><a href="#untuk-siapa" style="{navlink}">Untuk siapa</a><a href="#harga" style="{navlink}">Harga</a><a href="#faq" style="{navlink}">FAQ</a></nav>
 <a href="{APP}" style="{navlink}; color: {INK}">Masuk</a>
 <a href="{APP}" style="{btn}; min-height: 44px; font-size: 15px; background: {G}; color: #fff">Coba gratis</a>
@@ -125,13 +126,13 @@ body = f'''<div style="font-family: 'Plus Jakarta Sans', system-ui, sans-serif; 
 <li style="display: flex; gap: 8px; align-items: center; font-size: 15px; font-weight: 600; color: {SOFT}">{check}Bahasa Indonesia &amp; English</li>
 </ul>
 </div>
-<div style="flex: 1 1 520px; min-width: 0">{shot(IMG['pos'], 'Layar kasir KasirKu di tablet dengan menu kedai kopi').replace(' loading="lazy"', '')}</div>
+<div style="flex: 1 1 520px; min-width: 0">{shot(IMG['pos'], 'Layar kasir Pikul di tablet dengan menu kedai kopi').replace(' loading="lazy"', '')}</div>
 </div>
 </section>
 
 <section aria-labelledby="usp-title" style="padding: 40px 0 72px">
 <div style="{wrap}">
-<h2 id="usp-title" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Kenapa KasirKu</h2>
+<h2 id="usp-title" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Kenapa Pikul</h2>
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px">{usp_html}</div>
 </div>
 </section>
@@ -152,7 +153,7 @@ body = f'''<div style="font-family: 'Plus Jakarta Sans', system-ui, sans-serif; 
 
 <section id="untuk-siapa" style="padding: 24px 0 88px">
 <div style="{wrap}; display: flex; flex-wrap: wrap; gap: 48px">
-<div style="flex: 1 1 320px; min-width: 0">{eyebrow('Untuk siapa')}{h2('Satu kasir, empat cara berjualan.')}<p style="margin: 16px 0 0; font-size: 17px; line-height: 1.65; color: {SOFT}">Pilih jenis usaha saat pertama buka, dan KasirKu menyiapkan contoh menu yang cocok. Semuanya bisa diubah.</p></div>
+<div style="flex: 1 1 320px; min-width: 0">{eyebrow('Untuk siapa')}{h2('Satu kasir, empat cara berjualan.')}<p style="margin: 16px 0 0; font-size: 17px; line-height: 1.65; color: {SOFT}">Pilih jenis usaha saat pertama buka, dan Pikul menyiapkan contoh menu yang cocok. Semuanya bisa diubah.</p></div>
 <div style="flex: 2 1 560px; min-width: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px">{who_html}</div>
 </div>
 </section>
@@ -197,7 +198,7 @@ body = f'''<div style="font-family: 'Plus Jakarta Sans', system-ui, sans-serif; 
 <footer style="padding: 32px 0; border-top: 1px solid {LINE}">
 <div style="{wrap}; display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; justify-content: space-between">
 {logo}
-<p style="margin: 0; font-size: 14px; color: {MUTED}">Aplikasi kasir offline untuk UMKM Indonesia. Tersedia dalam Bahasa Indonesia dan English.</p>
+<p style="margin: 0; font-size: 14px; color: {MUTED}"><strong style="color: {INK}">Jualan ringan. Catatan beres.</strong> Aplikasi kasir offline untuk UMKM Indonesia. Tersedia dalam Bahasa Indonesia dan English.</p>
 </div>
 </footer>
 </div>'''
@@ -210,7 +211,7 @@ if MODE == 'dc':
 <html lang="id">
 <head>
 <meta charset="utf-8">
-<title>KasirKu — aplikasi kasir untuk UMKM</title>
+<title>Pikul — aplikasi kasir untuk UMKM</title>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -238,11 +239,14 @@ else:
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>KasirKu — aplikasi kasir offline untuk UMKM Indonesia</title>
+<title>Pikul — aplikasi kasir offline untuk UMKM Indonesia</title>
 <meta name="description" content="Aplikasi kasir untuk warung, kedai kopi, gorengan, dan lapak pasar. Jalan tanpa internet, bon pelanggan, QRIS, jual per kilo, tutup kasir. Coba gratis 14 hari.">
 <meta name="theme-color" content="#0b7a5a">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-<meta property="og:title" content="KasirKu — kasir yang tetap jalan, walau sinyal hilang">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon-180.png">
+<meta property="og:site_name" content="Pikul">
+<meta property="og:title" content="Pikul — kasir yang tetap jalan, walau sinyal hilang">
 <meta property="og:description" content="Aplikasi kasir offline untuk UMKM Indonesia. Coba gratis 14 hari.">
 <meta property="og:image" content="/landing/pos.png">
 {FONTS}

@@ -189,7 +189,7 @@ export const HELP_ID: HelpContent = {
     },
     offline: {
       title: 'Tanpa internet dan penyimpanan data',
-      summary: 'KasirKu menyimpan semuanya di perangkat ini, jadi tetap bisa dipakai saat sinyal hilang.',
+      summary: 'Pikul menyimpan semuanya di perangkat ini, jadi tetap bisa dipakai saat sinyal hilang.',
       steps: ['Jualan seperti biasa. Tidak ada yang perlu dilakukan saat internet mati.', 'Tanda "Lokal" di pojok berarti data tersimpan di perangkat ini.'],
       notes: [
         'Data belum otomatis tersalin ke perangkat lain. Laporan hanya memuat penjualan dari perangkat ini.',
@@ -214,11 +214,11 @@ export const HELP_ID: HelpContent = {
     },
     pasang: {
       title: 'Pasang di layar utama',
-      summary: 'KasirKu bisa dipasang seperti aplikasi biasa supaya terbuka penuh dan lebih cepat.',
+      summary: 'Pikul bisa dipasang seperti aplikasi biasa supaya terbuka penuh dan lebih cepat.',
       steps: [
         'Android (Chrome): ketuk menu tiga titik, lalu "Tambahkan ke layar utama" atau "Instal aplikasi".',
         'iPhone atau iPad (Safari): ketuk tombol Bagikan, lalu "Tambah ke Layar Utama".',
-        'Buka KasirKu dari ikon di layar utama.',
+        'Buka Pikul dari ikon di layar utama.',
       ],
       notes: ['Buka aplikasi sekali saat ada internet setelah memasang, supaya semua bagian tersimpan untuk dipakai offline.'],
       keywords: 'install pwa aplikasi ikon homescreen',

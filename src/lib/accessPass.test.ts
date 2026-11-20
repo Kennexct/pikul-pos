@@ -26,12 +26,12 @@ describe('verifyPass', () => {
     const other = await generateKeyPair('ES256', { extractable: true });
     const pub = await exportJWK(kp.publicKey);
     const sign = (key: CryptoKey | Uint8Array, claims: Record<string, unknown> = { email: 'x@y.id', plan: 'paid', until: T }) =>
-      new SignJWT(claims).setProtectedHeader({ alg: 'ES256' }).setSubject('acc').setIssuer('kasirku').setIssuedAt().setExpirationTime('30d').sign(key);
+      new SignJWT(claims).setProtectedHeader({ alg: 'ES256' }).setSubject('acc').setIssuer('pikul').setIssuedAt().setExpirationTime('30d').sign(key);
     const good = await sign(kp.privateKey);
     expect(await verifyPass(good, pub)).toMatchObject({ sub: 'acc', plan: 'paid', until: T });
     expect(await verifyPass(await sign(other.privateKey), pub)).toBeNull();
     const [h, , s] = good.split('.');
-    const forged = `${h}.${btoa(JSON.stringify({ sub: 'acc', iss: 'kasirku', email: 'x', plan: 'paid', until: T * 2, iat: 1 })).replace(/=+$/, '')}.${s}`;
+    const forged = `${h}.${btoa(JSON.stringify({ sub: 'acc', iss: 'pikul', email: 'x', plan: 'paid', until: T * 2, iat: 1 })).replace(/=+$/, '')}.${s}`;
     expect(await verifyPass(forged, pub)).toBeNull();
     expect(await verifyPass(await sign(kp.privateKey, { email: 'x', plan: 'gold', until: T }), pub)).toBeNull();
   });

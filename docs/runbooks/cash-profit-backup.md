@@ -10,7 +10,7 @@
 | Menu still "Habis" in the morning | The switch "Sediakan lagi … menu yang habis" was turned off at closing, or the day was not closed | Kasir → sold-out list → switch back. |
 | Laba looks too high | Some sold items have no cost price (warning names them), or add-ons carry no cost | Produk → fill "Harga modal". Past sales keep the cost they were sold with. |
 | Belanja bahan not subtracted from Laba bersih | By design when cost prices are used (they already contain ingredients) | Nothing to do. Without any cost prices the report switches to "Sisa setelah pengeluaran" and subtracts everything. |
-| "Ini bukan berkas cadangan KasirKu." / "Berkas rusak…" | Wrong or damaged file | Pick the `kasirku-cadangan-….json` file. Nothing on the device changed. |
+| "Ini bukan berkas cadangan Pikul." / "Berkas rusak…" | Wrong or damaged file | Pick the `pikul-cadangan-….json` file (older `kasirku-cadangan-….json` files restore too). Nothing on the device changed. |
 | "Cadangan ini dibuat dengan versi aplikasi yang lebih baru." | The app on this device is older than the one that made the file | Reload/update the app (close and reopen while online), then restore. |
 | "Pemulihan gagal, data di perangkat ini tidak berubah." | Storage full or the browser blocked the write | Free storage, retry. The old data is intact. |
 | After restore the app asks who is selling / the cart is empty | Expected: the seller and cart belonged to the old data | Choose the seller (PINs are the ones in the backup). |

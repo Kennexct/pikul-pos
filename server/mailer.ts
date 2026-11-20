@@ -9,9 +9,9 @@ export function resendMailer(apiKey: string, from: string, fetchFn: typeof fetch
         body: JSON.stringify({
           from,
           to: [email],
-          subject: `Kode masuk KasirKu: ${code}`,
-          text: `Kode masuk KasirKu Anda: ${code}\n\nBerlaku 10 menit. Abaikan email ini jika Anda tidak meminta kode.\n\nYour KasirKu sign-in code: ${code} (valid for 10 minutes).`,
-          html: `<div style="font-family:system-ui,sans-serif;font-size:16px;color:#0f1a16"><p>Kode masuk KasirKu Anda:</p><p style="font-size:32px;font-weight:800;letter-spacing:6px;color:#0b7a5a">${code}</p><p>Berlaku 10 menit. Abaikan email ini jika Anda tidak meminta kode.</p><p style="color:#5b6862;font-size:13px">Your KasirKu sign-in code, valid for 10 minutes.</p></div>`,
+          subject: `Kode masuk Pikul: ${code}`,
+          text: `Kode masuk Pikul Anda: ${code}\n\nBerlaku 10 menit. Abaikan email ini jika Anda tidak meminta kode.\n\nYour Pikul sign-in code: ${code} (valid for 10 minutes).`,
+          html: `<div style="font-family:system-ui,sans-serif;font-size:16px;color:#0f1a16"><p>Kode masuk Pikul Anda:</p><p style="font-size:32px;font-weight:800;letter-spacing:6px;color:#0b7a5a">${code}</p><p>Berlaku 10 menit. Abaikan email ini jika Anda tidak meminta kode.</p><p style="color:#5b6862;font-size:13px">Your Pikul sign-in code, valid for 10 minutes.</p></div>`,
         }),
       });
       if (!res.ok) throw new Error(`resend_${res.status}`);

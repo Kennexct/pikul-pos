@@ -140,6 +140,6 @@ export const useCartStore = create<CartState>()(
         }),
       clear: () => set({ ...EMPTY_CART, items: [] }),
     }),
-    { name: 'kasirku-cart', storage: createJSONStorage(() => localStorage) },
+    { name: 'kasirku-cart' /* legacy id, frozen (ADR-016) */, storage: createJSONStorage(() => localStorage) },
   ),
 );

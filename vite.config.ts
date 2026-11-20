@@ -12,7 +12,7 @@ const appFallback = (): Plugin => {
     else if (req.url && /^\/admin\/?(\?.*)?$/.test(req.url)) req.url = '/admin/index.html';
   };
   return {
-    name: 'kasirku-app-fallback',
+    name: 'pikul-app-fallback',
     configureServer(server) {
       server.middlewares.use((req, _res, next) => (rewrite(req), next()));
     },
@@ -37,8 +37,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['icons/*.png', 'favicon.svg'],
       manifest: {
-        name: 'KasirKu — Kasir UMKM',
-        short_name: 'KasirKu',
+        name: 'Pikul — Kasir UMKM',
+        short_name: 'Pikul',
         description: 'Kasir cepat untuk UMKM dan pedagang kaki lima',
         lang: 'id',
         start_url: '/app/',

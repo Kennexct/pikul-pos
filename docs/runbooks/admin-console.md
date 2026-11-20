@@ -26,7 +26,7 @@ Every save, switch, delete and upload is written to the `admin_audit` table in N
 ## Troubleshooting
 | Symptom | Check |
 |---|---|
-| "Akun ini bukan admin KasirKu." | Add the email to `ADMIN_EMAILS` and redeploy |
+| "Akun ini bukan admin Pikul." | Add the email to `ADMIN_EMAILS` and redeploy |
 | "Demi keamanan, masuk lagi setiap 12 jam." | Expected; sign in again |
 | Pop-up does not appear on the landing page | State must be *Tayang sekarang* and "Halaman depan" on; each browser sees it once (clear `kk.landingPopupsSeen` in localStorage to test again) |
 | Pop-up does not appear in the app | "Aplikasi merchant" on, the device online, and the account has not seen it yet (`kk.campaignsSeen`) |

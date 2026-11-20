@@ -186,7 +186,7 @@ def run(p, name, viewport, is_mobile):
     bad = Path(tempfile.mkdtemp()) / 'bukan-cadangan.json'
     bad.write_text('{"app": "lain"}')
     page.get_by_label('Berkas cadangan').set_input_files(str(bad))
-    page.get_by_text('Ini bukan berkas cadangan KasirKu.').wait_for()
+    page.get_by_text('Ini bukan berkas cadangan Pikul.').wait_for()
     page.get_by_label('Berkas cadangan').set_input_files(str(backup_path))
     dialog.get_by_text('Pulihkan cadangan ini?').wait_for()
     restore_blocked = dialog.get_by_role('button', name='Ganti semua data').is_disabled()

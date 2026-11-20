@@ -19,7 +19,7 @@ const files = [];
 
 const keys = new Set();
 const hasWords = (s) => /[A-Za-zÀ-ÿ]{2,}/.test(s);
-const IGNORE_TEXT = new Set(['Rp', 'KasirKu']);
+const IGNORE_TEXT = new Set(['Rp', 'Pikul']);
 const quote = (s) => `'${s.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\n/g, '\\n')}'`;
 const isT = (n) => ts.isCallExpression(n) && ts.isIdentifier(n.expression) && n.expression.text === 't';
 

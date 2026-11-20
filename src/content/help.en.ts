@@ -190,7 +190,7 @@ export const HELP_EN: HelpContent = {
     },
     offline: {
       title: 'Working offline and where data is kept',
-      summary: 'KasirKu keeps everything on this device, so it still works when the signal drops.',
+      summary: 'Pikul keeps everything on this device, so it still works when the signal drops.',
       steps: ['Sell as usual. There is nothing to do when the internet is down.', 'The "Local" mark in the corner means the data is saved on this device.'],
       notes: [
         'Data is not yet copied to other devices automatically. Reports only include sales made on this device.',
@@ -215,11 +215,11 @@ export const HELP_EN: HelpContent = {
     },
     pasang: {
       title: 'Install on the home screen',
-      summary: 'KasirKu can be installed like a normal app so it opens full screen and faster.',
+      summary: 'Pikul can be installed like a normal app so it opens full screen and faster.',
       steps: [
         'Android (Chrome): tap the three-dot menu, then "Add to Home screen" or "Install app".',
         'iPhone or iPad (Safari): tap the Share button, then "Add to Home Screen".',
-        'Open KasirKu from the icon on the home screen.',
+        'Open Pikul from the icon on the home screen.',
       ],
       notes: ['Open the app once with internet after installing, so every part is stored for offline use.'],
       keywords: 'install pwa app icon homescreen',

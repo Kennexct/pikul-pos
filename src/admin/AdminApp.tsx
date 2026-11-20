@@ -70,7 +70,7 @@ export function AdminApp() {
       <header className="border-b border-line bg-surface">
         <div className="mx-auto flex max-w-5xl items-center gap-3 px-4 pt-4 md:px-8">
           <ShieldCheck aria-hidden size={22} className="text-brand-600" />
-          <h1 className="flex-1 text-[20px] font-bold tracking-[-0.02em] text-ink">{t('Konsol admin KasirKu')}</h1>
+          <h1 className="flex-1 text-[20px] font-bold tracking-[-0.02em] text-ink">{t('Konsol admin Pikul')}</h1>
           <span className="hidden truncate text-[13px] text-muted sm:inline">{email}</span>
           <button
             type="button"

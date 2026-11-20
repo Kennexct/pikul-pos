@@ -1,4 +1,4 @@
-# KasirKu Design System — MASTER
+# Pikul Design System — MASTER
 
 Source of truth for every screen. Tokens live in `src/index.css` (`@theme`); shared classes in `src/components/ui/styles.ts`.
 Components must use semantic tokens only — no raw `slate-*`, `orange-*` or hex in JSX.
@@ -31,6 +31,8 @@ Components must use semantic tokens only — no raw `slate-*`, `orange-*` or hex
 | `brand-600` | #0B7A5A | Primary buttons, active states | 5.3:1 (white text on it) |
 | `brand-700` | #08654A | Active nav/tab text, links | 7.1:1 |
 | `brand-50` | #EBF7F2 | Selected backgrounds, success panel | — |
+| `kunyit` | #F2A93B | **Logo only** — the head dot in the Pikul mark | — |
+| `santan` | #F6F1E7 | **Logo only** — the mark on the pandan tile | — |
 | `ink` | #14201B | Primary text | 16.8:1 |
 | `ink-soft` | #36423D | Secondary emphasis | 10.5:1 |
 | `muted` | #5E6A65 | Helper text, labels — smallest allowed text color | 5.6:1 |
@@ -85,3 +87,18 @@ Pastel random tile colors · gradient buttons · pill-shaped everything · emoji
 
 - List and data pages (Kasir, Riwayat, Laporan, Produk, Pelanggan, Kas) use the full width.
 - Form-like pages (Pengaturan, Bantuan) use one centred column for header, tabs and content: `<PageHeader isNarrow>` + `NARROW_COLUMN` (`max-w-3xl`). Never cap content width while leaving it left-aligned.
+
+## Brand (ADR-016)
+
+- Name **Pikul** (formerly KasirKu). Tagline: *Jualan ringan. Catatan beres.* Brand kit v1 lives in the project folder `brand/pikul-brand-kit/` (SVG, PNG, app icons, logo template).
+- Logo in the app: `components/Brand/Logo.tsx` — `LogoMark` (pandan tile, santan mark, kunyit head dot) and `Logo` (mark + "Pikul" in ExtraBold, tracking −0.03em). Never redraw it inline; never use `kunyit`/`santan` outside the logo.
+- Icons: `public/favicon.svg`, `public/icons/icon-192|512.png`, `icon-maskable-512.png`, `apple-touch-icon-180.png` (full-bleed), `favicon-32.png`. Replace them only from the brand kit.
+
+### Legacy identifiers — do not rename
+These are invisible to sellers and live on devices or inside files. Renaming any of them without a migration loses data or breaks old backups.
+
+| Identifier | Where | Why it stays |
+| --- | --- | --- |
+| IndexedDB `kasirku` | `db/localDb.ts` | Every sale on the device lives here |
+| `kasirku-cart`, `kasirku-lang`, `kasirku-active-member` | localStorage | Open cart, language, signed-in cashier |
+| `app: "kasirku"` (`BACKUP_APP_ID`) | backup files | Old backups must keep restoring |

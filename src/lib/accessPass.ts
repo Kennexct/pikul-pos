@@ -21,7 +21,7 @@ export type AccessState =
 export async function verifyPass(token: string, publicJwk: JWK): Promise<PassClaims | null> {
   try {
     const key = await importJWK(publicJwk, 'ES256');
-    const { payload } = await jwtVerify(token, key, { issuer: 'kasirku', algorithms: ['ES256'], clockTolerance: 400 * 86_400 });
+    const { payload } = await jwtVerify(token, key, { issuer: 'pikul', algorithms: ['ES256'], clockTolerance: 400 * 86_400 });
     if (typeof payload.sub !== 'string' || typeof payload.email !== 'string' || typeof payload.until !== 'number' || typeof payload.iat !== 'number') return null;
     if (payload.plan !== 'trial' && payload.plan !== 'paid') return null;
     return { sub: payload.sub, email: payload.email, plan: payload.plan, until: payload.until, iat: payload.iat * 1000 };

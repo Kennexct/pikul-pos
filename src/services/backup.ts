@@ -4,6 +4,7 @@ import { BackupError, backupFileName, isPortableMetaKey, parseBackup, type Backu
 import { nowIso } from '../lib/id';
 import { t } from '../i18n';
 
+/** Legacy identifier, frozen (ADR-016). */
 const CART_STORAGE_KEY = 'kasirku-cart';
 /** Everything except the sync queue, which only makes sense on the device that queued it (ADR-008). */
 const backupTables = () => localDb.tables.filter((table) => table.name !== 'outbox');

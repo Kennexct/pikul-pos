@@ -3,18 +3,22 @@ interface LogoProps {
   withWordmark?: boolean;
 }
 
-/** Receipt logomark: a slip with a torn edge — the one thing every sale produces. */
+/**
+ * Pikul logomark (ADR-016, brand kit v1): a seller's head, a bent carrying pole and two equal loads,
+ * on a pandan tile. Reads as a street seller with a pikulan and as a balance — tidy books.
+ */
 export function LogoMark({ size = 32 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 32 32" aria-hidden="true" focusable="false">
-      <rect width="32" height="32" rx="8" fill="var(--color-brand-600)" />
-      <path
-        d="M10 7.5h12a1 1 0 0 1 1 1V24l-2-1.5-2 1.5-2-1.5-2 1.5-2-1.5-2 1.5-2-1.5V8.5a1 1 0 0 1 1-1Z"
-        fill="#fff"
-      />
-      <rect x="12" y="11" width="8" height="1.8" rx=".9" fill="var(--color-brand-600)" />
-      <rect x="12" y="14.6" width="5.5" height="1.8" rx=".9" fill="var(--color-brand-300)" />
-      <rect x="12" y="18.2" width="8" height="1.8" rx=".9" fill="var(--color-brand-600)" />
+    <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+      <rect width="64" height="64" rx="14.4" fill="var(--color-brand-600)" />
+      <g transform="translate(7.86 10.13) scale(0.7543)">
+        <circle cx="32" cy="14" r="6.5" fill="var(--color-kunyit)" />
+        <path d="M7 32Q32 22 57 32" fill="none" stroke="var(--color-santan)" strokeWidth="6" strokeLinecap="round" />
+        <rect x="13" y="29" width="4" height="11" fill="var(--color-santan)" />
+        <rect x="47" y="29" width="4" height="11" fill="var(--color-santan)" />
+        <path d="M4 39.5h22a11 11 0 0 1-22 0z" fill="var(--color-santan)" />
+        <path d="M38 39.5h22a11 11 0 0 1-22 0z" fill="var(--color-santan)" />
+      </g>
     </svg>
   );
 }
@@ -23,11 +27,7 @@ export function Logo({ size = 32, withWordmark = true }: LogoProps) {
   return (
     <span className="inline-flex items-center gap-2">
       <LogoMark size={size} />
-      {withWordmark && (
-        <span className="text-[17px] font-bold tracking-[-0.02em] text-ink">
-          Kasir<span className="text-brand-600">Ku</span>
-        </span>
-      )}
+      {withWordmark && <span className="text-[19px] font-extrabold tracking-[-0.03em] text-ink">Pikul</span>}
     </span>
   );
 }

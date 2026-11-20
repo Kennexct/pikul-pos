@@ -26,7 +26,7 @@ beforeEach(async () => {
     signer: await passSigner(jwk),
     google: { verify: async (t) => (t === 'good' ? { sub: 'g-1', email: 'Ani@Gmail.com' } : null) },
     now: () => now,
-    appOrigin: 'https://kasirku.test',
+    appOrigin: 'https://pikul.test',
     adminEmails: [],
   };
 });
@@ -47,7 +47,7 @@ describe('sign in with email code', () => {
     expect(mail[0].email).toBe('budi@warung.id');
     expect(s.account.plan).toBe('trial');
     expect(s.account.until).toBe(T0 + 14 * DAY_MS);
-    const { payload } = await jwtVerify(s.pass, publicKey, { issuer: 'kasirku' });
+    const { payload } = await jwtVerify(s.pass, publicKey, { issuer: 'pikul' });
     expect(payload).toMatchObject({ email: 'budi@warung.id', plan: 'trial', until: T0 + 14 * DAY_MS });
   });
 
