@@ -19,6 +19,11 @@
 - [ ] Final prices (set them in `/admin/` after deploy) and custom domain
 - [ ] Choose a payment provider (or keep extending accounts by hand in Neon)
 
+## v0.16 register open/close, categories, variant expand — In progress (2026-11-20)
+Branch `feat/register-categories` on top of `feat/ui-polish`. Spec `specs/2026-11-20-register-categories-design.md`, ADR-017.
+- [x] Spec, ADR-017, PM/architect/staff/EM/senior decisions
+- [ ] T1 lib/register + lib/denominations · T2 openRegister audit · T3 CashCounter + OpenRegisterSheet + Kas · T4 POS gate · T5 categories · T6 variant expand · T7 i18n, e2e v16, checks, runbook
+
 ## UI polish — Delivered (2026-11-20)
 Branch `feat/ui-polish` on top of `feat/rebrand-pikul`. Pop-up open/close motion + swipe-to-dismiss + focus handling, page transitions, tap feedback, scroll-edge cues, plain monogram tiles, landing fixes. Review `reviews/2026-11-20-ui-polish-review.md`; motion table in `design-system/MASTER.md`.
 

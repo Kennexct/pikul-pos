@@ -1,12 +1,8 @@
-# Handoff — after the Pikul rebrand (2026-11-20)
+# Handoff — v0.16 register open/close, categories, variant expand (2026-11-20)
 
-**Latest:** UI polish on `feat/ui-polish` (stacked on `feat/rebrand-pikul`), see `reviews/2026-11-20-ui-polish-review.md`.
+**Now:** building on `feat/register-categories` (stacked on `feat/ui-polish`). Design: `specs/2026-11-20-register-categories-design.md`, ADR-017. Task list in `decisions/engineering-manager/register-categories.md`.
 
-**Where things stand:** the product is now **Pikul** (formerly KasirKu, ADR-016) on branch `feat/rebrand-pikul`, stacked on `feat/v0.15-admin-console` (both in `kasirku-history.bundle` in the project folder). Nothing is deployed. Reviews: `reviews/2026-11-20-v15-review.md`, `reviews/2026-11-20-rebrand-review.md`.
+**Never rename:** IndexedDB `kasirku`, localStorage `kasirku-cart|lang|active-member`, backup marker `app: "kasirku"`.
 
-**Never rename:** IndexedDB `kasirku`, localStorage `kasirku-cart|lang|active-member`, backup marker `app: "kasirku"` (data on sellers' devices).
-
-**To go live:** `docs/runbooks/rename-cloudflare-github.md` (GitHub repo → `pikul`, Pages project `pikul`, domain, Resend), then `docs/runbooks/deploy-cloudflare.md` and `docs/runbooks/admin-console.md`.
-**Open items:** payment provider, rate-limit rule, CSP, real prices (set in `/admin/`), re-shoot landing screenshots, trademark search.
-
-**For any new thread:** read `status.md`, the relevant `decisions/<role>/_index.md`, ADRs 013–016 and `design-system/MASTER.md`. Next ADR: 017.
+**To go live:** `docs/runbooks/rename-cloudflare-github.md`, then `deploy-cloudflare.md` and `admin-console.md`.
+**For any new thread:** read `status.md`, the relevant `decisions/<role>/_index.md`, ADRs 013–017 and `design-system/MASTER.md`. Next ADR: 018.

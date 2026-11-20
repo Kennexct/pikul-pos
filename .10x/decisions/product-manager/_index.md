@@ -17,3 +17,4 @@
 ## Update 2026-11-20
 Status: M1–M14 shipped on device (M6 item-level discount, M9 receipt-as-image still open); M15 part 1 shipped; owner login replaced by v0.14 accounts. Pending: multi-device sync, cloud backup.
 - rebrand-pikul (2026-11-20) → `rebrand-pikul.md`
+- register-categories (v0.16) — ADR-017 → `register-categories.md`
