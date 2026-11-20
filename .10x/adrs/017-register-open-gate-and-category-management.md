@@ -12,7 +12,7 @@ Kenny asked that the first sale of the day checks the register is opened with a 
 1. **"Opened" = an opening cash recorded for that business date** (the existing `meta` key). No new table and no Dexie version bump. `openRegister()` writes it plus an audit event `register_opened`; editing after opening writes `opening_cash_changed` (old/new).
 2. Register status is derived (`lib/register.ts`, pure): `closed` if a live closing exists; `open` if an opening is recorded **or** a counted sale exists on the date (devices upgraded mid-day are not blocked); else `not_open`.
 3. The gate lives in the cashier UI only (`useRegisterGate`): first product tap with an empty cart, Bayar and Simpan pesanan. `completeOrder` / `saveOpenOrder` are **not** changed, so restores, tests and any future import path keep working and the sell path has no new failure mode. A closed day warns once and never blocks (matches ADR-007 "selling was never blocked").
-4. Counting by denomination is a pure helper (`lib/denominations.ts`); only the total is stored.
+4. No denomination counter: the seller types one total (a counter was built and removed at Kenny's request, 2026-11-20).
 5. Categories: `saveCategory` (rename, unique case-insensitive), `moveCategory` (swap `sortOrder`, renumber), `deleteCategory` (soft delete + null `categoryId` on its products, one Dexie transaction, all through `saveAndQueue`). Owner-only by the existing `OwnerGate` on Produk.
 6. Variant expand is presentation only.
 

@@ -1,4 +1,4 @@
-"""v0.16 (ADR-017): register open before the first sale (count by denomination), close with counted balance,
+"""v0.16 (ADR-017): register open before the first sale (counted float), close with counted balance,
 closed-day warning, Kategori tab (add, rename, reorder, delete), variant expand in the product list.
 Usage: python3 e2e/v16.py http://localhost:4173/app OUT"""
 import re
@@ -53,11 +53,8 @@ def run(p, name, viewport, is_mobile):
     shot(page, f'{name}-r1-banner')
     page.get_by_role('button', name=re.compile('^Roti Bakar')).first.click()
     dialog.get_by_role('heading', name='Buka kasir').wait_for()
-    dialog.get_by_role('button', name='Hitung per pecahan').click()
-    dialog.locator('#denom-50000').fill('1')
-    dialog.locator('#denom-20000').fill('2')
-    dialog.locator('#denom-2000').fill('5')
-    check(name, 'counter_fills_amount', dialog.locator('#opening-cash').input_value() == '100.000')
+    dialog.locator('#opening-cash').fill('100000')
+    check(name, 'no_denomination_counter', dialog.get_by_text('Hitung per pecahan').count() == 0)
     shot(page, f'{name}-r2-open-sheet')
     dialog.get_by_role('button', name='Buka kasir').click()
     page.get_by_text('Kasir dibuka · modal Rp100.000').wait_for()
@@ -70,9 +67,7 @@ def run(p, name, viewport, is_mobile):
     page.get_by_text('Rp115.000').first.wait_for()  # 100.000 + 15.000 cash sale
     check(name, 'edit_opening_reads_ubah', page.get_by_role('button', name='Ubah').count() == 1)
     page.get_by_role('button', name='Tutup kasir', exact=True).click()
-    dialog.get_by_role('button', name='Hitung per pecahan').click()
-    dialog.locator('#denom-100000').fill('1')
-    dialog.locator('#denom-10000').fill('1')
+    dialog.locator('#counted-cash').fill('110000')
     dialog.get_by_text('Selisih: kurang Rp5.000').wait_for()
     shot(page, f'{name}-r3-close-count')
     dialog.get_by_role('button', name='Tutup kasir', exact=True).click()

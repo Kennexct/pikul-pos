@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import toast from 'react-hot-toast';
-import { CashCounter } from '../../components/Register/CashCounter';
 import { RupiahInput } from '../../components/ui/RupiahInput';
 import { Sheet } from '../../components/ui/Sheet';
 import { Switch } from '../../components/ui/Switch';
@@ -66,7 +65,6 @@ export function CloseDaySheet({ storeId, actorId, businessDate, drawer, soldOutC
             {difference === null ? t('Hitung uang tunai di laci, lalu ketik jumlahnya.') : difference === 0 ? t('Pas, tidak ada selisih.') : t('Selisih: {0}', describeDifference(difference))}
           </p>
         </div>
-        <CashCounter onTotal={setCounted} />
         <div>
           <label htmlFor="closing-note" className={labelBase}>{t('Catatan')} <span className="font-normal text-muted">{t('(opsional)')}</span></label>
           <input id="closing-note" value={note} maxLength={CLOSING_NOTE_MAX} placeholder={t('mis. kembalian kurang Rp2.000')} onChange={(e) => setNote(e.target.value)} className={inputBase} />

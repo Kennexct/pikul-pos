@@ -118,9 +118,9 @@ export const HELP_ID: HelpContent = {
       title: 'Kas, pengeluaran, dan tutup kasir',
       summary: 'Layar Kas menjawab pertanyaan "uang di laci harusnya berapa?" dan mencatat uang yang keluar.',
       steps: [
-        'Sebelum penjualan pertama, kasir meminta "Buka kasir": hitung uang kembalian di laci dan ketik jumlahnya. "Hitung per pecahan" membantu menjumlah lembar dan koin.',
+        'Sebelum penjualan pertama, kasir meminta "Buka kasir": hitung uang kembalian di laci dan ketik jumlahnya.',
         'Setiap ada uang keluar (belanja bahan, gas, upah), ketuk "Catat pengeluaran". Matikan "Dibayar dari uang laci" kalau uangnya bukan dari laci.',
-        'Malam hari, ketuk "Tutup kasir", hitung uang di laci (boleh per pecahan), dan ketik jumlahnya.',
+        'Malam hari, ketuk "Tutup kasir", hitung uang di laci, dan ketik jumlahnya.',
         'Aplikasi mencatat selisihnya. Ringkasan bisa dikirim ke pemilik lewat WhatsApp.',
       ],
       notes: [
@@ -128,7 +128,7 @@ export const HELP_ID: HelpContent = {
         'Ada penjualan setelah kasir ditutup? Pemilik bisa "Buka kembali" lalu menutup lagi.',
         'Saat menutup, menu bertanda Habis bisa dikembalikan otomatis untuk besok.',
       ],
-      keywords: 'laci setoran selisih kurang lebih closing shift biaya belanja buka kasir modal pecahan',
+      keywords: 'laci setoran selisih kurang lebih closing shift biaya belanja buka kasir modal',
     },
     produk: {
       title: 'Produk, harga modal, dan stok habis',

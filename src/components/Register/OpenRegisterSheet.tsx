@@ -10,7 +10,6 @@ import type { BusinessDate, Id } from '../../types';
 import { RupiahInput } from '../ui/RupiahInput';
 import { Sheet } from '../ui/Sheet';
 import { btnPrimary, btnSecondary, helperText, labelBase } from '../ui/styles';
-import { CashCounter } from './CashCounter';
 import { t } from '../../i18n';
 
 interface OpenRegisterSheetProps {
@@ -75,7 +74,6 @@ export function OpenRegisterSheet({ storeId, actorId, businessDate, suggested, m
           <RupiahInput id="opening-cash" value={amount} onChange={setAmount} autoFocus size="lg" />
           <p className={helperText}>{t('Uang kembalian yang sudah ada di laci sebelum penjualan pertama.')}</p>
         </div>
-        <CashCounter onTotal={setAmount} />
       </div>
     </Sheet>
   );

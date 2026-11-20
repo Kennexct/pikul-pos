@@ -119,9 +119,9 @@ export const HELP_EN: HelpContent = {
       title: 'Cash, expenses and closing the register',
       summary: 'The Cash screen answers "how much should be in the drawer?" and records money going out.',
       steps: [
-        'Before the first sale, the register asks you to "Open register": count the change in the drawer and type the amount. "Count by note and coin" adds up notes and coins for you.',
+        'Before the first sale, the register asks you to "Open register": count the change in the drawer and type the amount.',
         'Whenever money goes out (ingredients, gas, wages), tap "Record expense". Turn off "Paid from the drawer" if the money did not come from the drawer.',
-        'At night, tap "Close register", count the cash in the drawer (by note and coin if you like) and type the amount.',
+        'At night, tap "Close register", count the cash in the drawer and type the amount.',
         'The app records the difference. The summary can be sent to the owner by WhatsApp.',
       ],
       notes: [
@@ -129,7 +129,7 @@ export const HELP_EN: HelpContent = {
         'A sale after closing? The owner can "Reopen" and close again.',
         'When closing, items marked Sold out can be made available again automatically for tomorrow.',
       ],
-      keywords: 'drawer deposit difference short over closing shift cost shopping till open register float notes coins',
+      keywords: 'drawer deposit difference short over closing shift cost shopping till open register float',
     },
     produk: {
       title: 'Products, cost price and sold out',

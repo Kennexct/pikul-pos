@@ -26,13 +26,14 @@ The business date follows the store's timezone and cut-off (unchanged). Yesterda
 
 ## Buka kasir sheet
 - Amount prefilled with the suggested float (`getOpeningCash`: typed today, else last closing's opening cash), label "Uang di laci saat mulai jualan".
-- Optional "Hitung per pecahan" (100.000 … 100) fills the amount.
 - Button "Buka kasir". Writes the opening and an audit event `register_opened` (amount, actor).
 - Can be dismissed ("Nanti saja"); the next Bayar/Simpan asks again. Opening is never required for browsing the menu.
 
 ## Kas page
 - "Modal awal" line: when the day is not opened yet the action reads **Buka kasir** (same sheet); afterwards **Ubah** (writes `opening_cash_changed` audit with old/new amount).
-- Tutup kasir sheet: adds the "Hitung per pecahan" helper; the rest is unchanged.
+- Tutup kasir sheet: unchanged (typed counted cash, expected vs counted vs difference).
+
+**Revision 2026-11-20 (Kenny):** the "Hitung per pecahan" counter was built, then removed — "per pecahan tidak diperlukan". Open and close take a single typed amount.
 
 ## Category tab
 - Tab order: Produk · Add-on · Kategori (with counts). Header button becomes "+ Kategori".
