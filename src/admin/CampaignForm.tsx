@@ -166,7 +166,7 @@ export function CampaignForm({ campaign, plans, now, onClose, onSaved, onError }
               </div>
             )}
           </div>
-          {promoPlan && <p className={helperText}>{t('Selama kampanye tayang, halaman depan, aplikasi, dan Midtrans memakai harga ini untuk {0}.', promoPlan.name)}</p>}
+          {promoPlan && <p className={helperText}>{t('Selama kampanye tayang, halaman depan dan aplikasi menampilkan harga ini untuk {0}.', promoPlan.name)}</p>}
         </div>
 
         <div>

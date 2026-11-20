@@ -98,23 +98,11 @@ export async function signOut(): Promise<void> {
   if (refreshToken) await api('POST', '/api/auth/signout', { refreshToken }).catch(() => undefined);
 }
 
-export interface PaymentView {
-  orderId: string;
-  plan: string;
-  planName: string;
-  amount: number;
-  days: number;
-  status: 'pending' | 'paid' | 'failed' | 'expired';
-  createdAt: number;
-  paidAt: number | null;
-  method: string | null;
-}
 export interface BillingOverview {
   account: { email: string; plan: 'trial' | 'paid'; until: number; trialEndsAt: number; paidUntil: number | null };
   plans: PlanOffer[];
-  payments: PaymentView[];
 }
-/** A plan as set in the admin console, with today's price (ADR-014). */
+/** A plan as set in the admin console, with today's display price (ADR-014). No payment provider is connected (ADR-015). */
 export interface PlanOffer {
   id: string;
   name: string;
@@ -136,7 +124,5 @@ export interface CampaignPopup {
   endsAt: number;
 }
 export const billingOverview = () => api<BillingOverview>('GET', '/api/billing', undefined, true);
-export const startCheckout = (plan: string) => api<{ orderId: string; redirectUrl: string }>('POST', '/api/billing/checkout', { plan }, true);
-export const paymentStatus = (orderId: string) => api<PaymentView>('GET', `/api/billing/status/${encodeURIComponent(orderId)}`, undefined, true);
 /** The live in-app campaign, if any (public, cached at the edge for a minute). */
 export const appCampaign = () => api<{ popup: CampaignPopup | null }>('GET', '/api/public/app');

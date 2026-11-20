@@ -1,35 +1,26 @@
 import { exportJWK, generateKeyPair } from 'jose';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { ADMIN_FRESH_MS } from './admin';
-import { sha512 } from './crypto';
 import { memoryRepo } from './memoryRepo';
 import { passSigner } from './pass';
 import { route } from './router';
 import { DAY_MS, type Deps } from './types';
 
 const T0 = Date.UTC(2026, 10, 20, 3);
-const SERVER_KEY = 'SB-Mid-server-test';
 const ADMIN = 'owner@kasirku.test';
 let now = T0;
 let mail: { email: string; code: string }[];
 let repo: ReturnType<typeof memoryRepo>;
 let deps: Deps;
-let snaps: { amount: number; itemId: string; itemName: string }[];
 
 beforeEach(async () => {
   now = T0;
   mail = [];
-  snaps = [];
   repo = memoryRepo();
   const kp = await generateKeyPair('ES256', { extractable: true });
   deps = {
     repo,
     mailer: { sendLoginCode: async (email, code) => void mail.push({ email, code }) },
-    midtrans: {
-      serverKey: SERVER_KEY,
-      createSnap: async ({ orderId, amount, itemId, itemName }) => (snaps.push({ amount, itemId, itemName }), { token: 't', redirectUrl: `https://snap.test/${orderId}` }),
-      getStatus: async () => null,
-    },
     signer: await passSigner({ ...(await exportJWK(kp.privateKey)), kid: 't1' }),
     google: null,
     now: () => now,
@@ -75,23 +66,18 @@ describe('admin access', () => {
 });
 
 describe('plans', () => {
-  it('edits a plan, drives checkout price and days, and keeps a snapshot on the payment', async () => {
+  it('edits a plan and the landing page and the app show it', async () => {
     const admin = await signIn(ADMIN);
     const saved = await call('POST', '/api/admin/plans', plan({ days: 31 }), admin);
     expect(saved.status).toBe(200);
     expect(saved.purgePublic).toBe(true);
     expect((saved.body as { plan: { features: string[] } }).plan.features).toEqual(['A', 'B']);
     expect(repo.audit.at(-1)).toMatchObject({ email: ADMIN, action: 'plan.save', target: 'monthly' });
-
+    const pub = (await call('GET', '/api/public/landing')).body as { plans: { id: string; amount: number; days: number }[] };
+    expect(pub.plans[0]).toMatchObject({ id: 'monthly', amount: 59_000, days: 31 });
     const m = await signIn('budi@warung.id');
-    const { orderId } = (await call('POST', '/api/billing/checkout', { plan: 'monthly' }, m)).body as { orderId: string };
-    expect(snaps[0]).toEqual({ amount: 59_000, itemId: 'monthly', itemName: 'KasirKu Bulanan' });
-    // Kenny changes the price while the payment is pending: the notification still matches the snapshot.
-    await call('POST', '/api/admin/plans', plan({ amount: 69_000 }), admin);
-    const gross = '59000.00';
-    await call('POST', '/api/billing/midtrans', { order_id: orderId, status_code: '200', gross_amount: gross, transaction_status: 'settlement', signature_key: await sha512(orderId + '200' + gross + SERVER_KEY) });
-    expect(repo.payments.get(orderId)).toMatchObject({ status: 'paid', amount: 59_000, days: 31, planName: 'Bulanan' });
-    expect([...repo.accounts.values()].find((a) => a.email === 'budi@warung.id')!.paidUntil).toBe(T0 + 14 * DAY_MS + 31 * DAY_MS);
+    const ov = (await call('GET', '/api/billing', undefined, m)).body as { plans: { id: string; amount: number }[] };
+    expect(ov.plans[0]).toMatchObject({ id: 'monthly', amount: 59_000 });
   });
 
   it('creates new plans, refuses duplicates and bad values, and hides inactive plans', async () => {
@@ -104,8 +90,6 @@ describe('plans', () => {
     await call('POST', '/api/admin/plans', plan({ id: 'yearly', name: 'Tahunan', amount: 490_000, days: 365, active: false }), admin);
     const pub = (await call('GET', '/api/public/landing')).body as { plans: { id: string }[] };
     expect(pub.plans.map((p) => p.id)).toEqual(['monthly', 'quarterly']);
-    const m = await signIn('budi@warung.id');
-    expect((await call('POST', '/api/billing/checkout', { plan: 'yearly' }, m)).status).toBe(400);
   });
 });
 
@@ -139,19 +123,16 @@ describe('campaigns', () => {
     expect(((await call('GET', '/api/admin/catalog', undefined, admin)).body as { campaigns: unknown[] }).campaigns).toHaveLength(0);
   });
 
-  it('a live promo price is charged at checkout and shown with the normal price', async () => {
+  it('a live promo price is shown with the normal price, only during the campaign', async () => {
     const admin = await signIn(ADMIN);
     expect((await call('POST', '/api/admin/campaigns', campaign({ planId: 'yearly', promoAmount: 490_000 }), admin)).body).toEqual({ error: 'invalid_promo' });
-    const id = ((await call('POST', '/api/admin/campaigns', campaign({ planId: 'yearly', promoAmount: 399_000 }), admin)).body as { campaign: { id: string } }).campaign.id;
-    const m = await signIn('budi@warung.id');
-    await call('POST', '/api/billing/checkout', { plan: 'yearly' }, m);
-    expect(snaps.at(-1)!.amount).toBe(490_000); // not started yet
+    expect((await call('POST', '/api/admin/campaigns', campaign({ planId: 'yearly', promoAmount: 399_000 }), admin)).status).toBe(200);
+    const yearly = async () => ((await call('GET', '/api/public/landing')).body as { plans: { id: string; amount: number; regularAmount: number; promoEndsAt: number | null }[] }).plans.find((p) => p.id === 'yearly');
+    expect(await yearly()).toMatchObject({ amount: 490_000, promoEndsAt: null }); // not started yet
     now = T0 + 2 * DAY_MS;
-    const ov = (await call('GET', '/api/billing', undefined, m)).body as { plans: { id: string; amount: number; regularAmount: number; promoEndsAt: number | null }[] };
-    expect(ov.plans.find((p) => p.id === 'yearly')).toMatchObject({ amount: 399_000, regularAmount: 490_000, promoEndsAt: T0 + 10 * DAY_MS });
-    const { orderId } = (await call('POST', '/api/billing/checkout', { plan: 'yearly' }, m)).body as { orderId: string };
-    expect(snaps.at(-1)!.amount).toBe(399_000);
-    expect(repo.payments.get(orderId)!.campaignId).toBe(id);
+    expect(await yearly()).toMatchObject({ amount: 399_000, regularAmount: 490_000, promoEndsAt: T0 + 10 * DAY_MS });
+    now = T0 + 10 * DAY_MS;
+    expect(await yearly()).toMatchObject({ amount: 490_000, promoEndsAt: null });
   });
 
   it('refuses unsafe links, missing placement and bad dates', async () => {

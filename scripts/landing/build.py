@@ -82,14 +82,14 @@ def plan_card(name, price, unit, note, badge, badge_cls, items, cta, primary, pa
 </div>'''
 
 pricing = (plan_card('Coba gratis', 'Rp0', '14 hari', 'Semua fitur, tanpa kartu kredit. Cukup daftar dengan email.', 'Mulai di sini', 'brand', all_feats, 'Coba gratis 14 hari', True, paid=False)
-         + plan_card('Bulanan', 'Rp49.000', '/ 30 hari', 'Lanjut setelah masa coba. Bayar dengan QRIS, VA, GoPay, atau ShopeePay.', '', '', ['Semua fitur di masa coba', 'Perpanjang kapan saja, tanpa hari hilang', 'Data tetap milik Anda'], 'Mulai dengan masa coba', False)
+         + plan_card('Bulanan', 'Rp49.000', '/ 30 hari', 'Lanjut setelah masa coba.', '', '', ['Semua fitur di masa coba', 'Perpanjang kapan saja, tanpa hari hilang', 'Data tetap milik Anda'], 'Mulai dengan masa coba', False)
          + plan_card('Tahunan', 'Rp490.000', '/ 365 hari', 'Hemat dua bulan dibanding bayar bulanan.', 'Hemat 2 bulan', 'neutral', ['Semua fitur di masa coba', 'Sekali bayar untuk setahun', 'Data tetap milik Anda'], 'Mulai dengan masa coba', False))
 
 soon = ['Cadangan otomatis ke cloud','Data tersinkron antar perangkat','Laporan gabungan semua kasir']
 
 faqs = [('Benar-benar bisa tanpa internet?','Ya. Daftar dan masuk pertama kali butuh internet. Setelah itu KasirKu menyimpan semua data di perangkat: penjualan, struk, laporan, dan tutup kasir tetap jalan saat sinyal hilang.'),
         ('Apa yang terjadi kalau masa coba habis?','Laporan, riwayat, ekspor, dan cadangan data tetap bisa dibuka. Hanya penjualan baru yang berhenti sampai Anda memperpanjang. Data tidak pernah dihapus.'),
-        ('Bagaimana cara membayar?','Di aplikasi: Pengaturan → Langganan. Pembayaran lewat Midtrans dengan QRIS, virtual account, GoPay, atau ShopeePay. Perpanjangan ditambahkan setelah tanggal berakhir, jadi tidak ada hari yang hilang.'),
+        ('Bagaimana cara membayar?','Pembayaran langganan online sedang kami siapkan. Selama masa coba, semua fitur bisa dipakai gratis tanpa kartu kredit.'),
         ('Data saya aman di mana?','Di perangkat Anda sendiri. Akun hanya dipakai untuk masuk dan langganan. Simpan cadangan rutin lewat Pengaturan → Cadangan; cadangan otomatis ke cloud sedang disiapkan.'),
         ('Perangkat apa yang dibutuhkan?','Tablet atau HP Android/iPhone dengan browser modern, atau laptop. Untuk cetak struk, pakai printer yang sudah terpasang di perangkat.'),
         ('Apakah QRIS-nya otomatis terkonfirmasi?','Belum. KasirKu menampilkan QRIS statis toko Anda; kasir menekan "Sudah dibayar" setelah melihat notifikasi dari bank.')]
@@ -172,7 +172,7 @@ body = f'''<div style="font-family: 'Plus Jakarta Sans', system-ui, sans-serif; 
 <p style="margin: 0; font-size: 15px; font-weight: 700; color: {INK}">Segera hadir untuk pelanggan:</p>
 <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 10px 24px">{li(soon, clock)}</ul>
 </div>
-<p style="margin: 20px auto 0; max-width: 900px; text-align: center; font-size: 14px; color: {MUTED}">Harga dapat berubah sebelum peluncuran resmi. Pembayaran diproses oleh Midtrans.</p>
+<p style="margin: 20px auto 0; max-width: 900px; text-align: center; font-size: 14px; color: {MUTED}">Harga dapat berubah sebelum peluncuran resmi.</p>
 </div>
 </section>
 

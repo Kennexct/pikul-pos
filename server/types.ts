@@ -57,7 +57,7 @@ export interface Account {
   googleSub: string | null;
   createdAt: number;
   trialEndsAt: number;
-  paidUntil: number | null;
+  paidUntil: number | null; // entitlement beyond the trial; no payment provider sets it yet
 }
 
 export interface LoginCode {
@@ -72,21 +72,6 @@ export interface RefreshToken {
   tokenHash: string;
   accountId: string;
   expiresAt: number;
-}
-
-export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'expired';
-export interface Payment {
-  orderId: string;
-  accountId: string;
-  plan: string; // plan id
-  planName: string; // snapshot at checkout
-  amount: number; // snapshot: what Midtrans must report
-  days: number; // snapshot: what a paid notification adds
-  campaignId: string | null;
-  status: PaymentStatus;
-  createdAt: number;
-  paidAt: number | null;
-  method: string | null;
 }
 
 export interface Repo {
@@ -106,13 +91,6 @@ export interface Repo {
   takeRefreshToken(tokenHash: string): Promise<RefreshToken | null>; // read and delete (rotation)
   deleteRefreshTokens(accountId: string): Promise<void>;
 
-  createPayment(p: Payment): Promise<void>;
-  findPayment(orderId: string): Promise<Payment | null>;
-  /** Moves a pending payment to paid exactly once; returns false when it was not pending. */
-  markPaymentPaid(orderId: string, paidAt: number, method: string | null): Promise<boolean>;
-  setPaymentStatus(orderId: string, status: PaymentStatus): Promise<void>;
-  listPayments(accountId: string): Promise<Payment[]>;
-
   listPlans(): Promise<PlanDef[]>;
   putPlan(p: PlanDef): Promise<void>;
   listCampaigns(): Promise<Campaign[]>; // not archived
@@ -127,22 +105,6 @@ export interface Mailer {
   sendLoginCode(email: string, code: string): Promise<void>;
 }
 
-export interface SnapResult {
-  token: string;
-  redirectUrl: string;
-}
-export interface MidtransStatus {
-  transactionStatus: string;
-  fraudStatus: string | null;
-  grossAmount: number;
-  paymentType: string | null;
-}
-export interface Midtrans {
-  createSnap(input: { orderId: string; amount: number; itemId: string; itemName: string; email: string; finishUrl: string }): Promise<SnapResult>;
-  getStatus(orderId: string): Promise<MidtransStatus | null>;
-  serverKey: string;
-}
-
 export interface PassSigner {
   sign(claims: { sub: string; email: string; plan: 'trial' | 'paid'; until: number }): Promise<string>;
 }
@@ -154,7 +116,6 @@ export interface GoogleVerifier {
 export interface Deps {
   repo: Repo;
   mailer: Mailer;
-  midtrans: Midtrans;
   signer: PassSigner;
   google: GoogleVerifier | null;
   now: () => number;

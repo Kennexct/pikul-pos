@@ -1,5 +1,5 @@
 import { googleSignIn, refresh, requestCode, signOut, verifyCode } from './auth';
-import { checkout, notification, overview, paymentStatus } from './billing';
+import { overview } from './billing';
 import { adminArchiveCampaign, adminCatalog, adminMe, adminSaveCampaign, adminSavePlan, adminToggleCampaign, adminUploadImage, appPopupData, landingData, MAX_IMAGE_BYTES, publicImage } from './admin';
 import type { ApiResponse, Deps } from './types';
 
@@ -32,10 +32,6 @@ export async function route(deps: Deps, method: string, path: string, auth: stri
       return signOut(deps, body);
     case 'GET /api/billing':
       return overview(deps, auth);
-    case 'POST /api/billing/checkout':
-      return checkout(deps, auth, body);
-    case 'POST /api/billing/midtrans':
-      return notification(deps, body);
     case 'GET /api/public/landing':
       return landingData(deps);
     case 'GET /api/public/app':
@@ -59,7 +55,5 @@ export async function route(deps: Deps, method: string, path: string, auth: stri
     if (c[2] === '/archive') return adminArchiveCampaign(deps, auth, c[1]);
     return adminSaveCampaign(deps, auth, c[1], body);
   }
-  const m = /^GET \/api\/billing\/status\/([A-Z0-9-]{6,64})$/.exec(key);
-  if (m) return paymentStatus(deps, auth, m[1]);
   return { status: 404, body: { error: 'not_found' } };
 }

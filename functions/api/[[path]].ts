@@ -1,7 +1,6 @@
 /// <reference types="@cloudflare/workers-types" />
 import { consoleMailer, resendMailer } from '../../server/mailer';
 import { memoryRepo } from '../../server/memoryRepo';
-import { devMidtrans, midtransClient } from '../../server/midtrans';
 import { neonRepo } from '../../server/neonRepo';
 import { googleVerifier, passSigner } from '../../server/pass';
 import { route } from '../../server/router';
@@ -12,8 +11,6 @@ interface Env {
   RESEND_API_KEY?: string;
   MAIL_FROM?: string;
   PASS_PRIVATE_JWK: string;
-  MIDTRANS_SERVER_KEY: string;
-  MIDTRANS_PRODUCTION?: string;
   GOOGLE_CLIENT_ID?: string;
   APP_ORIGIN: string;
   ADMIN_EMAILS?: string; // comma-separated; only these accounts may use /admin (ADR-014)
@@ -30,7 +27,6 @@ async function deps(env: Env): Promise<Deps> {
   return {
     repo: env.DATABASE_URL ? neonRepo(env.DATABASE_URL) : (devRepo ??= memoryRepo()),
     mailer: env.RESEND_API_KEY && env.MAIL_FROM ? resendMailer(env.RESEND_API_KEY, env.MAIL_FROM) : consoleMailer,
-    midtrans: dev && env.MIDTRANS_SERVER_KEY.startsWith('dev-') ? devMidtrans(env.MIDTRANS_SERVER_KEY, env.APP_ORIGIN) : midtransClient(env.MIDTRANS_SERVER_KEY, env.MIDTRANS_PRODUCTION === 'true'),
     signer: signerCache.signer,
     google: env.GOOGLE_CLIENT_ID ? googleVerifier(env.GOOGLE_CLIENT_ID) : null,
     now: Date.now,

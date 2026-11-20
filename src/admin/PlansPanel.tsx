@@ -19,7 +19,7 @@ interface Props {
   onError: (e: unknown) => Promise<void>;
 }
 
-/** Plans (ADR-014): what the landing page, the app and Midtrans checkout use. */
+/** Plans (ADR-014): what the landing page and the app show. */
 export function PlansPanel({ plans, onChanged, onError }: Props) {
   const [adding, setAdding] = useState(false);
   const nextSort = (plans.reduce((m, p) => Math.max(m, p.sort), 0) || 0) + 10;
@@ -30,7 +30,7 @@ export function PlansPanel({ plans, onChanged, onError }: Props) {
           <h2 id="plans-title" className="text-[17px] font-bold text-ink">
             {t('Paket harga')}
           </h2>
-          <p className="text-[14px] text-muted">{t('Tersimpan = langsung dipakai di halaman depan (±1 menit), aplikasi, dan pembayaran Midtrans.')}</p>
+          <p className="text-[14px] text-muted">{t('Tersimpan = langsung dipakai di halaman depan (±1 menit) dan aplikasi.')}</p>
         </div>
         {!adding && (
           <button type="button" className={btnSecondary} onClick={() => setAdding(true)}>
@@ -45,7 +45,7 @@ export function PlansPanel({ plans, onChanged, onError }: Props) {
           <PlanEditor key={`${p.id}-${p.updatedAt}`} draft={toDraft(p)} isNew={false} onChanged={onChanged} onError={onError} />
         ))}
       </div>
-      <p className={`${helperText} mt-4`}>{t('Paket tidak bisa dihapus karena dipakai riwayat pembayaran. Matikan "Dijual" untuk menyembunyikannya. Semua paket membuka semua fitur; baris fitur hanya untuk tampilan.')}</p>
+      <p className={`${helperText} mt-4`}>{t('Paket tidak dihapus agar kodenya tetap. Matikan "Dijual" untuk menyembunyikannya. Semua paket membuka semua fitur; baris fitur hanya untuk tampilan.')}</p>
     </section>
   );
 }
@@ -134,7 +134,7 @@ function PlanEditor({ draft, isNew, onDone, onChanged, onError }: { draft: Draft
         </label>
         <textarea id={`${id}-features`} rows={4} className={`${inputBase} h-auto py-2.5`} value={d.features} onChange={(e) => set('features', e.target.value)} />
       </div>
-      <Switch checked={d.active} onChange={(v) => set('active', v)} label={t('Dijual')} description={t('Tampil di halaman depan dan aplikasi, dan bisa dibayar.')} />
+      <Switch checked={d.active} onChange={(v) => set('active', v)} label={t('Dijual')} description={t('Tampil di halaman depan dan aplikasi.')} />
       <div className="flex gap-2">
         <button type="submit" className={`${btnPrimary} flex-1`} disabled={busy || (!dirty && !isNew)}>
           {isNew ? t('Buat paket') : t('Simpan')}

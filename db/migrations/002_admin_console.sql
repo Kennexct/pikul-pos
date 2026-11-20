@@ -59,14 +59,3 @@ create table if not exists admin_audit (
   target text not null,
   detail jsonb
 );
-
--- Payments now point at any plan and keep a snapshot of what was sold.
-alter table payments drop constraint if exists payments_plan_check;
-alter table payments add constraint payments_plan_fk foreign key (plan) references plans(id) not valid;
-alter table payments add column if not exists plan_name text;
-alter table payments add column if not exists days integer;
-alter table payments add column if not exists campaign_id uuid references campaigns(id);
-update payments set days = case plan when 'yearly' then 365 else 30 end where days is null;
-update payments set plan_name = case plan when 'yearly' then 'Tahunan' else 'Bulanan' end where plan_name is null;
-alter table payments alter column days set not null;
-alter table payments alter column plan_name set not null;

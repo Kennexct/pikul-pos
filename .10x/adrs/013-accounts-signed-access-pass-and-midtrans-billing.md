@@ -1,6 +1,6 @@
 # ADR-013: Accounts, signed offline access pass, Midtrans billing on Cloudflare + Neon
 
-**Status:** Accepted
+**Status:** Accepted — billing part superseded by ADR-015 (Midtrans removed 2026-11-20)
 **Date:** 2026-11-19
 **Feature:** accounts-billing
 **Author:** 10x-Team (Architect + Staff Engineer)

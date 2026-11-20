@@ -1,12 +1,11 @@
 import { DEFAULT_PLANS } from './catalog';
-import type { Account, AdminAuditEntry, Campaign, StoredImage, LoginCode, Payment, PaymentStatus, PlanDef, RefreshToken, Repo } from './types';
+import type { Account, AdminAuditEntry, Campaign, StoredImage, LoginCode, PlanDef, RefreshToken, Repo } from './types';
 
 /** In-memory Repo for tests and `wrangler pages dev` without a database. */
-export function memoryRepo(): Repo & { accounts: Map<string, Account>; payments: Map<string, Payment>; campaigns: Map<string, Campaign>; audit: AdminAuditEntry[] } {
+export function memoryRepo(): Repo & { accounts: Map<string, Account>; campaigns: Map<string, Campaign>; audit: AdminAuditEntry[] } {
   const accounts = new Map<string, Account>();
   const codes = new Map<string, LoginCode>();
   const tokens = new Map<string, RefreshToken>();
-  const payments = new Map<string, Payment>();
   const plans = new Map<string, PlanDef>(DEFAULT_PLANS.map((p) => [p.id, structuredClone(p)]));
   const campaigns = new Map<string, Campaign>();
   const audit: AdminAuditEntry[] = [];
@@ -14,7 +13,6 @@ export function memoryRepo(): Repo & { accounts: Map<string, Account>; payments:
   const clone = <T>(v: T | undefined): T | null => (v ? structuredClone(v) : null);
   return {
     accounts,
-    payments,
     campaigns,
     audit,
     async findAccountByEmail(email) {
@@ -60,27 +58,6 @@ export function memoryRepo(): Repo & { accounts: Map<string, Account>; payments:
     },
     async deleteRefreshTokens(accountId) {
       for (const [k, t] of tokens) if (t.accountId === accountId) tokens.delete(k);
-    },
-    async createPayment(p) {
-      payments.set(p.orderId, structuredClone(p));
-    },
-    async findPayment(id) {
-      return clone(payments.get(id));
-    },
-    async markPaymentPaid(id, paidAt, method) {
-      const p = payments.get(id);
-      if (!p || p.status === 'paid') return false;
-      p.status = 'paid';
-      p.paidAt = paidAt;
-      p.method = method;
-      return true;
-    },
-    async setPaymentStatus(id, status: PaymentStatus) {
-      const p = payments.get(id);
-      if (p) p.status = status;
-    },
-    async listPayments(accountId) {
-      return [...payments.values()].filter((p) => p.accountId === accountId).sort((a, b) => b.createdAt - a.createdAt).map((p) => structuredClone(p));
     },
     async listPlans() {
       return [...plans.values()].map((p) => structuredClone(p));

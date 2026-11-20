@@ -1,6 +1,6 @@
 """v0.15 admin console against `wrangler pages dev` (DEV_MODE=1, ADMIN_EMAILS=admin@kasirku.test):
 a merchant is refused; the admin edits a plan and schedules a campaign (banner upload, link, promo price, landing + app);
-the landing page shows live prices and the pop-up once; a merchant sees the in-app pop-up once and pays the promo price.
+the landing page shows live prices and the pop-up once; a merchant sees the in-app pop-up once and the promo price.
 Usage: python3 e2e/v15.py http://localhost:8788 OUT /tmp/wrangler.log [skip-setup]
 (run after v14.py: it changes the prices; skip-setup re-runs the checks against an existing campaign)"""
 import os
@@ -137,12 +137,9 @@ def merchant_flow(p, viewport, is_mobile, name):
     dialog.get_by_role('button', name='Tutup').click()
     page.goto(BASE + '/app/pengaturan?tab=subscription')
     page.get_by_text('Promo sampai').wait_for()
-    page.get_by_role('button', name=re.compile('^Bulanan')).get_by_text('Rp 59.000', exact=False).count()
+    plans = page.locator('li', has_text='Tahunan').first
+    assert '392.000' in plans.inner_text() and plans.locator('s').inner_text().find('490.000') >= 0
     shot(page, f'{name}-d2-subscription')
-    page.get_by_role('button', name=re.compile('^Tahunan')).click()
-    page.wait_for_url(re.compile(r'/app/pengaturan\?tab=subscription(&|$)'))
-    page.get_by_text('Menunggu').wait_for()
-    assert page.locator('li', has_text='Tahunan').first.inner_text().find('392') >= 0
     page.goto(BASE + '/app/')
     page.get_by_role('button', name='Kerupuk').first.wait_for()
     page.wait_for_timeout(3000)

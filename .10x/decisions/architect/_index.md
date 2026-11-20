@@ -7,6 +7,7 @@
 [DISCOVERED] Known gap: sync is push-only (no pull to other devices yet — M15).
 
 ## Features
+- admin-console (v0.15) — ADR-014, ADR-015 → `admin-console.md`
 - reports-export — ADR-001, ADR-002 → `reports-export.md`
 - staff-pin — ADR-003, ADR-004 → `staff-pin.md`
 - customers (M7) — ADR-005 → `customers.md`

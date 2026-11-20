@@ -1,5 +1,5 @@
 import { neon } from '@neondatabase/serverless';
-import type { Account, Campaign, StoredImage, LoginCode, Payment, PlanDef, RefreshToken, Repo } from './types';
+import type { Account, Campaign, StoredImage, LoginCode, PlanDef, RefreshToken, Repo } from './types';
 
 type Row = Record<string, unknown>;
 const ms = (v: unknown) => (v === null || v === undefined ? null : new Date(v as string).getTime());
@@ -13,20 +13,6 @@ const account = (r: Row): Account => ({
   trialEndsAt: ms(r.trial_ends_at)!,
   paidUntil: ms(r.paid_until),
 });
-const payment = (r: Row): Payment => ({
-  orderId: r.order_id as string,
-  accountId: r.account_id as string,
-  plan: r.plan as string,
-  planName: (r.plan_name as string | null) ?? (r.plan as string),
-  amount: Number(r.amount),
-  days: Number(r.days),
-  campaignId: (r.campaign_id as string | null) ?? null,
-  status: r.status as Payment['status'],
-  createdAt: ms(r.created_at)!,
-  paidAt: ms(r.paid_at),
-  method: (r.method as string | null) ?? null,
-});
-
 const b64 = (bytes: Uint8Array) => {
   let s = '';
   for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
@@ -113,23 +99,6 @@ export function neonRepo(databaseUrl: string): Repo {
       one(sql`delete from refresh_tokens where token_hash = ${h} returning *` as Promise<Row[]>, (r): RefreshToken => ({ tokenHash: r.token_hash as string, accountId: r.account_id as string, expiresAt: ms(r.expires_at)! })),
     async deleteRefreshTokens(accountId) {
       await sql`delete from refresh_tokens where account_id = ${accountId}`;
-    },
-    async createPayment(p) {
-      await sql`insert into payments (order_id, account_id, plan, plan_name, amount, days, campaign_id, status, created_at)
-        values (${p.orderId}, ${p.accountId}, ${p.plan}, ${p.planName}, ${p.amount}, ${p.days}, ${p.campaignId}, ${p.status}, ${iso(p.createdAt)})`;
-    },
-    findPayment: (id) => one(sql`select * from payments where order_id = ${id}` as Promise<Row[]>, payment),
-    async markPaymentPaid(id, paidAt, method) {
-      const rows = (await sql`update payments set status = 'paid', paid_at = ${iso(paidAt)}, method = ${method}
-        where order_id = ${id} and status <> 'paid' returning order_id`) as Row[];
-      return rows.length === 1;
-    },
-    async setPaymentStatus(id, status) {
-      await sql`update payments set status = ${status} where order_id = ${id} and status = 'pending'`;
-    },
-    async listPayments(accountId) {
-      const rows = (await sql`select * from payments where account_id = ${accountId} order by created_at desc limit 50`) as Row[];
-      return rows.map(payment);
     },
     async listPlans() {
       return ((await sql`select * from plans`) as Row[]).map(plan);

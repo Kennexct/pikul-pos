@@ -1,28 +1,29 @@
 # Status
 
-**Phase:** Delivery docs complete — v0.14 (accounts, trial, Midtrans billing). Not deployed.
-**Branch:** `main` contains everything through v0.14 (`df4d12c`). Feature branches `feat/*` are merged history.
+**Phase:** Delivery docs complete — v0.15 admin console (plans, scheduled promo pop-ups); Midtrans removed (ADR-015). Not deployed.
+**Branch:** `feat/v0.15-admin-console` (on top of `main` `aaac4dc`). Delivered as a git bundle in the project folder; GitHub repo not reachable from the build session.
 **Repo:** GitHub `Kennexct/kasirku` (per deploy runbook). Project folder copy: `kasirku-full/` + `kasirku-history.bundle`.
-**Last refreshed:** 2026-11-20 (context check against the project folder)
+**Last refreshed:** 2026-11-20 (v0.15)
 
 ## Current snapshot (2026-11-20)
-- App version 0.14.0. 160 unit/integration tests (per v0.14 review), 13 Playwright scripts in `e2e/`.
-- Stack: React 19 + Vite 8 PWA, Tailwind v4, Zustand, Dexie · Cloudflare Pages + Functions, Neon, Resend, Midtrans Snap (ADR-013). Supabase/Vercel plan superseded.
-- Every PRD module M1–M14 shipped on device; M15 part 1 (staff PIN) shipped; owner login replaced by v0.14 accounts.
+- App version 0.15.0. 165 unit/integration tests, 14 Playwright scripts in `e2e/` (new: `v15.py`).
+- Stack: React 19 + Vite 8 PWA, Tailwind v4, Zustand, Dexie · Cloudflare Pages + Functions, Neon, Resend (ADR-013). No payment provider (ADR-015). Supabase/Vercel plan superseded.
+- `/admin/` owner console (ADR-014): plans in Neon drive the landing page and the app; campaigns = scheduled pop-up banners (upload, optional link, on/off, landing and/or app once per account, optional promo price). Access: `ADMIN_EMAILS` + 12-hour session; `admin_audit` log.
 
 ### Waiting on Kenny (blocks go-live)
-- [ ] Neon project (Singapore) + run `db/migrations/001_accounts_billing.sql`
+- [ ] Neon project (Singapore) + run `db/migrations/001_accounts_billing.sql` and `002_admin_console.sql`
 - [ ] Resend account + verified sending domain
-- [ ] Midtrans sandbox server key (then production after KYC)
-- [ ] Cloudflare Pages project connected to the GitHub repo + variables from `.env.example`
-- [ ] Final prices (Rp49.000 / Rp490.000 are placeholders) and custom domain
+- [ ] Cloudflare Pages project connected to the GitHub repo + variables from `.env.example` (incl. `ADMIN_EMAILS`)
+- [ ] Final prices (set them in `/admin/` after deploy) and custom domain
+- [ ] Choose a payment provider (or keep extending accounts by hand in Neon)
 
 ### Open engineering items
 - [ ] Cloudflare WAF rate-limit rule on `/api/auth/code` (5 / 10 min / IP)
 - [ ] CSP header in `public/_headers`
-- [ ] Disable "Bayar" when the pass is expired (today it rejects at payment)
+- [ ] Expired banner says "Perpanjang" but there is no online payment (ADR-015)
+- [ ] Optional: "grant days" for an account in the admin console
 - [ ] Decide the fate of the legacy Supabase outbox push (`src/services/supabase.ts`, `sync.ts`) before multi-device sync
-- [ ] Next features: multi-device sync, cloud backup to R2, photo upload, item-level discount, receipt as image, split payment
+- [ ] Next features: multi-device sync, cloud backup to R2 (could also host campaign banners), photo upload, item-level discount, receipt as image, split payment
 
 ---
 ## History (earlier status, kept for reference)
@@ -97,3 +98,6 @@ Spec `specs/2026-11-19-accounts-trial-billing-design.md`, ADR-013. Stack: Cloudf
 
 ## v0.14 accounts-billing — Delivery docs complete (2026-11-19)
 Built and verified (see reviews/2026-11-19-v14-review.md). Waiting on the user for: Neon project, Resend domain, Midtrans sandbox keys, Cloudflare Pages project, final prices, custom domain.
+
+## v0.15 admin console — Delivery docs complete (2026-11-20)
+Spec `specs/2026-11-20-admin-console-design.md`, ADR-014, ADR-015 (Midtrans removed), review `reviews/2026-11-20-v15-review.md`, runbook `docs/runbooks/admin-console.md`.

@@ -7,7 +7,7 @@ export const DEFAULT_PLANS: readonly PlanDef[] = [
     name: 'Bulanan',
     amount: 49_000,
     days: 30,
-    note: 'Lanjut setelah masa coba. Bayar dengan QRIS, VA, GoPay, atau ShopeePay.',
+    note: 'Lanjut setelah masa coba.',
     badge: '',
     features: ['Semua fitur di masa coba', 'Perpanjang kapan saja, tanpa hari hilang', 'Data tetap milik Anda'],
     active: true,
@@ -152,7 +152,7 @@ export type CampaignState = 'live' | 'scheduled' | 'ended' | 'off';
 export const campaignState = (c: Campaign, now: number): CampaignState =>
   !c.enabled ? 'off' : now < c.startsAt ? 'scheduled' : now >= c.endsAt ? 'ended' : 'live';
 
-/** What a plan costs right now: the lowest live promo for it, else its normal price. */
+/** What a plan costs right now (display price): the lowest live promo for it, else its normal price. */
 export function priceNow(plan: PlanDef, campaigns: readonly Campaign[], now: number): { amount: number; campaign: Campaign | null } {
   let best: Campaign | null = null;
   for (const c of campaigns) {
