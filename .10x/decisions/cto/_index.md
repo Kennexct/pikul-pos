@@ -9,3 +9,8 @@
 - sales-history-refunds (M10–M11) — shipped v0.4
 - reports-export (M12–M13) — **delivered** (branch `feat/reports-export`) → `reports-export.md`
 - staff-pin (M15 part 1) — build offline, WebCrypto, client-side limit accepted → `staff-pin.md`
+- v0.8–v0.13 feedback rounds — all on-device, ADR-006…012
+- accounts-billing (v0.14) — paid product: 14-day trial then Midtrans subscription → `accounts-billing.md`
+
+## Stack update (2026-11-20, ADR-013)
+Backend and hosting are now Cloudflare Pages + Functions, Neon Postgres, Resend, Midtrans; R2 reserved for cloud backup. The Supabase + Vercel lines above are superseded.

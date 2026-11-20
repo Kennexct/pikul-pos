@@ -16,3 +16,9 @@
 - v0.11 English — ADR-010 (source-string dictionary, reload on change)
 - v0.12 flexible price, sell by weight — ADR-011 → `v12-flex-price-weight.md`
 - v0.13 variants + add-on rename — ADR-012 → `v13-variants-addons.md`
+- v0.14 accounts, trial, billing — ADR-013 → `accounts-billing.md`; landing page → `landing-page.md`
+
+## Update 2026-11-20
+- Server code lives in `server/` (framework-free, `Deps` injection); `functions/api/[[path]].ts` only wires Cloudflare env.
+- Entitlement is decided on device from a signed ES256 access pass (active / grace 3 days / expired → read-only enforced in order services).
+- The outbox push still targets the legacy Supabase client and is inert without env; multi-device sync must be redesigned on Neon (new ADR).

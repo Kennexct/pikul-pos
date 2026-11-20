@@ -6,25 +6,28 @@ This repo implements the infrastructure for the PRD *"KasirKu — PRD: Simple PO
 ## 1. Architecture
 
 ```
-┌──────────────────────── Device (phone / tablet browser, PWA) ────────────────────────┐
+┌──────────────────────── Device (phone / tablet browser, PWA at /app/) ───────────────┐
 │  React UI (pages/)  ──►  Zustand (store/)  ──►  lib/ (pricing, money, dates)          │
 │        │                                                                              │
 │        ▼                                                                              │
 │  Dexie / IndexedDB (db/localDb.ts)  ◄── POS reads & writes ONLY here (works offline)   │
 │        │  saveAndQueue(): record + outbox row in ONE transaction                       │
 │        ▼                                                                              │
-│  Outbox ──► services/sync.ts (every 15 s, on reconnect) ──► idempotent upsert by UUID  │
+│  Outbox (push target not live yet — legacy Supabase client, off without env)           │
+│  Access pass: ES256 JWT checked on device → active / grace (3 days) / expired=read-only│
 │  Service worker (Workbox): app shell + product photos + QRIS image cached              │
 └───────────────────────────────────────────┬──────────────────────────────────────────┘
-                                            │ HTTPS (JWT)
+                                            │ HTTPS
 ┌───────────────────────────────────────────▼──────────────────────────────────────────┐
-│  Supabase (region ap-southeast-1, Singapore)                                          │
-│   • Auth: email / phone OTP for owners                                                │
-│   • Postgres: RLS per store_id, append-only orders, immutability trigger, views       │
-│   • Storage: product-photos, qris (public read, owner write by <store_id>/ prefix)    │
-│   • Edge Functions (phase 4): large-range XLSX/PDF export                              │
+│  Cloudflare Pages: / landing (static) · /app/ PWA · /api/* Pages Functions             │
+│   functions/api/[[path]].ts wires env → server/ (framework-free handlers, Deps object) │
+│   • Neon Postgres (ap-southeast-1): accounts, login_codes, refresh_tokens, payments    │
+│   • Resend: 6-digit email sign-in code · optional Google ID token                      │
+│   • Midtrans Snap redirect + verified notification → extends paid_until                │
+│   • R2: reserved for cloud backup (not used yet)                                       │
 └──────────────────────────────────────────────────────────────────────────────────────┘
-Static hosting: Vercel (SPA rewrites + security headers in vercel.json) · Errors: Sentry
+Before v0.14 the plan was Supabase + Vercel; ADR-013 replaced it. supabase/migrations is kept as the
+reference schema for future multi-device sync and is not applied anywhere.
 ```
 
 ### Why this stack
@@ -35,8 +38,9 @@ Static hosting: Vercel (SPA rewrites + security headers in vercel.json) · Error
 | Local data | Dexie (IndexedDB) | Offline checkout is a hard requirement; indexed queries for history and reports |
 | State | Zustand | Small, no boilerplate; cart persisted to localStorage to survive reloads |
 | Styling | Tailwind CSS v4 | Fast responsive layouts, tiny CSS output |
-| Backend | Supabase | Postgres + Auth + Storage + RLS in one; generous free tier fits UMKM cost target |
-| Hosting | Vercel | Free tier, global CDN, preview deploys per PR |
+| Backend | Cloudflare Pages Functions + Neon Postgres (ADR-013) | Serverless, free tiers, Singapore region; server code is framework-free and tested with an in-memory repo |
+| Auth & billing | Email code (Resend) + offline ES256 access pass + Midtrans Snap | Selling keeps working offline through trial, paid period and a 3-day grace |
+| Hosting | Cloudflare Pages | Landing at `/`, app at `/app/`, API at `/api/*` in one project |
 | IDs | Client UUIDv7 | Create records offline without collisions; time-sortable |
 | Money | Integer Rupiah | No floating-point errors; IDR has no minor unit in practice |
 
@@ -46,7 +50,14 @@ Static hosting: Vercel (SPA rewrites + security headers in vercel.json) · Error
 kasirku/
 ├── .github/workflows/ci.yml     # typecheck → test → build on every PR
 ├── public/icons/                # PWA icons (placeholder "K" — replace with brand)
-├── supabase/migrations/         # SQL schema, RLS, triggers, views, storage buckets
+├── supabase/migrations/         # reference sync schema (RLS, triggers, views) — not applied anywhere
+├── db/migrations/               # Neon schema for accounts + billing (v0.14)
+├── server/                      # framework-free API handlers: auth, billing, pass, midtrans, repos
+├── functions/api/[[path]].ts    # Cloudflare Pages Functions entry → server/
+├── landing/                     # landing page source (built to / by scripts/landing/build.py)
+├── app/index.html               # PWA entry served at /app/
+├── docs/runbooks/               # how-to per feature, incl. deploy-cloudflare.md
+├── e2e/                         # Playwright browser flows (Python)
 ├── src/
 │   ├── types/index.ts           # ALL domain types (single source of truth)
 │   ├── constants/index.ts       # limits, defaults, routes — no magic numbers
@@ -64,7 +75,7 @@ kasirku/
 │   ├── components/Layout/       # AppShell (bottom bar phone / side rail tablet), SyncBadge
 │   └── pages/                   # one folder per module (POS, More, … placeholders mapped to PRD)
 ├── vite.config.ts               # React, Tailwind, PWA manifest + Workbox caching, Vitest
-└── vercel.json
+└── public/_headers, _redirects # Cloudflare headers + /app/* SPA fallback
 ```
 
 Page folders to add as modules are built: `OpenOrders/`, `History/`, `Reports/`, `Products/`, `Customers/`, `Settings/`, `Auth/`.
@@ -79,13 +90,7 @@ npm test                       # pricing, business date, receipt no., UUIDv7
 npm run build                  # typecheck + production build + service worker
 ```
 
-Database:
-
-```bash
-npx supabase login
-npx supabase link --project-ref <ref>
-npx supabase db push           # applies supabase/migrations
-```
+Accounts and billing (v0.14): follow [`docs/runbooks/deploy-cloudflare.md`](docs/runbooks/deploy-cloudflare.md) — Neon (`db/migrations/001_accounts_billing.sql`), access-pass key (`node scripts/gen-pass-key.mjs`), Resend, Midtrans sandbox, Cloudflare Pages. Locally, `npm run build && npm run pages:dev` with `DEV_MODE=1` uses an in-memory DB and prints sign-in codes to the log. `VITE_BILLING=off` builds the app without the account gate.
 
 ## 4. Offline sync design
 
@@ -98,6 +103,8 @@ npx supabase db push           # applies supabase/migrations
 
 ## 5. Security model
 
+- **v0.14 accounts:** sign-in codes hashed (10 min, 5 attempts, 60 s resend); refresh tokens stored as SHA-256 and rotated; the access-pass private key is a Cloudflare secret, only the public JWK ships; Midtrans notifications verified by signature + amount and applied idempotently per `order_id`. Open before launch: rate-limit rule on `/api/auth/code`, CSP header.
+- The points below describe the planned sync backend (`supabase/migrations`), not yet live.
 - Only the public anon key ships to the client; every table has RLS keyed on `store_id` (`is_store_member`, `is_store_owner`).
 - Catalog/config tables: owner writes, members read. Operational tables: members insert/update, **no delete policy**.
 - `orders_immutability` trigger blocks edits to items/totals/payments once an order is no longer `open`.
@@ -106,15 +113,15 @@ npx supabase db push           # applies supabase/migrations
 
 ## 6. Environments and delivery
 
-| Env | Frontend | Supabase project | Deploy trigger |
+| Env | Where | Backend | Deploy trigger |
 | --- | --- | --- | --- |
-| Local | `npm run dev` | optional (offline mode) | — |
-| Preview | Vercel preview URL | `kasirku-staging` | every PR |
-| Production | Vercel production | `kasirku-prod` (Singapore) | merge to `main` |
+| Local | `npm run dev` / `npm run pages:dev` | none, or `DEV_MODE=1` in-memory API | — |
+| Preview | Cloudflare Pages preview URL | Neon branch + Midtrans sandbox | every PR (once the Pages project exists) |
+| Production | Cloudflare Pages + custom domain | Neon (Singapore) + Midtrans production | merge to `main` |
 
-CI (`.github/workflows/ci.yml`): `npm ci` → `typecheck` → `test` → `build`. Migrations are applied to staging on merge, to prod by manual approval.
+CI (`.github/workflows/ci.yml`): `npm ci` → `typecheck` → `i18n:check` → `test` → `build`. The Cloudflare Pages project, Neon project, Resend domain and Midtrans keys do not exist yet (see `.10x/status.md`).
 
-## 7. Current status (v0.13 — + variants, add-ons)
+## 7. Current status (v0.14 — + accounts, trial, billing)
 
 Design rules, tokens and component inventory: [`design-system/MASTER.md`](design-system/MASTER.md). Browser flow checks: [`e2e/`](e2e/README.md).
 
@@ -123,7 +130,7 @@ Design rules, tokens and component inventory: [`design-system/MASTER.md`](design
 | --- | --- | --- |
 | M1 POS checkout | Done: grid, search, categories, cart, qty, line notes, change calculator | `pages/POS/` |
 | M2 Products & variants | Done: CRUD, categories, variant groups (single/multi, required, +Rp), per-mode price | `pages/Products/` |
-| M3 Product photo | Done on device: compressed to WebP ≤ 200 KB. Upload to Supabase Storage pending | `lib/image.ts` |
+| M3 Product photo | Done on device: compressed to WebP ≤ 200 KB. Cloud upload pending (R2, with cloud backup) | `lib/image.ts` |
 | M4 Sales mode | Done: add / rename / reorder / delete own modes (max 8); switch re-prices the cart; base / per-product / markup % rules; default mode | `pages/Settings/SalesModeSettings.tsx` |
 | M5 Payment + QRIS | Done: add / rename / reorder / delete own methods (max 12, ADR-006); methods on/off, reference off/optional/required, static QRIS upload + full-screen display. Single method per order (split = v1.1) | `PaymentSheet.tsx`, `QrisDisplay.tsx` |
 | M6 Discount | Order-level done (presets + ad-hoc % / Rp, cashier limit). Item-level pending | `DiscountSheet.tsx` |
@@ -148,11 +155,12 @@ Design rules, tokens and component inventory: [`design-system/MASTER.md`](design
 | Flexible price (v0.12) | Done: per-product switch; the seller types the price at the register; the normal price is stored next to the charged price and shown in history and the Item export (ADR-011) | `pages/POS/components/SaleEntrySheet.tsx`, `lib/quantity.ts` |
 | Sell by weight / measure (v0.12) | Done: store setting; products sold per kg, ons, gram, litre or metre; weight or money amount typed at the register; decimal quantity, whole-Rupiah line totals; receipts, refunds, profit and exports aware of units | `lib/quantity.ts`, `lib/pricing.ts`, `pages/Products/ProductForm.tsx`, `pages/Settings/StoreSettings.tsx` |
 | Variants & add-ons (v0.13) | Done: product → variant (own full price, takeaway price, cost, sold-out) → add-ons (ice, sugar, size…; previously called "Varian"); cashier sheet variant-then-add-on; reports per variant (ADR-012) | `lib/productVariants.ts`, `pages/POS/components/OptionSheet.tsx`, `pages/Products/ProductVariantsEditor.tsx` |
-| M15 parts 2–3 (owner login, sync) | Not started — needs a Supabase project | — |
+| Accounts, trial & billing (v0.14) | Done in code: email-code sign-in (optional Google), 14-day trial, offline ES256 access pass with 3-day grace, read-only on expiry, Midtrans Snap subscription, landing at `/`, app at `/app/` (ADR-013). Not deployed yet | `server/`, `functions/api/`, `src/lib/accessPass.ts`, `pages/Auth/`, `pages/Settings/SubscriptionSettings.tsx` |
+| Multi-device sync, cloud backup | Not started — will reuse v0.14 accounts (Neon, R2) | — |
 
 First run opens a three-step journey; the chosen template (`services/seedTemplate.ts`) seeds a small editable menu so the seller can sell immediately.
 
-Tests: 145 unit/integration tests (incl. a 20k-order performance guard) (`npm test`) cover pricing, variants, receipt numbering, business date, WhatsApp receipt text, and the order service against an in-memory IndexedDB (paid, open → resume → paid, cancel + audit, validation, StrictMode double-seed guard) and void/refund rules (same-day void, refund window, partial → full, permission, reason).
+Tests: 160 unit/integration tests (incl. server auth/billing against an in-memory repo) (incl. a 20k-order performance guard) (`npm test`) cover pricing, variants, receipt numbering, business date, WhatsApp receipt text, and the order service against an in-memory IndexedDB (paid, open → resume → paid, cancel + audit, validation, StrictMode double-seed guard) and void/refund rules (same-day void, refund window, partial → full, permission, reason).
 
 ## 8. Build order (maps to PRD release plan)
 

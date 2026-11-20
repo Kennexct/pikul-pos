@@ -10,3 +10,8 @@
 - customers — `orders.customer_name_snapshot text` (additive, parses; not applied — no project). Existing `customers` RLS + phone check reused.
 - v0.9 cost price, expenses, day closings → `v09-profit-closing-backup.md`
 - v0.12 unit, flexible price, order_lines view → `v12-flex-price-weight.md`
+- v0.13 product variants migration (`20261119030000_v13_product_variants.sql`)
+- accounts-billing (v0.14) — Neon `db/migrations/001_accounts_billing.sql` → `accounts-billing.md`
+
+## Update 2026-11-20
+Two schemas: `db/migrations/` (Neon, live target for accounts + billing) and `supabase/migrations/` (reference sync schema, never applied). Dexie remains the source of truth for store data.

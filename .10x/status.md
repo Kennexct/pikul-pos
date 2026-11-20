@@ -1,7 +1,34 @@
 # Status
 
-**Phase:** Delivery Complete — v0.13 (variants, add-on rename)
-**Branch:** `feat/v0.12-flex-price-weight` (stacked: … → v0.8-feedback → v0.9 → v0.10 → v0.11 → v0.12)
+**Phase:** Delivery docs complete — v0.14 (accounts, trial, Midtrans billing). Not deployed.
+**Branch:** `main` contains everything through v0.14 (`df4d12c`). Feature branches `feat/*` are merged history.
+**Repo:** GitHub `Kennexct/kasirku` (per deploy runbook). Project folder copy: `kasirku-full/` + `kasirku-history.bundle`.
+**Last refreshed:** 2026-11-20 (context check against the project folder)
+
+## Current snapshot (2026-11-20)
+- App version 0.14.0. 160 unit/integration tests (per v0.14 review), 13 Playwright scripts in `e2e/`.
+- Stack: React 19 + Vite 8 PWA, Tailwind v4, Zustand, Dexie · Cloudflare Pages + Functions, Neon, Resend, Midtrans Snap (ADR-013). Supabase/Vercel plan superseded.
+- Every PRD module M1–M14 shipped on device; M15 part 1 (staff PIN) shipped; owner login replaced by v0.14 accounts.
+
+### Waiting on Kenny (blocks go-live)
+- [ ] Neon project (Singapore) + run `db/migrations/001_accounts_billing.sql`
+- [ ] Resend account + verified sending domain
+- [ ] Midtrans sandbox server key (then production after KYC)
+- [ ] Cloudflare Pages project connected to the GitHub repo + variables from `.env.example`
+- [ ] Final prices (Rp49.000 / Rp490.000 are placeholders) and custom domain
+
+### Open engineering items
+- [ ] Cloudflare WAF rate-limit rule on `/api/auth/code` (5 / 10 min / IP)
+- [ ] CSP header in `public/_headers`
+- [ ] Disable "Bayar" when the pass is expired (today it rejects at payment)
+- [ ] Decide the fate of the legacy Supabase outbox push (`src/services/supabase.ts`, `sync.ts`) before multi-device sync
+- [ ] Next features: multi-device sync, cloud backup to R2, photo upload, item-level discount, receipt as image, split payment
+
+---
+## History (earlier status, kept for reference)
+
+**Phase (as of v0.13):** Delivery Complete — v0.13 (variants, add-on rename)
+**Branch (then):** `feat/v0.12-flex-price-weight` (stacked: … → v0.8-feedback → v0.9 → v0.10 → v0.11 → v0.12)
 **Previous:** Delivery Complete (`reports-export`) — ready to merge after 2 manual device checks
 
 | Feature | Phase | Notes |
@@ -41,7 +68,7 @@
 - [ ] Manual: iPad Safari (installed PWA) download
 - [ ] Manual: PBKDF2 timing and PIN pad on a low-end Android phone
 - [ ] Manual: backup download + restore (file picker, reload) on Android Chrome and iPad Safari; backup size with many product photos
-- [ ] Apply DB migrations to a live Supabase project (checked 2026-11-18: the account has no KasirKu project; two unrelated projects exist and must not be touched)
+- [x] ~~Apply DB migrations to a live Supabase project~~ superseded by ADR-013 (Neon). Original note: (checked 2026-11-18: the account has no KasirKu project; two unrelated projects exist and must not be touched)
 
 ## M15 decomposition
 | Sub-project | Needs backend | Closes |

@@ -15,3 +15,4 @@
 - v0.11 English → `v11-english.md`
 - v0.12 flexible price, sell by weight → `v12-flex-price-weight.md`
 - v0.13 variants + add-on rename → `v13-variants-addons.md`
+- v0.14 accounts, trial, billing → `accounts-billing.md` (160 unit tests, `e2e/v14.py`)

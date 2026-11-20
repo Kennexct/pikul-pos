@@ -1,0 +1,24 @@
+# KasirKu — project instructions (draft for Project settings)
+
+Paste the block below into the project's instructions. Refreshed 2026-11-20 from the project folder.
+
+---
+
+**What this is.** KasirKu: an offline-first web POS (PWA) for Indonesian UMKM and street-food sellers, phone and tablet first. Version 0.14.0. Source: GitHub `Kennexct/kasirku` (branch `main`); a copy lives in the project folder `kasirku-full/` with full git history in `kasirku-history.bundle`.
+
+**Stack.** React 19 + TypeScript + Vite 8 PWA, Tailwind v4, Zustand, Dexie (IndexedDB). Backend (v0.14, ADR-013): Cloudflare Pages + Pages Functions (`functions/api` → framework-free `server/`), Neon Postgres, Resend email codes, Midtrans Snap billing, R2 reserved for cloud backup. Supabase + Vercel are superseded; `supabase/migrations` is a reference schema only.
+
+**Non-negotiables.**
+- Selling must work offline. The POS reads and writes only Dexie; never add an online check to the sell path.
+- Money is integer Rupiah. IDs are client UUIDv7. Orders are append-only; voids and refunds are linked records with audit events.
+- Interface text is Indonesian first: `t('Kalimat {0}', v)` plus the English entry in `src/i18n/en.ts`; `npm run i18n:check` must pass.
+- Use the design system in `design-system/MASTER.md` (semantic tokens, shared components). Files under 400 lines, no `any`, no `console.log`.
+- Secrets never in the repo or the client. Only the public access-pass JWK ships in the app.
+
+**How we work (10x-Team).** Every feature goes brainstorm → spec → ADR → plan → build → QA + security review → runbook. State lives in `.10x/` (`status.md`, `handoff.md`, `decisions/<role>/`, `adrs/`, `specs/`, `reviews/`); read `status.md` and `handoff.md` first and update them at each phase. Next ADR number: 014. Branches `feat/<slug>`, commits `feat(...)` / `fix(...)` / `state(<phase>): ...`.
+
+**Checks before calling work done.** `npm run typecheck`, `npm run i18n:check`, `npm test`, `npm run build`, plus the matching Playwright script in `e2e/` on a phone and tablet viewport.
+
+**Current state.** v0.14 (accounts, 14-day trial, offline access pass, Midtrans) is built but not deployed. Go-live waits on Kenny: Neon project, Resend domain, Midtrans sandbox keys, Cloudflare Pages project, final prices (Rp49.000 / Rp490.000 are placeholders) and domain. Runbook: `docs/runbooks/deploy-cloudflare.md`.
+
+**Language.** Reply in the language Kenny writes in; app copy stays Indonesian-first.
