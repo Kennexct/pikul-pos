@@ -1,21 +1,23 @@
-import { ChevronRight, PackageOpen, Plus } from 'lucide-react';
+import { ChevronRight, ChevronsDownUp, ChevronsUpDown, PackageOpen, Plus } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { PageHeader } from '../../components/Layout/PageHeader';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { LoadingScreen } from '../../components/ui/LoadingScreen';
-import { ProductThumb } from '../../components/ui/ProductThumb';
 import { SearchInput } from '../../components/ui/SearchInput';
-import { badgeBrand, badgeNeutral, badgeWarn, btnPrimary, card } from '../../components/ui/styles';
+import { badgeNeutral, btnGhost, btnPrimary, card } from '../../components/ui/styles';
 import { Tabs } from '../../components/ui/Tabs';
 import { useAppData } from '../../hooks/useAppData';
 import { formatRupiah } from '../../lib/money';
-import type { Product, VariantGroup } from '../../types';
+import { hasVariants } from '../../lib/productVariants';
+import type { Category, Id, Product, VariantGroup } from '../../types';
+import { CategoriesPanel } from './CategoriesPanel';
+import { CategoryForm } from './CategoryForm';
 import { ProductForm } from './ProductForm';
+import { PRODUCT_COLUMNS, ProductRow } from './ProductRow';
 import { VariantGroupForm } from './VariantGroupForm';
 import { t } from '../../i18n';
-import { perUnit } from '../../lib/quantity';
 
-type Tab = 'products' | 'variants';
+type Tab = 'products' | 'variants' | 'categories';
 type Editing<T> = { item: T | null } | null;
 
 export function ProductsPage() {
@@ -24,15 +26,40 @@ export function ProductsPage() {
   const [search, setSearch] = useState('');
   const [editingProduct, setEditingProduct] = useState<Editing<Product>>(null);
   const [editingGroup, setEditingGroup] = useState<Editing<VariantGroup>>(null);
+  const [editingCategory, setEditingCategory] = useState<Editing<Category>>(null);
+  const [expanded, setExpanded] = useState<ReadonlySet<Id>>(new Set());
 
   const categoryName = useMemo(() => new Map(catalog?.categories.map((c) => [c.id, c.name]) ?? []), [catalog]);
   const groupName = useMemo(() => new Map(catalog?.variantGroups.map((g) => [g.id, g.name]) ?? []), [catalog]);
+  /** Products per category; key null = "Tanpa kategori" (also products whose category was deleted). */
+  const productCount = useMemo(() => {
+    const counts = new Map<Id | null, number>();
+    for (const p of catalog?.products ?? []) {
+      const key = p.categoryId && categoryName.has(p.categoryId) ? p.categoryId : null;
+      counts.set(key, (counts.get(key) ?? 0) + 1);
+    }
+    return counts;
+  }, [catalog, categoryName]);
 
   if (!store || !catalog) return <LoadingScreen />;
 
   const query = search.trim().toLowerCase();
   const products = catalog.products.filter((p) => query === '' || p.name.toLowerCase().includes(query));
   const takeawayMode = catalog.salesModes.find((m) => m.priceRule === 'mode_price');
+  const withVariants = products.filter(hasVariants);
+  const isAllExpanded = withVariants.length > 0 && withVariants.every((p) => expanded.has(p.id));
+  const toggle = (id: Id) =>
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  const addNew = () => {
+    if (tab === 'products') setEditingProduct({ item: null });
+    else if (tab === 'variants') setEditingGroup({ item: null });
+    else setEditingCategory({ item: null });
+  };
 
   return (
     <section className="flex min-h-0 flex-1 flex-col">
@@ -43,10 +70,10 @@ export function ProductsPage() {
         actions={
           <button
             type="button"
-            onClick={() => (tab === 'products' ? setEditingProduct({ item: null }) : setEditingGroup({ item: null }))}
+            onClick={addNew}
             className={`${btnPrimary} h-11`}
           >
-            <Plus aria-hidden size={18} /> {tab === 'products' ? t('Produk') : t('Grup add-on')}
+            <Plus aria-hidden size={18} /> {tab === 'products' ? t('Produk') : tab === 'variants' ? t('Grup add-on') : t('Kategori')}
           </button>
         }
       >
@@ -57,6 +84,7 @@ export function ProductsPage() {
           items={[
             { value: 'products', label: t('Produk'), count: catalog.products.length },
             { value: 'variants', label: t('Add-on'), count: catalog.variantGroups.length },
+            { value: 'categories', label: t('Kategori'), count: catalog.categories.length },
           ]}
         />
       </PageHeader>
@@ -64,11 +92,24 @@ export function ProductsPage() {
       <div className="min-h-0 flex-1 overflow-y-auto p-4 md:px-8 md:py-6">
         {tab === 'products' ? (
           <>
-            <div className="mb-3 max-w-md">
-              <SearchInput value={search} onChange={setSearch} placeholder={t('Cari produk…')} label={t('Cari produk')} />
+            <div className="mb-3 flex items-center gap-2">
+              <div className="min-w-0 max-w-md flex-1">
+                <SearchInput value={search} onChange={setSearch} placeholder={t('Cari produk…')} label={t('Cari produk')} />
+              </div>
+              {withVariants.length > 0 && (
+                <button
+                  type="button"
+                  aria-label={isAllExpanded ? t('Tutup semua varian') : t('Buka semua varian')}
+                  onClick={() => setExpanded(isAllExpanded ? new Set() : new Set(withVariants.map((p) => p.id)))} className={`${btnGhost} shrink-0 text-[14px]`}>
+                  {isAllExpanded ? <ChevronsDownUp aria-hidden size={17} /> : <ChevronsUpDown aria-hidden size={17} />}
+                  <span className="hidden sm:inline">{isAllExpanded ? t('Tutup semua varian') : t('Buka semua varian')}</span>
+                </button>
+              )}
             </div>
             <div className={`${card} overflow-hidden`}>
-              <div className="hidden grid-cols-[1fr_160px_120px_120px_96px_24px] items-center gap-4 border-b border-line bg-subtle px-4 py-2.5 text-[12px] font-semibold uppercase tracking-[0.05em] text-muted lg:grid">
+              <div
+                className={`hidden items-center gap-4 border-b border-line bg-subtle py-2.5 pr-4 text-[12px] font-semibold uppercase tracking-[0.05em] text-muted lg:grid ${PRODUCT_COLUMNS} ${withVariants.length > 0 ? 'pl-[52px]' : 'pl-4'}`}
+              >
                 <span>{t('Produk')}</span>
                 <span>{t('Varian & add-on')}</span>
                 <span className="text-right">{'Dine In'}</span>
@@ -78,44 +119,26 @@ export function ProductsPage() {
               </div>
               <ul className="divide-y divide-line">
                 {products.map((p) => (
-                  <li key={p.id}>
-                    <button
-                      type="button"
-                      onClick={() => setEditingProduct({ item: p })}
-                      className="grid w-full grid-cols-[1fr_auto_20px] items-center gap-3 px-4 py-3 text-left hover:bg-subtle lg:grid-cols-[1fr_160px_120px_120px_96px_24px] lg:gap-4"
-                    >
-                      <span className="flex min-w-0 items-center gap-3">
-                        <ProductThumb name={p.name} photoUrl={p.photoUrl} className="h-11 w-11 shrink-0 rounded-md border border-line" />
-                        <span className="min-w-0">
-                          <span className={`block truncate text-[15px] font-semibold ${p.isActive ? '' : 'text-muted'}`}>{p.name}</span>
-                          <span className="block truncate text-[13px] text-muted">
-                            {(p.categoryId && categoryName.get(p.categoryId)) || t('Tanpa kategori')}
-                            <span className="lg:hidden">
-                              {(p.variants?.length ?? 0) > 0 && t(' · {0} varian', p.variants?.length ?? 0)}
-                              {p.variantGroupIds.length > 0 && t(' · {0} add-on', p.variantGroupIds.length)}
-                              {p.isActive && p.isSoldOut && t(' · Habis')}
-                            </span>
-                          </span>
-                        </span>
-                      </span>
-                      <span className="hidden truncate text-[13px] text-ink-soft lg:block">
-                        {[(p.variants ?? []).map((v) => v.name).join(', '), p.variantGroupIds.map((id) => groupName.get(id)).filter(Boolean).join(', ')].filter(Boolean).join(' · ') || '—'}
-                      </span>
-                      <span className="num text-right text-[15px] font-semibold">{formatRupiah(p.basePrice)}{perUnit(p.unit)}</span>
-                      <span className="num hidden text-right text-[14px] text-ink-soft lg:block">
-                        {takeawayMode && p.modePrices[takeawayMode.id] !== undefined ? formatRupiah(p.modePrices[takeawayMode.id] ?? 0) : '—'}
-                      </span>
-                      <span className="hidden lg:block">
-                        <span className={!p.isActive ? badgeNeutral : p.isSoldOut ? badgeWarn : badgeBrand}>{!p.isActive ? t('Nonaktif') : p.isSoldOut ? t('Habis') : t('Aktif')}</span>
-                      </span>
-                      <ChevronRight aria-hidden size={18} className="text-faint" />
-                    </button>
-                  </li>
+                  <ProductRow
+                    key={p.id}
+                    product={p}
+                    categoryName={(p.categoryId && categoryName.get(p.categoryId)) || t('Tanpa kategori')}
+                    summary={[(p.variants ?? []).map((v) => v.name).join(', '), p.variantGroupIds.map((id) => groupName.get(id)).filter(Boolean).join(', ')].filter(Boolean).join(' · ')}
+                    addOnCount={p.variantGroupIds.length}
+                    takeawayModeId={takeawayMode?.id}
+                    takeawayModeName={takeawayMode?.name ?? 'Takeaway'}
+                    hasToggleColumn={withVariants.length > 0}
+                    isExpanded={expanded.has(p.id)}
+                    onToggle={() => toggle(p.id)}
+                    onOpen={() => setEditingProduct({ item: p })}
+                  />
                 ))}
               </ul>
               {products.length === 0 && <EmptyState icon={PackageOpen} title={t('Belum ada produk')} description={t('Tambahkan menu pertama Anda.')} />}
             </div>
           </>
+        ) : tab === 'categories' ? (
+          <CategoriesPanel storeId={store.id} categories={catalog.categories} productCount={productCount} onEdit={(category) => setEditingCategory({ item: category })} />
         ) : (
           <ul className={`${card} divide-y divide-line overflow-hidden`}>
             {catalog.variantGroups.map((g) => (
@@ -140,6 +163,14 @@ export function ProductsPage() {
       </div>
 
       {editingProduct && <ProductForm product={editingProduct.item} catalog={catalog} storeId={store.id} isWeightSaleEnabled={store.settings.isWeightSaleEnabled === true} onClose={() => setEditingProduct(null)} />}
+      {editingCategory && (
+        <CategoryForm
+          category={editingCategory.item}
+          storeId={store.id}
+          productCount={editingCategory.item ? (productCount.get(editingCategory.item.id) ?? 0) : 0}
+          onClose={() => setEditingCategory(null)}
+        />
+      )}
       {editingGroup && <VariantGroupForm group={editingGroup.item} storeId={store.id} onClose={() => setEditingGroup(null)} />}
     </section>
   );
