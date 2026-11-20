@@ -10,6 +10,16 @@ BASE, OUT = sys.argv[1], sys.argv[2]
 errors = []
 
 
+
+def open_register(page, label='Buka kasir'):
+    """v0.16 (ADR-017): the register must be opened before the first sale; open it with the suggested float."""
+    back = page.url
+    page.goto(BASE + '/kas')
+    page.get_by_role('button', name=label).first.click()
+    page.get_by_role('dialog').get_by_role('button', name=label).click()
+    page.get_by_role('dialog').wait_for(state='detached')
+    page.goto(back)
+
 def sell(page, product, is_mobile, qris=False):
     page.goto(BASE + '/')
     page.get_by_role('button', name=product).first.click()
@@ -29,6 +39,7 @@ def sell(page, product, is_mobile, qris=False):
 
 def download(page, fmt_label, dataset=None):
     page.get_by_role('button', name='Ekspor').click()
+    page.wait_for_timeout(400)  # let the sheet finish opening (v0.15 motion)
     page.get_by_role('radio', name=fmt_label).click()
     if dataset:
         page.get_by_role('radio', name=dataset, exact=True).click()
@@ -38,6 +49,7 @@ def download(page, fmt_label, dataset=None):
     path = f'{OUT}/{dl.suggested_filename}'
     dl.save_as(path)
     page.get_by_role('button', name='Tutup').click()
+    page.get_by_role('dialog').wait_for(state='detached')
     return path
 
 
@@ -47,6 +59,8 @@ def run(p, name, viewport, is_mobile):
     page.goto(BASE + '/')
     page.get_by_role('button', name='Lewati, pakai contoh toko').click()  # first-time journey: take the example store
     page.get_by_role('navigation').first.wait_for()  # the store exists once the app shell is up
+    page.get_by_role('navigation').first.wait_for()
+    open_register(page)
     page.on('pageerror', lambda e: errors.append(f'{name}: {e}'))
     page.on('response', lambda r: r.status >= 400 and errors.append(f'{name}: {r.status} {r.url}'))
 
@@ -69,10 +83,12 @@ def run(p, name, viewport, is_mobile):
     xlsx = download(page, 'Excel')
     pdf = download(page, 'PDF')
     page.get_by_role('button', name='Ekspor').click()
+    page.wait_for_timeout(400)  # let the sheet finish opening (v0.15 motion)
     page.get_by_role('radio', name='CSV').click()
     page.wait_for_timeout(300)
     page.screenshot(path=f'{OUT}/{name}-r2-export.png')
     page.get_by_role('button', name='Tutup').click()
+    page.get_by_role('dialog').wait_for(state='detached')
     csv_path = download(page, 'CSV', 'Refund')
     browser.close()
 

@@ -27,6 +27,16 @@ READ_DB = """async () => {
 }"""
 
 
+
+def open_register(page, label='Buka kasir'):
+    """v0.16 (ADR-017): the register must be opened before the first sale; open it with the suggested float."""
+    back = page.url
+    page.goto(BASE + '/kas')
+    page.get_by_role('button', name=label).first.click()
+    page.get_by_role('dialog').get_by_role('button', name=label).click()
+    page.get_by_role('dialog').wait_for(state='detached')
+    page.goto(back)
+
 def shot(page, name):
     page.wait_for_timeout(400)
     page.screenshot(path=f'{OUT}/{name}.png')
@@ -43,6 +53,8 @@ def run(p, name, viewport, is_mobile):
     page.goto(BASE + '/pengaturan?tab=payments')
     page.get_by_role('button', name='Lewati, pakai contoh toko').click()  # first-time journey: take the example store
     page.get_by_role('navigation').first.wait_for()  # the store exists once the app shell is up
+    page.get_by_role('navigation').first.wait_for()
+    open_register(page)
     page.get_by_role('button', name='Tambah metode').click()
     page.locator('#method-name').fill('GoPay')
     shot(page, f'{name}-v1-add-method')
@@ -133,7 +145,7 @@ def run(p, name, viewport, is_mobile):
     dialog.get_by_role('button', name=re.compile('Bu Sari')).click()
     page.get_by_role('button', name='Simpan', exact=True).click()
     page.locator('#order-label').fill('Bon Bu Sari')
-    dialog.get_by_role('button', name=re.compile('Simpan')).click()
+    dialog.get_by_role('button', name='Simpan pesanan').click()  # the cart sheet may still be animating out
     page.get_by_text(re.compile('disimpan')).first.wait_for()
 
     page.goto(BASE + '/pelanggan')

@@ -28,6 +28,16 @@ READ_DB = """async () => {
 }"""
 
 
+
+def open_register(page, label='Buka kasir'):
+    """v0.16 (ADR-017): the register must be opened before the first sale; open it with the suggested float."""
+    back = page.url
+    page.goto(BASE + '/kas')
+    page.get_by_role('button', name=label).first.click()
+    page.get_by_role('dialog').get_by_role('button', name=label).click()
+    page.get_by_role('dialog').wait_for(state='detached')
+    page.goto(back)
+
 def enter_pin(page, label, pin):
     pad = page.get_by_role('group', name=label)
     for digit in pin:
@@ -50,6 +60,8 @@ def run(p, name, viewport, is_mobile):
     page.goto(BASE + '/pengaturan?tab=staff')
     page.get_by_role('button', name='Lewati, pakai contoh toko').click()  # first-time journey: take the example store
     page.get_by_role('navigation').first.wait_for()  # the store exists once the app shell is up
+    open_register(page)
+    page.get_by_role('navigation').first.wait_for()
     page.locator('#owner-pin-new').fill('1234')
     page.locator('#owner-pin-confirm').fill('1234')
     page.get_by_role('button', name='Aktifkan PIN').click()

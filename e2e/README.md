@@ -14,6 +14,7 @@ python3    e2e/v12.py     http://localhost:4173 ./shots              # market se
 python3    e2e/v11.py     http://localhost:4173 ./shots              # English device: whole app in English, leftover-Indonesian scan, Excel, switch language (needs openpyxl)
 python3    e2e/v09.py     http://localhost:4173 ./shots              # cost price -> profit + Excel, expenses, close of day (short, reopen, exact), backup -> restore (needs openpyxl)
 python3    e2e/reports.py http://localhost:4173 ./shots              # sales + refund -> Reports -> download XLSX/PDF/CSV and verify (needs openpyxl)
+python3    e2e/v16.py     http://localhost:4173/app ./shots          # register: open with count before first sale, close with count, closed-day warning; Kategori tab; variant expand
 ```
 Both print `ERRORS: none` when no page errors, console errors or failed requests occurred. Screenshots land in `./shots`.
 Since v0.10 a fresh browser profile opens the first-time journey; every older flow presses "Lewati, pakai contoh toko" first.
@@ -23,3 +24,6 @@ Since v0.11 every Indonesian flow sets `locale='id-ID'` on the browser context; 
 Old flows: build without `VITE_PASS_PUBLIC_JWK` (billing off), `npx vite preview --port 4173`, then pass `http://localhost:4173/app` as BASE.
 `manage.py` takes the fixtures folder as a third argument: `python3 e2e/manage.py http://localhost:4173/app OUT e2e/fixtures`.
 `v14.py` runs against `wrangler pages dev` — see docs/runbooks/deploy-cloudflare.md.
+
+## v0.16: open the register first
+Since v0.16 (ADR-017) the first sale of the day asks to open the register. Every older flow calls `open_register(page)` right after the first-time journey (it opens Kas, presses "Buka kasir" with the suggested float and goes back).

@@ -19,6 +19,16 @@ MERCHANT_WORDS = set('kopi susu gula aren teh tarik cokelat roti bakar kentang g
 leftovers = {}
 
 
+
+def open_register(page, label='Buka kasir'):
+    """v0.16 (ADR-017): the register must be opened before the first sale; open it with the suggested float."""
+    back = page.url
+    page.goto(BASE + '/kas')
+    page.get_by_role('button', name=label).first.click()
+    page.get_by_role('dialog').get_by_role('button', name=label).click()
+    page.get_by_role('dialog').wait_for(state='detached')
+    page.goto(back)
+
 def scan(page, name, screen):
     """Record Indonesian words still visible on this screen."""
     page.wait_for_timeout(350)
@@ -51,6 +61,8 @@ def run(p, name, viewport, is_mobile):
     page.get_by_role('button', name='Continue').click()
     scan(page, name, 'journey-how')
     page.get_by_role('button', name='Start selling').click()
+    page.get_by_role('navigation').first.wait_for()
+    open_register(page, 'Open register')
 
     # Sale with a variant, cash.
     page.get_by_role('button', name=re.compile('^Kopi')).first.click()

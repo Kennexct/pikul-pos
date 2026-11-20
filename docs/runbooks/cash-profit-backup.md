@@ -34,3 +34,13 @@ Backup file hygiene: it contains customer phone numbers and PIN hashes — keep 
 | Categories or payment names stayed Indonesian after switching | They are the shop's own data, created in the language chosen at setup | Rename them in Products / Settings. |
 | The app "blinks" when the language is changed | It reloads to rebuild labels and date formats | Expected. The cart and seller are kept; owner mode locks. |
 | One device in English, another in Indonesian | Language is per device | Expected; receipts and exports follow the device that produced them. |
+
+## Register open/close, categories (v0.16, ADR-017)
+| Symptom | Cause | Action |
+| --- | --- | --- |
+| "Buka kasir" pops up on the first tap of the day | By design: today's register has no opening count yet | Count the drawer (or use "Hitung per pecahan") and press "Buka kasir". Rp0 is allowed. "Nanti saja" closes it; Bayar asks again. |
+| The pop-up does not appear on a device that already sold today | A sale already counts on the day (device updated mid-day), so the register is treated as open | Nothing to do. Check Kas → Modal awal and change it if needed. |
+| "Kasir hari ini sudah ditutup" on the cashier | The day was closed; selling still works after one warning | Owner: Kas → Buka kembali, then close again so the count matches. |
+| Who changed the opening cash? | — | Audit events `register_opened` and `opening_cash_changed` (old → new) with the seller. |
+| A category disappeared from the cashier tabs | It was deleted in Produk → Kategori | Its products are under "Tanpa kategori" (cashier tab "Semua"). Create the category again and reassign products. |
+| Category order on the cashier is wrong | Order follows Produk → Kategori | Use the up/down arrows there. |

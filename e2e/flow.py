@@ -5,6 +5,16 @@ BASE = sys.argv[1]
 OUT = sys.argv[2]
 errors = []
 
+
+def open_register(page, label='Buka kasir'):
+    """v0.16 (ADR-017): the register must be opened before the first sale; open it with the suggested float."""
+    back = page.url
+    page.goto(BASE + '/kas')
+    page.get_by_role('button', name=label).first.click()
+    page.get_by_role('dialog').get_by_role('button', name=label).click()
+    page.get_by_role('dialog').wait_for(state='detached')
+    page.goto(back)
+
 def run(p, name, viewport, is_mobile):
     browser = p.chromium.launch(executable_path='/usr/bin/google-chrome', args=['--no-sandbox'])
     ctx = browser.new_context(locale='id-ID', viewport=viewport, is_mobile=is_mobile, has_touch=is_mobile, device_scale_factor=1)
@@ -14,6 +24,8 @@ def run(p, name, viewport, is_mobile):
     page.goto(BASE)
     page.get_by_role('button', name='Lewati, pakai contoh toko').click()  # first-time journey: take the example store
     page.get_by_role('navigation').first.wait_for()  # the store exists once the app shell is up
+    page.get_by_role('navigation').first.wait_for()
+    open_register(page)
     page.get_by_role('button', name='Es Teh').first.wait_for()
     page.wait_for_timeout(400); page.screenshot(path=f'{OUT}/{name}-1-pos.png')
 

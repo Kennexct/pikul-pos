@@ -27,6 +27,10 @@ def latest_code(email):
 
 def sell(page, is_mobile):
     page.get_by_role('button', name='Kerupuk').first.click()
+    page.wait_for_timeout(300)
+    if page.get_by_role('dialog').get_by_role('button', name='Buka kasir').count():  # v0.16 (ADR-017): open the register first
+        page.get_by_role('dialog').get_by_role('button', name='Buka kasir').click()
+        page.get_by_role('dialog').wait_for(state='detached')
     if is_mobile:
         page.get_by_role('button', name='Lihat pesanan').click()
     page.get_by_role('button', name='Bayar').click()

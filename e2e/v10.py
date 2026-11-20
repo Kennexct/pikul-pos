@@ -23,6 +23,16 @@ READ_DB = """async () => {
 }"""
 
 
+
+def open_register(page, label='Buka kasir'):
+    """v0.16 (ADR-017): the register must be opened before the first sale; open it with the suggested float."""
+    back = page.url
+    page.goto(BASE + '/kas')
+    page.get_by_role('button', name=label).first.click()
+    page.get_by_role('dialog').get_by_role('button', name=label).click()
+    page.get_by_role('dialog').wait_for(state='detached')
+    page.goto(back)
+
 def shot(page, name):
     page.wait_for_timeout(400)
     page.screenshot(path=f'{OUT}/{name}.png')
@@ -53,6 +63,8 @@ def run(p, name, viewport, is_mobile):
     page.get_by_role('heading', name='Cara kerja Pikul').wait_for()
     shot(page, f'{name}-x3-intro')
     page.get_by_role('button', name='Mulai jualan').click()
+    page.get_by_role('navigation').first.wait_for()
+    open_register(page)
 
     # 2. Cashier opens with the chosen menu and the Langkah awal banner; first sale ticks a step.
     page.get_by_role('button', name=re.compile('Kentang Goreng')).first.wait_for()
