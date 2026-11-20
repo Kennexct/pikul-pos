@@ -20,13 +20,13 @@ export function midtransClient(serverKey: string, production: boolean, fetchFn: 
   const headers = { Authorization: auth, Accept: 'application/json', 'Content-Type': 'application/json' };
   return {
     serverKey,
-    async createSnap({ orderId, amount, itemName, email, finishUrl }): Promise<SnapResult> {
+    async createSnap({ orderId, amount, itemId, itemName, email, finishUrl }): Promise<SnapResult> {
       const res = await fetchFn(`${snapBase}/snap/v1/transactions`, {
         method: 'POST',
         headers,
         body: JSON.stringify({
           transaction_details: { order_id: orderId, gross_amount: amount },
-          item_details: [{ id: orderId.split('-')[1] ?? 'plan', price: amount, quantity: 1, name: itemName }],
+          item_details: [{ id: itemId, price: amount, quantity: 1, name: itemName }],
           customer_details: { email },
           callbacks: { finish: finishUrl },
           expiry: { unit: 'hours', duration: 24 },

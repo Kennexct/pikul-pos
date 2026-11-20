@@ -100,8 +100,10 @@ export async function signOut(): Promise<void> {
 
 export interface PaymentView {
   orderId: string;
-  plan: 'monthly' | 'yearly';
+  plan: string;
+  planName: string;
   amount: number;
+  days: number;
   status: 'pending' | 'paid' | 'failed' | 'expired';
   createdAt: number;
   paidAt: number | null;
@@ -109,9 +111,32 @@ export interface PaymentView {
 }
 export interface BillingOverview {
   account: { email: string; plan: 'trial' | 'paid'; until: number; trialEndsAt: number; paidUntil: number | null };
-  prices: Record<'monthly' | 'yearly', { amount: number; days: number }>;
+  plans: PlanOffer[];
   payments: PaymentView[];
 }
+/** A plan as set in the admin console, with today's price (ADR-014). */
+export interface PlanOffer {
+  id: string;
+  name: string;
+  days: number;
+  amount: number;
+  regularAmount: number;
+  promoEndsAt: number | null;
+  note: string;
+  badge: string;
+  features: string[];
+}
+export interface CampaignPopup {
+  id: string;
+  title: string;
+  body: string;
+  imageUrl: string | null;
+  linkUrl: string | null;
+  ctaLabel: string;
+  endsAt: number;
+}
 export const billingOverview = () => api<BillingOverview>('GET', '/api/billing', undefined, true);
-export const startCheckout = (plan: 'monthly' | 'yearly') => api<{ orderId: string; redirectUrl: string }>('POST', '/api/billing/checkout', { plan }, true);
+export const startCheckout = (plan: string) => api<{ orderId: string; redirectUrl: string }>('POST', '/api/billing/checkout', { plan }, true);
 export const paymentStatus = (orderId: string) => api<PaymentView>('GET', `/api/billing/status/${encodeURIComponent(orderId)}`, undefined, true);
+/** The live in-app campaign, if any (public, cached at the edge for a minute). */
+export const appCampaign = () => api<{ popup: CampaignPopup | null }>('GET', '/api/public/app');

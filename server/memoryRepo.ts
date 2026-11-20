@@ -1,15 +1,22 @@
-import type { Account, LoginCode, Payment, PaymentStatus, RefreshToken, Repo } from './types';
+import { DEFAULT_PLANS } from './catalog';
+import type { Account, AdminAuditEntry, Campaign, StoredImage, LoginCode, Payment, PaymentStatus, PlanDef, RefreshToken, Repo } from './types';
 
 /** In-memory Repo for tests and `wrangler pages dev` without a database. */
-export function memoryRepo(): Repo & { accounts: Map<string, Account>; payments: Map<string, Payment> } {
+export function memoryRepo(): Repo & { accounts: Map<string, Account>; payments: Map<string, Payment>; campaigns: Map<string, Campaign>; audit: AdminAuditEntry[] } {
   const accounts = new Map<string, Account>();
   const codes = new Map<string, LoginCode>();
   const tokens = new Map<string, RefreshToken>();
   const payments = new Map<string, Payment>();
+  const plans = new Map<string, PlanDef>(DEFAULT_PLANS.map((p) => [p.id, structuredClone(p)]));
+  const campaigns = new Map<string, Campaign>();
+  const audit: AdminAuditEntry[] = [];
+  const images = new Map<string, StoredImage>();
   const clone = <T>(v: T | undefined): T | null => (v ? structuredClone(v) : null);
   return {
     accounts,
     payments,
+    campaigns,
+    audit,
     async findAccountByEmail(email) {
       return clone([...accounts.values()].find((a) => a.email === email));
     },
@@ -74,6 +81,30 @@ export function memoryRepo(): Repo & { accounts: Map<string, Account>; payments:
     },
     async listPayments(accountId) {
       return [...payments.values()].filter((p) => p.accountId === accountId).sort((a, b) => b.createdAt - a.createdAt).map((p) => structuredClone(p));
+    },
+    async listPlans() {
+      return [...plans.values()].map((p) => structuredClone(p));
+    },
+    async putPlan(p) {
+      plans.set(p.id, structuredClone(p));
+    },
+    async listCampaigns() {
+      return [...campaigns.values()].filter((c) => !c.archived).map((c) => structuredClone(c));
+    },
+    async findCampaign(id) {
+      return clone(campaigns.get(id));
+    },
+    async putCampaign(c) {
+      campaigns.set(c.id, structuredClone(c));
+    },
+    async putImage(i) {
+      images.set(i.id, structuredClone(i));
+    },
+    async getImage(id) {
+      return clone(images.get(id));
+    },
+    async addAudit(e) {
+      audit.push(structuredClone(e));
     },
   };
 }

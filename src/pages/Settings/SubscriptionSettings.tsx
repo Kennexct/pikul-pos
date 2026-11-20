@@ -5,7 +5,7 @@ import { useSearchParams } from 'react-router-dom';
 import { btnPrimary, btnSecondary, badgeBrand, badgeNeutral, badgeWarn } from '../../components/ui/styles';
 import { daysLeft } from '../../lib/accessPass';
 import { formatRupiah } from '../../lib/money';
-import { ApiError, billingOverview, paymentStatus, startCheckout, type BillingOverview, type PaymentView } from '../../services/account';
+import { ApiError, billingOverview, paymentStatus, startCheckout, type BillingOverview, type PaymentView, type PlanOffer } from '../../services/account';
 import { useAccessStore } from '../../store/useAccessStore';
 import { DATE_LOCALE, t } from '../../i18n';
 import { SettingsSection } from './SettingsSection';
@@ -60,7 +60,7 @@ export function SubscriptionSettings() {
     })();
   }, [params, setParams, load, refresh]);
 
-  const pay = async (plan: 'monthly' | 'yearly') => {
+  const pay = async (plan: string) => {
     setBusy(plan);
     try {
       const { redirectUrl } = await startCheckout(plan);
@@ -81,7 +81,6 @@ export function SubscriptionSettings() {
         ? t('Berakhir {0}. Masa tenggang offline sampai {1}.', fmtDate(access.until), fmtDate(access.graceEnds))
         : t('Berakhir {0}. Penjualan baru dinonaktifkan.', fmtDate(access.until));
 
-  const prices = data?.prices ?? { monthly: { amount: 49_000, days: 30 }, yearly: { amount: 490_000, days: 365 } };
 
   return (
     <>
@@ -94,16 +93,15 @@ export function SubscriptionSettings() {
       </SettingsSection>
 
       <SettingsSection title={t('Perpanjang')} description={t('Bayar dengan QRIS, virtual account, GoPay, atau ShopeePay lewat Midtrans.')}>
-        <div className="grid gap-3 sm:grid-cols-2">
-          <button type="button" className={`${btnPrimary} h-auto flex-col py-3`} onClick={() => void pay('monthly')} disabled={busy !== null}>
-            <span>{t('Bulanan')}</span>
-            <span className="text-[13px] font-medium opacity-90">{t('{0} / 30 hari', formatRupiah(prices.monthly.amount))}</span>
-          </button>
-          <button type="button" className={`${btnSecondary} h-auto flex-col py-3`} onClick={() => void pay('yearly')} disabled={busy !== null}>
-            <span>{t('Tahunan')}</span>
-            <span className="text-[13px] font-medium text-muted">{t('{0} / 365 hari', formatRupiah(prices.yearly.amount))}</span>
-          </button>
-        </div>
+        {data ? (
+          <div className="grid gap-3 sm:grid-cols-2">
+            {data.plans.map((p, i) => (
+              <PlanButton key={p.id} plan={p} primary={i === 0} disabled={busy !== null} onPay={() => void pay(p.id)} />
+            ))}
+          </div>
+        ) : (
+          !offline && <p className="text-[14px] text-muted">{t('Memuat paket…')}</p>
+        )}
         {offline && <p className="mt-3 text-[13px] text-warn-700">{t('Tidak ada internet. Pembayaran dan riwayat butuh koneksi.')}</p>}
       </SettingsSection>
 
@@ -114,7 +112,7 @@ export function SubscriptionSettings() {
               <li key={p.orderId} className="flex items-center justify-between gap-3 py-2.5 text-[14px]">
                 <div className="min-w-0">
                   <p className="font-semibold">
-                    {p.plan === 'monthly' ? t('Bulanan') : t('Tahunan')} · {formatRupiah(p.amount)}
+                    {p.planName} · {formatRupiah(p.amount)}
                   </p>
                   <p className="truncate text-[12px] text-muted">
                     {fmtDate(p.paidAt ?? p.createdAt)} · {p.orderId}
@@ -134,5 +132,23 @@ export function SubscriptionSettings() {
         </button>
       </SettingsSection>
     </>
+  );
+}
+
+/** One plan as set in the admin console; a live promo shows the normal price struck through (ADR-014). */
+function PlanButton({ plan, primary, disabled, onPay }: { plan: PlanOffer; primary: boolean; disabled: boolean; onPay: () => void }) {
+  const promo = plan.amount < plan.regularAmount;
+  return (
+    <button type="button" className={`${primary ? btnPrimary : btnSecondary} h-auto flex-col gap-0.5 py-3`} onClick={onPay} disabled={disabled}>
+      <span className="flex items-center gap-2">
+        {plan.name}
+        {plan.badge && <span className={badgeBrand}>{plan.badge}</span>}
+      </span>
+      <span className={`num text-[13px] font-medium ${primary ? 'opacity-90' : 'text-muted'}`}>
+        {promo && <s className="mr-1.5 opacity-75">{formatRupiah(plan.regularAmount)}</s>}
+        {t('{0} / {1} hari', formatRupiah(plan.amount), plan.days)}
+      </span>
+      {promo && plan.promoEndsAt !== null && <span className="text-[12px] font-semibold">{t('Promo sampai {0}', fmtDate(plan.promoEndsAt))}</span>}
+    </button>
   );
 }

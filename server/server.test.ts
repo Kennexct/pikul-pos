@@ -36,6 +36,7 @@ beforeEach(async () => {
     google: { verify: async (t) => (t === 'good' ? { sub: 'g-1', email: 'Ani@Gmail.com' } : null) },
     now: () => now,
     appOrigin: 'https://kasirku.test',
+    adminEmails: [],
   };
 });
 

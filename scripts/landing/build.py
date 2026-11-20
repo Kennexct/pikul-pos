@@ -68,11 +68,12 @@ all_feats = ['Kasir, struk, QRIS statis','Varian, add-on, mode penjualan','Jual 
 btn = 'display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 22px; border-radius: 10px; font-size: 16px; font-weight: 700; text-decoration: none'
 wrap = 'width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 24px; box-sizing: border-box'
 
-def plan_card(name, price, unit, note, badge, badge_cls, items, cta, primary):
+def plan_card(name, price, unit, note, badge, badge_cls, items, cta, primary, paid=True):
     bstyle = 'background: #e7f4ee; color: #075c44' if badge_cls == 'brand' else 'background: #f1f4f2; color: #3d4a44'
     border = f'2px solid {G}' if primary else f'1px solid {LINE}'
     cta_style = f'{btn}; margin-top: auto; background: {G}; color: #fff' if primary else f'{btn}; margin-top: auto; background: #fff; color: {INK}; border: 1px solid #c9d2cd'
-    return f'''<div style="background: #fff; border: {border}; border-radius: 18px; padding: 28px; display: flex; flex-direction: column; gap: 18px">
+    mark = ' data-plan-card' if paid else ''
+    return f'''<div{mark} style="background: #fff; border: {border}; border-radius: 18px; padding: 28px; display: flex; flex-direction: column; gap: 18px">
 <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px"><h3 style="margin: 0; font-size: 20px; font-weight: 800; color: {INK}">{name}</h3>{f'<span style="padding: 4px 10px; border-radius: 999px; {bstyle}; font-size: 13px; font-weight: 700">{badge}</span>' if badge else ''}</div>
 <p style="margin: 0; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap"><span style="font-size: 40px; font-weight: 800; letter-spacing: -0.03em; color: {INK}">{price}</span><span style="font-size: 15px; color: {MUTED}">{unit}</span></p>
 <p style="margin: 0; font-size: 15px; line-height: 1.6; color: {SOFT}">{note}</p>
@@ -80,7 +81,7 @@ def plan_card(name, price, unit, note, badge, badge_cls, items, cta, primary):
 <a href="{APP}" style="{cta_style}">{cta}</a>
 </div>'''
 
-pricing = (plan_card('Coba gratis', 'Rp0', '14 hari', 'Semua fitur, tanpa kartu kredit. Cukup daftar dengan email.', 'Mulai di sini', 'brand', all_feats, 'Coba gratis 14 hari', True)
+pricing = (plan_card('Coba gratis', 'Rp0', '14 hari', 'Semua fitur, tanpa kartu kredit. Cukup daftar dengan email.', 'Mulai di sini', 'brand', all_feats, 'Coba gratis 14 hari', True, paid=False)
          + plan_card('Bulanan', 'Rp49.000', '/ 30 hari', 'Lanjut setelah masa coba. Bayar dengan QRIS, VA, GoPay, atau ShopeePay.', '', '', ['Semua fitur di masa coba', 'Perpanjang kapan saja, tanpa hari hilang', 'Data tetap milik Anda'], 'Mulai dengan masa coba', False)
          + plan_card('Tahunan', 'Rp490.000', '/ 365 hari', 'Hemat dua bulan dibanding bayar bulanan.', 'Hemat 2 bulan', 'neutral', ['Semua fitur di masa coba', 'Sekali bayar untuk setahun', 'Data tetap milik Anda'], 'Mulai dengan masa coba', False))
 
@@ -166,7 +167,7 @@ body = f'''<div style="font-family: 'Plus Jakarta Sans', system-ui, sans-serif; 
 <section id="harga" style="padding: 96px 0">
 <div style="{wrap}">
 <div style="max-width: 720px; margin: 0 auto 48px; text-align: center">{eyebrow('Harga')}{h2('Coba 14 hari gratis. Lanjut kalau cocok.')}<p style="margin: 16px 0 0; font-size: 17px; line-height: 1.65; color: {SOFT}">Satu harga, semua fitur. Tanpa biaya per transaksi.</p></div>
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; max-width: 1080px; margin: 0 auto">{pricing}</div>
+<div id="paket-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; max-width: 1080px; margin: 0 auto">{pricing}</div>
 <div style="max-width: 1080px; margin: 24px auto 0; padding: 20px 24px; border: 1px dashed #c9d2cd; border-radius: 14px; display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: center">
 <p style="margin: 0; font-size: 15px; font-weight: 700; color: {INK}">Segera hadir untuk pelanggan:</p>
 <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 10px 24px">{li(soon, clock)}</ul>
@@ -249,6 +250,8 @@ else:
 </head>
 <body>
 {body}
+<!-- ADR-014: live plans + campaign pop-up from /api/public/landing; the prices above are the no-JS fallback. -->
+<script type="module" src="/src/landing/live.ts"></script>
 </body>
 </html>
 '''

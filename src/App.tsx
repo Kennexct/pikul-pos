@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { CampaignPopup } from './components/Access/CampaignPopup';
 import { AppShell } from './components/Layout/AppShell';
 import { OwnerGate } from './components/Layout/OwnerGate';
 import { LockScreen } from './components/Pin/LockScreen';
@@ -114,6 +115,7 @@ export default function App() {
         <Route path="*" element={<Navigate to={ROUTES.pos} replace />} />
       </Routes>
       <OwnerPinHost />
+      <CampaignPopup />
       {toaster}
     </BrowserRouter>
   );

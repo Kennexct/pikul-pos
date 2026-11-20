@@ -1,23 +1,25 @@
 import { accountFromBearer, entitledUntil, planOf } from './auth';
 import { randomToken } from './crypto';
 import { isFailedStatus, isPaidStatus, validSignature } from './midtrans';
-import { DAY_MS, PLANS, type ApiResponse, type Deps, type Payment, type Plan } from './types';
+import { offers, priceNow } from './catalog';
+import { DAY_MS, type ApiResponse, type Deps, type Payment } from './types';
 
 const bad = (error: string, status = 400): ApiResponse => ({ status, body: { error } });
-const isPlan = (v: unknown): v is Plan => v === 'monthly' || v === 'yearly';
 
-const view = (p: Payment) => ({ orderId: p.orderId, plan: p.plan, amount: p.amount, status: p.status, createdAt: p.createdAt, paidAt: p.paidAt, method: p.method });
+const view = (p: Payment) => ({ orderId: p.orderId, plan: p.plan, planName: p.planName, amount: p.amount, days: p.days, status: p.status, createdAt: p.createdAt, paidAt: p.paidAt, method: p.method });
 
 export async function checkout(deps: Deps, auth: string | null, body: unknown): Promise<ApiResponse> {
   const a = await accountFromBearer(deps, auth);
   if (!a) return bad('signed_out', 401);
-  const plan = (body as { plan?: unknown })?.plan;
-  if (!isPlan(plan)) return bad('invalid_plan');
-  const { amount, label } = PLANS[plan];
+  const planId = (body as { plan?: unknown })?.plan;
+  const plan = (await deps.repo.listPlans()).find((p) => p.id === planId && p.active);
+  if (!plan) return bad('invalid_plan');
   const now = deps.now();
-  const orderId = `KK-${plan === 'monthly' ? 'M' : 'Y'}-${now.toString(36)}-${randomToken(4)}`.toUpperCase();
-  await deps.repo.createPayment({ orderId, accountId: a.id, plan, amount, status: 'pending', createdAt: now, paidAt: null, method: null });
-  const snap = await deps.midtrans.createSnap({ orderId, amount, itemName: label, email: a.email, finishUrl: `${deps.appOrigin}/app/pengaturan?tab=subscription&bayar=${encodeURIComponent(orderId)}` });
+  // Price is decided here, never by the client (ADR-014); the payment keeps a snapshot.
+  const { amount, campaign } = priceNow(plan, await deps.repo.listCampaigns(), now);
+  const orderId = `KK-${now.toString(36)}-${randomToken(4)}`.toUpperCase();
+  await deps.repo.createPayment({ orderId, accountId: a.id, plan: plan.id, planName: plan.name, amount, days: plan.days, campaignId: campaign?.id ?? null, status: 'pending', createdAt: now, paidAt: null, method: null });
+  const snap = await deps.midtrans.createSnap({ orderId, amount, itemId: plan.id, itemName: `KasirKu ${plan.name}`.slice(0, 50), email: a.email, finishUrl: `${deps.appOrigin}/app/pengaturan?tab=subscription&bayar=${encodeURIComponent(orderId)}` });
   return { status: 200, body: { orderId, redirectUrl: snap.redirectUrl } };
 }
 
@@ -28,7 +30,7 @@ async function applyPaid(deps: Deps, p: Payment, method: string | null): Promise
   const a = await deps.repo.findAccountById(p.accountId);
   if (!a) return;
   const from = Math.max(now, a.paidUntil ?? 0, a.trialEndsAt);
-  await deps.repo.setPaidUntil(a.id, from + PLANS[p.plan].days * DAY_MS);
+  await deps.repo.setPaidUntil(a.id, from + p.days * DAY_MS);
 }
 
 /** Midtrans HTTP notification. Always answers 200 for well-formed, verified notifications so Midtrans stops retrying. */
@@ -63,12 +65,13 @@ export async function paymentStatus(deps: Deps, auth: string | null, orderId: st
 export async function overview(deps: Deps, auth: string | null): Promise<ApiResponse> {
   const a = await accountFromBearer(deps, auth);
   if (!a) return bad('signed_out', 401);
-  const payments = (await deps.repo.listPayments(a.id)).map(view);
+  const [list, plans, campaigns] = await Promise.all([deps.repo.listPayments(a.id), deps.repo.listPlans(), deps.repo.listCampaigns()]);
+  const payments = list.map(view);
   return {
     status: 200,
     body: {
       account: { email: a.email, plan: planOf(a), until: entitledUntil(a), trialEndsAt: a.trialEndsAt, paidUntil: a.paidUntil },
-      prices: Object.fromEntries(Object.entries(PLANS).map(([k, v]) => [k, { amount: v.amount, days: v.days }])),
+      plans: offers(plans, campaigns, deps.now()),
       payments,
     },
   };

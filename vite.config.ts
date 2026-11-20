@@ -9,6 +9,7 @@ import { VitePWA } from 'vite-plugin-pwa';
 const appFallback = (): Plugin => {
   const rewrite = (req: { url?: string }) => {
     if (req.url && /^\/app(\/[^.]*)?(\?.*)?$/.test(req.url)) req.url = '/app/index.html';
+    else if (req.url && /^\/admin\/?(\?.*)?$/.test(req.url)) req.url = '/admin/index.html';
   };
   return {
     name: 'kasirku-app-fallback',
@@ -25,7 +26,7 @@ export default defineConfig({
   appType: 'mpa',
   build: {
     rollupOptions: {
-      input: { landing: resolve(__dirname, 'index.html'), app: resolve(__dirname, 'app/index.html') },
+      input: { landing: resolve(__dirname, 'index.html'), app: resolve(__dirname, 'app/index.html'), admin: resolve(__dirname, 'admin/index.html') },
     },
   },
   plugins: [
@@ -58,6 +59,8 @@ export default defineConfig({
         navigateFallbackAllowlist: [/^\/app(\/|$)/],
         navigateFallbackDenylist: [/^\/api\//],
         globPatterns: ['**/*.{js,css,html,svg,png,webp,woff2}'],
+        // ADR-014: the admin console and the landing script are online-only, never in the POS offline cache.
+        globIgnores: ['admin/**', 'assets/admin-*', 'assets/landing-*', 'landing/**', 'index.html'],
         runtimeCaching: [
           {
             // Product photos + QRIS image from Supabase Storage: available offline.
