@@ -11,7 +11,7 @@
 
 ## Readings chosen (Kenny was away; reversible)
 - "Check whether the register is open before the first sale" = a **register-open gate** at the cashier: until today's register is opened, the first product tap (empty cart), Bayar and Simpan pesanan open a **Buka kasir** sheet. Opening = confirming the opening cash count. Rp0 is allowed. Selling stays fully offline (Dexie only).
-- "End of day, count the register balance" = keep the existing **Tutup kasir** (expected vs counted vs difference) and add an optional **count by denomination** helper, used in both Buka kasir and Tutup kasir.
+- "End of day, count the register balance" = keep the existing **Tutup kasir** (expected vs counted vs difference) (a count-by-denomination helper was later removed at Kenny's request).
 - "Category button" = a third tab **Kategori** on the Produk page with the list (product count each), add, rename, move up/down, delete (its products become "Tanpa kategori").
 - "Quick button to expand" = a chevron toggle on rows of products that have variants; expanding shows one indented line per variant with Dine In price, the per-product mode price (Takeaway), and status.
 
@@ -49,7 +49,7 @@ The business date follows the store's timezone and cut-off (unchanged). Yesterda
 
 ## Testing
 - Unit: register status rules, `openRegister` audit + validation, `sumDenominations`, category rename/unique/delete-moves-products/reorder.
-- e2e `e2e/v16.py`: phone + tablet — gate appears on first tap, open with denomination count, sale goes through, close with count shows difference; category tab add/rename/reorder/delete; variant expand toggle.
+- e2e `e2e/v16.py`: phone + tablet — gate appears on first tap, open with a typed amount, sale goes through, close with count shows difference; category tab add/rename/reorder/delete; variant expand toggle.
 
 ## Out of scope
-Multiple shifts per day, per-cashier drawers, blind close, storing the denomination breakdown.
+Multiple shifts per day, per-cashier drawers, blind close, counting by denomination.
