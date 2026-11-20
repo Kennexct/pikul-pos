@@ -1,12 +1,12 @@
 # Status
 
-**Phase:** Delivery docs complete — rebrand KasirKu → **Pikul** (ADR-016) on top of v0.15 admin console. Not deployed.
+**Phase:** Delivery complete — v0.16 register open/close, Kategori tab, variant expand (ADR-017) on top of UI polish → rebrand → v0.15. Not deployed.
 **Branch:** `feat/rebrand-pikul` (on top of `feat/v0.15-admin-console`, on top of `main` `aaac4dc`). Delivered as a git bundle in the project folder; GitHub repo not reachable from the build session.
 **Repo:** GitHub `Kennexct/kasirku` (per deploy runbook). Project folder copy: `kasirku-full/` + `kasirku-history.bundle`.
-**Last refreshed:** 2026-11-20 (v0.15)
+**Last refreshed:** 2026-11-20 (v0.16)
 
 ## Current snapshot (2026-11-20)
-- App version 0.15.0. 165 unit/integration tests, 14 Playwright scripts in `e2e/` (new: `v15.py`).
+- App version 0.16.0. 176 unit/integration tests, 15 Playwright scripts in `e2e/` (new: `v16.py`).
 - Stack: React 19 + Vite 8 PWA, Tailwind v4, Zustand, Dexie · Cloudflare Pages + Functions, Neon, Resend (ADR-013). No payment provider (ADR-015). Supabase/Vercel plan superseded.
 - `/admin/` owner console (ADR-014): plans in Neon drive the landing page and the app; campaigns = scheduled pop-up banners (upload, optional link, on/off, landing and/or app once per account, optional promo price). Access: `ADMIN_EMAILS` + 12-hour session; `admin_audit` log.
 
@@ -19,10 +19,11 @@
 - [ ] Final prices (set them in `/admin/` after deploy) and custom domain
 - [ ] Choose a payment provider (or keep extending accounts by hand in Neon)
 
-## v0.16 register open/close, categories, variant expand — In progress (2026-11-20)
-Branch `feat/register-categories` on top of `feat/ui-polish`. Spec `specs/2026-11-20-register-categories-design.md`, ADR-017.
-- [x] Spec, ADR-017, PM/architect/staff/EM/senior decisions
-- [ ] T1 lib/register + lib/denominations · T2 openRegister audit · T3 CashCounter + OpenRegisterSheet + Kas · T4 POS gate · T5 categories · T6 variant expand · T7 i18n, e2e v16, checks, runbook
+## v0.16 register open/close, categories, variant expand — Delivered (2026-11-20)
+Branch `feat/register-categories` on top of `feat/ui-polish`. Spec `specs/2026-11-20-register-categories-design.md`, ADR-017, review `reviews/2026-11-20-v16-review.md` (QA + security PASS).
+- [x] Spec, ADR-017, all role decisions
+- [x] T1 lib/register + lib/denominations · T2 opening audit · T3 CashCounter + OpenRegisterSheet + Kas · T4 POS gate · T5 categories · T6 variant expand · T7 i18n, help, e2e v16, checks, runbook
+- [ ] Manual: counter and gate on a low-end Android phone and iPad Safari
 
 ## UI polish — Delivered (2026-11-20)
 Branch `feat/ui-polish` on top of `feat/rebrand-pikul`. Pop-up open/close motion + swipe-to-dismiss + focus handling, page transitions, tap feedback, scroll-edge cues, plain monogram tiles, landing fixes. Review `reviews/2026-11-20-ui-polish-review.md`; motion table in `design-system/MASTER.md`.

@@ -1,6 +1,8 @@
 # Handoff — v0.16 register open/close, categories, variant expand (2026-11-20)
 
-**Now:** building on `feat/register-categories` (stacked on `feat/ui-polish`). Design: `specs/2026-11-20-register-categories-design.md`, ADR-017. Task list in `decisions/engineering-manager/register-categories.md`.
+**Latest:** v0.16 delivered on `feat/register-categories` (stacked on `feat/ui-polish` → `feat/rebrand-pikul` → `feat/v0.15-admin-console`). Register must be opened (counted float) before the first sale; count by note/coin at open and close; Kategori tab; variant expand. ADR-017, review `reviews/2026-11-20-v16-review.md`, runbook `docs/runbooks/cash-profit-backup.md` (v0.16 section).
+
+**e2e note:** since v0.16 every older flow calls `open_register(page)` after the first-time journey.
 
 **Never rename:** IndexedDB `kasirku`, localStorage `kasirku-cart|lang|active-member`, backup marker `app: "kasirku"`.
 

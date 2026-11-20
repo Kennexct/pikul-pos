@@ -15,3 +15,4 @@
 
 ## Update 2026-11-20
 Two schemas: `db/migrations/` (Neon, live target for accounts + billing) and `supabase/migrations/` (reference sync schema, never applied). Dexie remains the source of truth for store data.
+- register-categories (v0.16) — ADR-017 → `register-categories.md`
