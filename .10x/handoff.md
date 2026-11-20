@@ -1,5 +1,7 @@
 # Handoff — after the Pikul rebrand (2026-11-20)
 
+**Latest:** UI polish on `feat/ui-polish` (stacked on `feat/rebrand-pikul`), see `reviews/2026-11-20-ui-polish-review.md`.
+
 **Where things stand:** the product is now **Pikul** (formerly KasirKu, ADR-016) on branch `feat/rebrand-pikul`, stacked on `feat/v0.15-admin-console` (both in `kasirku-history.bundle` in the project folder). Nothing is deployed. Reviews: `reviews/2026-11-20-v15-review.md`, `reviews/2026-11-20-rebrand-review.md`.
 
 **Never rename:** IndexedDB `kasirku`, localStorage `kasirku-cart|lang|active-member`, backup marker `app: "kasirku"` (data on sellers' devices).

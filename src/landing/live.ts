@@ -105,16 +105,29 @@ const isSafeLink = (u: string) => /^\/(?!\/)/.test(u) || /^https:\/\//.test(u);
 function showPopup(p: Popup) {
   const opener = document.activeElement as HTMLElement | null;
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const backdrop = el('div', `position: fixed; inset: 0; z-index: 50; background: rgba(15,26,22,.55); display: flex; align-items: center; justify-content: center; padding: 16px; ${reduce ? '' : 'animation: kk-fade .2s ease-out'}`);
-  const box = el('div', 'position: relative; width: 100%; max-width: 480px; max-height: calc(100dvh - 32px); overflow: auto; background: #fff; border-radius: 18px; font-family: "Plus Jakarta Sans", system-ui, sans-serif; box-shadow: 0 24px 64px -16px rgba(15,26,22,.45)', undefined, {
+  // Translucent, lightly blurred scrim: the page stays visible behind the promo. The card rises in and leaves the same way.
+  const backdrop = el('div', `position: fixed; inset: 0; z-index: 50; background: rgba(15,26,22,.5); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; padding: 16px; ${reduce ? '' : 'animation: kk-fade .2s ease-out'}`);
+  const box = el('div', `position: relative; width: 100%; max-width: 480px; max-height: calc(100dvh - 32px); overflow: auto; overscroll-behavior: contain; background: #fff; border-radius: 18px; font-family: "Plus Jakarta Sans", system-ui, sans-serif; box-shadow: 0 24px 64px -16px rgba(15,26,22,.45); ${reduce ? '' : 'animation: kk-rise .32s cubic-bezier(.25,1,.5,1)'}`, undefined, {
     role: 'dialog',
     'aria-modal': 'true',
     'aria-labelledby': 'kk-popup-title',
   });
+  const scrollY = document.documentElement.style.overflow;
+  document.documentElement.style.overflow = 'hidden';
+  let isClosing = false;
   const close = () => {
-    backdrop.remove();
+    if (isClosing) return;
+    isClosing = true;
     document.removeEventListener('keydown', onKey);
-    opener?.focus();
+    const done = () => {
+      backdrop.remove();
+      document.documentElement.style.overflow = scrollY;
+      opener?.focus();
+    };
+    if (reduce) return done();
+    backdrop.style.animation = 'kk-unfade .18s ease-in forwards';
+    box.style.animation = 'kk-sink .18s cubic-bezier(.5,0,.75,0) forwards';
+    window.setTimeout(done, 190);
   };
   const onKey = (e: KeyboardEvent) => {
     if (e.key === 'Escape') close();
@@ -148,9 +161,29 @@ function showPopup(p: Popup) {
   }
   box.append(x, content);
   backdrop.append(box);
-  if (!document.getElementById('kk-popup-style')) document.head.append(el('style', '', '@keyframes kk-fade{from{opacity:0}to{opacity:1}}', { id: 'kk-popup-style' }));
+  if (!document.getElementById('kk-popup-style')) document.head.append(el('style', '', '@keyframes kk-fade{from{opacity:0}to{opacity:1}}@keyframes kk-rise{from{opacity:0;transform:translateY(16px) scale(.97)}}@keyframes kk-unfade{to{opacity:0}}@keyframes kk-sink{to{opacity:0;transform:translateY(8px) scale(.98)}}', { id: 'kk-popup-style' }));
   document.body.append(backdrop);
   x.focus();
+}
+
+/** Sections below the fold rise in once as they scroll into view (styles in scripts/landing/build.py). */
+function revealOnScroll() {
+  if (!('IntersectionObserver' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const io = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) {
+        if (!e.isIntersecting) continue;
+        e.target.classList.remove('lp-pending');
+        io.unobserve(e.target);
+      }
+    },
+    { rootMargin: '0px 0px -8% 0px' },
+  );
+  for (const node of document.querySelectorAll('[data-reveal]')) {
+    if (node.getBoundingClientRect().top < window.innerHeight) continue; // already on screen: never hide it
+    node.classList.add('lp-pending');
+    io.observe(node);
+  }
 }
 
 async function main() {
@@ -172,4 +205,5 @@ async function main() {
   }
 }
 
+revealOnScroll();
 void main();

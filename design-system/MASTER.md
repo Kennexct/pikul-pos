@@ -71,8 +71,23 @@ Components must use semantic tokens only — no raw `slate-*`, `orange-*` or hex
 
 ## Motion
 
-- Sheets: 220ms slide-up with ease-out-quart; backdrop: 160ms fade. Press feedback: 1px translate.
-- `prefers-reduced-motion` disables all animation.
+Motion confirms what just happened; nothing loops. Tokens and keyframes live in `src/index.css`.
+
+| Moment | Phone | Tablet |
+| --- | --- | --- |
+| Sheet / pop-up opens | slides up from the bottom edge, 320ms ease-out-quart | rises 10px and scales from 0.97, 220ms |
+| Sheet closes (X, scrim, Escape, swipe) | slides back down, 200ms ease-in-quart, then `onClose` | sinks and fades, 160ms |
+| Scrim | `ink/45` + 3px blur, fades in 160ms / out 200ms — translucent so the sale stays visible | same |
+| Swipe to dismiss | drag the grabber/header down > 96px (or flick) | — |
+| Page change (nav links) | content pane fades out 90ms, new page rises 8px in 220ms (View Transitions; rail and tab bar stay still) | same |
+| Tap registered | qty badge on the tile and the cart-bar count pop once (260ms) | same |
+| Full-screen hand-off (QRIS) | rises 16px in 280ms | same |
+| Horizontal scrollers (`scroll-x`) | the edge hiding more content fades (scroll-driven; no fade when nothing overflows) | same |
+| Press feedback | 1px translate / 0.985 scale | same |
+
+- `Sheet` owns its exit: always close through its X/scrim/Escape or by setting `isOpen` false; it unmounts after the exit.
+- `Sheet` moves focus into the dialog, traps Tab, gives focus back to the opener, and only the top sheet answers Escape.
+- `prefers-reduced-motion` disables all animation, including page transitions; sheets then close instantly.
 
 ## Layout
 
@@ -81,7 +96,7 @@ Components must use semantic tokens only — no raw `slate-*`, `orange-*` or hex
 
 ## Anti-patterns (reject in review)
 
-Pastel random tile colors · gradient buttons · pill-shaped everything · emoji icons · gray text below `muted` · raw palette classes in JSX · shadows on every card · centered-everything layouts · more than one accent color.
+Pastel random tile colors · dot-grid or pattern fills behind monograms · endless pulse/float loops · gradient buttons · pill-shaped everything · emoji icons · gray text below `muted` · raw palette classes in JSX · shadows on every card · centered-everything layouts · more than one accent color.
 
 ## Page width
 

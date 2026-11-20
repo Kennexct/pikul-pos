@@ -12,10 +12,10 @@ else:
 APP = '/app/'
 G = '#0b7a5a'; INK = '#0f1a16'; SOFT = '#3d4a44'; MUTED = '#5b6862'; LINE = '#e3e8e5'; CANVAS = '#f6f8f7'
 
-def ic(path): return f'<svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="{G}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">{path}</svg>'
+def ic(path): return f'<svg aria-hidden="true" style="flex: none" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="{G}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">{path}</svg>'
 I = {
 'wifi':'<path d="M2 2l20 20"/><path d="M8.5 16.5a5 5 0 0 1 7 0"/><path d="M5 12.9a10 10 0 0 1 5.2-2.7"/><path d="M19 12.9a10 10 0 0 0-2.4-1.6"/><path d="M2 8.8a15 15 0 0 1 4.2-2.6"/><path d="M22 8.8A15 15 0 0 0 10.7 5"/><circle cx="12" cy="20" r="0.5"/>',
-'zap':'<path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/>',
+'timer':'<circle cx="12" cy="14" r="8"/><path d="M12 10v4l2 2"/><path d="M10 2h4"/><path d="M12 2v4"/>',
 'store':'<path d="M3 9l1-5h16l1 5"/><path d="M4 9v11h16V9"/><path d="M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"/>',
 'wallet':'<rect x="3" y="6" width="18" height="14" rx="2"/><path d="M16 13h2"/><path d="M3 10h18"/>',
 'receipt':'<path d="M5 3v18l2-1.5L9 21l2-1.5L13 21l2-1.5L17 21l2-1.5V3l-2 1.5L15 3l-2 1.5L11 3 9 4.5 7 3 5 4.5z"/><path d="M9 9h6M9 13h6"/>',
@@ -33,16 +33,19 @@ I = {
 check = f'<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="{G}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>'
 clock = f'<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="{MUTED}" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'
 
-def shot(src, alt, w='100%'):
-    return f'<div style="border-radius: 16px; border: 1px solid {LINE}; background: #fff; padding: 8px; box-shadow: 0 1px 2px rgba(15,26,22,.04), 0 12px 32px -12px rgba(15,26,22,.18)"><img src="{src}" alt="{alt}" loading="lazy" style="display: block; width: {w}; height: auto; border-radius: 10px"></div>'
-def eyebrow(t): return f'<p style="margin: 0 0 12px; font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: {G}">{t}</p>'
+SIZE = {'pos': (1024, 768), 'bon': (1024, 768), 'tutup': (1024, 768), 'varian': (390, 844), 'timbang': (390, 844)}
+def shot(key, alt, w='100%', hero=False):
+    iw, ih = SIZE[key]
+    load = 'fetchpriority="high"' if hero else 'loading="lazy" decoding="async"'
+    return f'<div{"" if hero else " data-reveal"} style="border-radius: 16px; border: 1px solid {LINE}; background: #fff; padding: 8px; box-shadow: 0 1px 2px rgba(15,26,22,.04), 0 12px 32px -12px rgba(15,26,22,.18)"><img src="{IMG[key]}" alt="{alt}" width="{iw}" height="{ih}" {load} style="display: block; width: {w}; height: auto; border-radius: 10px"></div>'
+def eyebrow(t): return f'<p style="margin: 0 0 10px; font-size: 15px; font-weight: 700; color: {G}">{t}</p>'
 def h2(t, id_=''): return f'<h2{f" id={chr(34)}{id_}{chr(34)}" if id_ else ""} style="margin: 0; font-size: clamp(28px, 4vw, 40px); line-height: 1.15; letter-spacing: -0.02em; font-weight: 800; color: {INK}">{t}</h2>'
 
 usp = [('wifi','Jalan tanpa internet','Semua data tersimpan di perangkat. Sinyal hilang, penjualan tetap tercatat dan struk tetap keluar.'),
-       ('zap','Siap dalam 2 menit','Daftar dengan email, pilih jenis usaha, dan contoh menu langsung jadi. Tanpa install dari toko aplikasi.'),
+       ('timer','Siap dalam 2 menit','Daftar dengan email, pilih jenis usaha, dan contoh menu langsung jadi. Tanpa install dari toko aplikasi.'),
        ('store','Dibuat untuk cara jual kita','Bon pelanggan, QRIS statis, harga Dine In / Takeaway / ojol, jual per kilo, harga nego di meja kasir.'),
        ('wallet','Tahu uang dan untung tiap malam','Tutup kasir: uang laci seharusnya vs yang dihitung. Laba dari harga modal, bukan tebakan.')]
-usp_html = ''.join(f'<div style="background: #fff; border: 1px solid {LINE}; border-radius: 14px; padding: 24px; display: flex; flex-direction: column; gap: 10px"><div style="width: 44px; height: 44px; border-radius: 10px; background: #e7f4ee; display: flex; align-items: center; justify-content: center">{ic(I[i])}</div><h3 style="margin: 4px 0 0; font-size: 18px; font-weight: 700; color: {INK}">{a}</h3><p style="margin: 0; font-size: 15px; line-height: 1.6; color: {SOFT}">{b}</p></div>' for i,a,b in usp)
+usp_html = ''.join(f'<div style="border-top: 2px solid {INK}; padding-top: 18px; display: flex; flex-direction: column; gap: 8px"><h3 style="margin: 0; display: flex; gap: 10px; align-items: flex-start; font-size: 18px; line-height: 1.3; font-weight: 800; letter-spacing: -0.01em; color: {INK}">{ic(I[i])}{a}</h3><p style="margin: 0; font-size: 15px; line-height: 1.6; color: {SOFT}">{b}</p></div>' for i,a,b in usp)
 
 deep = [('varian','Layar pilih varian dan add-on di kasir','Varian &amp; add-on','Kopi → Latte → sedikit es, tanpa gula, Grande.','Setiap varian punya harga sendiri, termasuk harga Takeaway. Add-on seperti es, gula, dan ukuran bisa wajib atau opsional, dengan tambahan harga. Di struk dan laporan tertulis "Kopi – Latte", jadi Anda tahu minuman mana yang paling laku.', True),
         ('timbang','Layar isi berat atau nominal untuk barang timbangan','Untuk pedagang pasar','Jual per kilo, atau "beli sepuluh ribu".','Ketik beratnya (0,75 kg) atau uang pembeli (Rp10.000) dan beratnya dihitung sendiri. Harga hari ini beda? Ganti langsung di kasir; harga normal tetap tercatat.', True),
@@ -51,11 +54,11 @@ deep = [('varian','Layar pilih varian dan add-on di kasir','Varian &amp; add-on'
 deep_html = ''
 for n,(k,alt,eb,title,body,phone) in enumerate(deep):
     text = f'<div style="flex: 1 1 360px; min-width: 0; display: flex; flex-direction: column; justify-content: center">{eyebrow(eb)}<h3 style="margin: 0; font-size: clamp(24px, 3vw, 32px); line-height: 1.2; letter-spacing: -0.02em; font-weight: 800; color: {INK}">{title}</h3><p style="margin: 16px 0 0; font-size: 17px; line-height: 1.65; color: {SOFT}; max-width: 520px">{body}</p></div>'
-    img = f'<div style="flex: 1 1 420px; min-width: 0; display: flex; justify-content: center">{shot(IMG[k], alt, "min(100%, 380px)" if phone else "100%")}</div>'
+    img = f'<div style="flex: 1 1 420px; min-width: 0; display: flex; justify-content: center">{shot(k, alt, "min(100%, 380px)" if phone else "100%")}</div>'
     deep_html += f'<div style="display: flex; flex-wrap: wrap; gap: 48px; align-items: center">{text+img if n%2==0 else img+text}</div>'
 
 feats = [('receipt','Kasir &amp; struk','Cetak struk 58/80 mm atau kirim lewat WhatsApp.'),('layers','Varian &amp; add-on','Harga per varian, add-on wajib atau opsional.'),('tag','Mode penjualan','Dine In, Takeaway, ojol; markup otomatis.'),('qr','QRIS statis','Tampilkan QRIS toko bersama total yang harus dibayar.'),('scale','Jual per berat','kg, ons, gram, liter, meter; per nominal.'),('rotate','Void &amp; refund','Dengan alasan, batas hari, dan izin pemilik.'),('chart','Laporan &amp; laba','Jam ramai, menu terlaris, ekspor Excel/PDF/CSV.'),('users','Pelanggan &amp; bon','Riwayat belanja dan pengingat bayar.'),('wallet','Kas &amp; pengeluaran','Belanja bahan, gas, upah; tutup kasir harian.'),('lock','Staf &amp; PIN','PIN per kasir, bagian pemilik terkunci.'),('save','Cadangan data','Simpan semua data ke satu berkas, pulihkan kapan saja.'),('globe','Indonesia &amp; English','Ganti bahasa per perangkat.')]
-feat_html = ''.join(f'<div style="display: flex; gap: 14px; align-items: flex-start; padding: 20px; background: #fff; border: 1px solid {LINE}; border-radius: 12px"><div style="flex: none; margin-top: 2px">{ic(I[i])}</div><div><h3 style="margin: 0; font-size: 16px; font-weight: 700; color: {INK}">{a}</h3><p style="margin: 4px 0 0; font-size: 14px; line-height: 1.55; color: {MUTED}">{b}</p></div></div>' for i,a,b in feats)
+feat_html = ''.join(f'<div style="display: flex; gap: 14px; align-items: flex-start; padding: 18px 0; border-bottom: 1px solid {LINE}"><div style="flex: none; margin-top: 2px">{ic(I[i])}</div><div><h3 style="margin: 0; font-size: 16px; font-weight: 700; color: {INK}">{a}</h3><p style="margin: 4px 0 0; font-size: 14px; line-height: 1.55; color: {MUTED}">{b}</p></div></div>' for i,a,b in feats)
 
 who = [('Kedai kopi','Varian minuman, es/gula/ukuran, harga Takeaway dan ojol.'),('Bakso &amp; warung makan','Pesanan per meja, simpan dulu bayar nanti, level pedas.'),('Gorengan &amp; jajanan','Satu ketuk per item, uang pas, antrean cepat.'),('Lapak pasar','Per kilo atau per nominal, harga harian, bon langganan.')]
 who_html = ''.join(f'<div style="padding: 24px; border-radius: 14px; background: #fff; border: 1px solid {LINE}"><h3 style="margin: 0; font-size: 18px; font-weight: 700; color: {INK}">{a}</h3><p style="margin: 8px 0 0; font-size: 15px; line-height: 1.6; color: {SOFT}">{b}</p></div>' for a,b in who)
@@ -101,11 +104,11 @@ navlink = f'color: {SOFT}; text-decoration: none; font-size: 15px; font-weight: 
 
 body = f'''<div style="font-family: 'Plus Jakarta Sans', system-ui, sans-serif; background: {CANVAS}; color: {INK}; min-width: 0">
 <header style="position: sticky; top: 0; z-index: 10; background: rgba(246,248,247,.92); backdrop-filter: blur(8px); border-bottom: 1px solid {LINE}">
-<div style="{wrap}; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px; min-height: 68px">
+<div style="{wrap}; display: flex; align-items: center; gap: 12px 28px; min-height: 64px">
 <a href="#top" aria-label="Pikul, ke atas" style="text-decoration: none">{logo}</a>
-<nav aria-label="Navigasi halaman" style="display: flex; flex-wrap: wrap; gap: 4px 24px; flex: 1 1 auto"><a href="#fitur" style="{navlink}">Fitur</a><a href="#untuk-siapa" style="{navlink}">Untuk siapa</a><a href="#harga" style="{navlink}">Harga</a><a href="#faq" style="{navlink}">FAQ</a></nav>
-<a href="{APP}" style="{navlink}; color: {INK}">Masuk</a>
-<a href="{APP}" style="{btn}; min-height: 44px; font-size: 15px; background: {G}; color: #fff">Coba gratis</a>
+<nav class="lp-nav" aria-label="Navigasi halaman" style="display: flex; gap: 4px 24px; flex: 1 1 auto"><a href="#fitur" style="{navlink}">Fitur</a><a href="#untuk-siapa" style="{navlink}">Untuk siapa</a><a href="#harga" style="{navlink}">Harga</a><a href="#faq" style="{navlink}">FAQ</a></nav>
+<a href="{APP}" class="lp-signin" style="{navlink}; color: {INK}; white-space: nowrap">Masuk</a>
+<a href="{APP}" style="{btn}; min-height: 44px; padding: 0 18px; font-size: 15px; background: {G}; color: #fff; white-space: nowrap">Coba gratis</a>
 </div>
 </header>
 
@@ -113,7 +116,6 @@ body = f'''<div style="font-family: 'Plus Jakarta Sans', system-ui, sans-serif; 
 <section style="padding: 72px 0 56px">
 <div style="{wrap}; display: flex; flex-wrap: wrap; gap: 56px; align-items: center">
 <div style="flex: 1 1 440px; min-width: 0">
-<p style="display: inline-flex; align-items: center; gap: 8px; margin: 0 0 20px; padding: 6px 12px; border-radius: 999px; background: #e7f4ee; color: #075c44; font-size: 14px; font-weight: 700">Aplikasi kasir untuk UMKM Indonesia</p>
 <h1 style="margin: 0; font-size: clamp(38px, 5.6vw, 64px); line-height: 1.05; letter-spacing: -0.035em; font-weight: 800; color: {INK}">Kasir yang tetap jalan, walau sinyal hilang.</h1>
 <p style="margin: 22px 0 0; font-size: clamp(17px, 2vw, 20px); line-height: 1.6; color: {SOFT}; max-width: 560px">Untuk warung, kedai kopi, gorengan, sampai lapak pasar. Catat penjualan, bon pelanggan, dan uang laci di tablet atau HP yang sudah Anda punya. Coba gratis 14 hari.</p>
 <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px">
@@ -126,20 +128,20 @@ body = f'''<div style="font-family: 'Plus Jakarta Sans', system-ui, sans-serif; 
 <li style="display: flex; gap: 8px; align-items: center; font-size: 15px; font-weight: 600; color: {SOFT}">{check}Bahasa Indonesia &amp; English</li>
 </ul>
 </div>
-<div style="flex: 1 1 520px; min-width: 0">{shot(IMG['pos'], 'Layar kasir Pikul di tablet dengan menu kedai kopi').replace(' loading="lazy"', '')}</div>
+<div class="lp-hero-shot" style="flex: 1 1 520px; min-width: 0">{shot('pos', 'Layar kasir Pikul di tablet dengan menu kedai kopi', hero=True)}</div>
 </div>
 </section>
 
 <section aria-labelledby="usp-title" style="padding: 40px 0 72px">
 <div style="{wrap}">
 <h2 id="usp-title" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Kenapa Pikul</h2>
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px">{usp_html}</div>
+<div class="lp-usp">{usp_html}</div>
 </div>
 </section>
 
 <section id="fitur" style="padding: 72px 0; background: #fff; border-top: 1px solid {LINE}; border-bottom: 1px solid {LINE}">
 <div style="{wrap}; display: flex; flex-direction: column; gap: 96px">
-<div style="max-width: 720px">{eyebrow('Yang membuatnya berbeda')}{h2('Dibuat dari cara pedagang Indonesia benar-benar berjualan.')}</div>
+<div data-reveal style="max-width: 720px">{eyebrow('Yang membuatnya berbeda')}{h2('Dibuat dari cara pedagang Indonesia benar-benar berjualan.')}</div>
 {deep_html}
 </div>
 </section>
@@ -147,7 +149,7 @@ body = f'''<div style="font-family: 'Plus Jakarta Sans', system-ui, sans-serif; 
 <section aria-labelledby="semua-fitur" style="padding: 88px 0">
 <div style="{wrap}">
 <div style="max-width: 720px; margin-bottom: 36px">{eyebrow('Semua fitur')}{h2('Semua yang dibutuhkan satu toko, dalam satu aplikasi.', 'semua-fitur')}</div>
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px">{feat_html}</div>
+<div class="lp-feats">{feat_html}</div>
 </div>
 </section>
 
@@ -204,7 +206,16 @@ body = f'''<div style="font-family: 'Plus Jakarta Sans', system-ui, sans-serif; 
 </div>'''
 
 FONTS = '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">'
-CSS = f'body{{margin:0}}a{{color:{G}}}a:hover{{opacity:.92}}a:focus-visible,summary:focus-visible{{outline:3px solid {G};outline-offset:3px;border-radius:6px}}summary::-webkit-details-marker{{display:none}}'
+CSS = f'body{{margin:0}}'
+CSS += '.lp-usp{display:grid;gap:28px 32px;grid-template-columns:1fr}@media(min-width:600px){.lp-usp{grid-template-columns:repeat(2,1fr)}}@media(min-width:1000px){.lp-usp{grid-template-columns:repeat(4,1fr)}}'
+CSS += f'.lp-feats{{display:grid;column-gap:40px;grid-template-columns:1fr;border-top:1px solid {LINE}}}@media(min-width:640px){{.lp-feats{{grid-template-columns:repeat(2,1fr)}}}}@media(min-width:1000px){{.lp-feats{{grid-template-columns:repeat(3,1fr)}}}}'
+CSS += '@media(max-width:719px){.lp-nav{display:none!important}.lp-signin{margin-left:auto}}'
+# Motion: the hero screenshot settles in once (transform only, so it never delays LCP); sections below the fold
+# rise as they scroll in (live.ts adds .lp-pending only to elements still off-screen, so no-JS shows everything).
+CSS += '@keyframes lp-settle{from{transform:translateY(28px)}}.lp-hero-shot{animation:lp-settle .7s cubic-bezier(.25,1,.5,1) both}'
+CSS += '[data-reveal]{transition:opacity .6s cubic-bezier(.25,1,.5,1),transform .6s cubic-bezier(.25,1,.5,1)}[data-reveal].lp-pending{opacity:0;transform:translateY(24px)}'
+CSS += '@media(prefers-reduced-motion:reduce){.lp-hero-shot{animation:none}[data-reveal]{transition:none}[data-reveal].lp-pending{opacity:1;transform:none}}'
+CSS += f'a{{color:{G}}}a:hover{{opacity:.92}}a:focus-visible,summary:focus-visible{{outline:3px solid {G};outline-offset:3px;border-radius:6px}}summary::-webkit-details-marker{{display:none}}'
 
 if MODE == 'dc':
     out = f'''<!doctype html>

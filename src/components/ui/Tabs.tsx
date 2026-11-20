@@ -14,7 +14,7 @@ interface TabsProps<T extends string> {
 /** Underline tabs that scroll horizontally on small screens (categories, settings sections). */
 export function Tabs<T extends string>({ label, items, value, onChange }: TabsProps<T>) {
   return (
-    <div role="tablist" aria-label={label} className="-mb-px flex gap-1 overflow-x-auto [scrollbar-width:none]">
+    <div role="tablist" aria-label={label} className="scroll-x -mb-px flex gap-1">
       {items.map((item) => {
         const isActive = item.value === value;
         return (

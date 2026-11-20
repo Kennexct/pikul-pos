@@ -65,7 +65,7 @@ export function CampaignPopup() {
     if (popup.linkUrl) openLink(popup.linkUrl);
     close();
   };
-  const image = popup.imageUrl && <img src={popup.imageUrl} alt={popup.title} className="block h-auto w-full rounded-lg border border-line" />;
+  const image = popup.imageUrl && <img src={popup.imageUrl} alt={popup.title} className="block h-auto w-full rounded-lg" />;
 
   return (
     <Sheet

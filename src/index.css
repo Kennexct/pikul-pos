@@ -57,6 +57,7 @@
   --shadow-bar: 0 -1px 0 rgb(20 32 27 / 0.06), 0 -8px 24px -12px rgb(20 32 27 / 0.12);
 
   --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-in-quart: cubic-bezier(0.5, 0, 0.75, 0);
 }
 
 @layer base {
@@ -112,12 +113,126 @@
   animation: fade-in 160ms ease-out;
 }
 
+/*
+ * Pop-up motion (design-system/MASTER.md → Motion). Phone sheets travel from the screen edge they live on;
+ * tablet dialogs rise and settle in place. Exits are shorter and ease-in so closing never feels slow.
+ * Exit keyframes have no `from`, so a sheet dragged halfway down leaves from where the finger let go.
+ */
+@keyframes fade-out {
+  to { opacity: 0; }
+}
+@keyframes sheet-in {
+  from { transform: translateY(100%); }
+}
+@keyframes sheet-out {
+  to { transform: translateY(100%); }
+}
+@keyframes dialog-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.97); }
+}
+@keyframes dialog-out {
+  to { opacity: 0; transform: translateY(6px) scale(0.98); }
+}
+@utility animate-fade-out {
+  animation: fade-out 200ms ease-in forwards;
+}
+@utility animate-sheet-in {
+  animation: sheet-in 320ms var(--ease-out-quart);
+}
+@utility animate-sheet-out {
+  animation: sheet-out 200ms var(--ease-in-quart) forwards;
+}
+@utility animate-dialog-in {
+  animation: dialog-in 220ms var(--ease-out-quart);
+}
+@utility animate-dialog-out {
+  animation: dialog-out 160ms var(--ease-in-quart) forwards;
+}
+
+/* One-shot confirmation that a tap registered (qty badge on a tile, count on the cart bar). Re-keyed per change. */
+@keyframes pop {
+  0% { transform: scale(0.6); }
+  60% { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+@utility animate-pop {
+  animation: pop 260ms var(--ease-out-quart);
+}
+
+/* Full-screen hand-offs (QRIS): rise in instead of appearing. */
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(16px); }
+}
+@utility animate-rise {
+  animation: rise-in 280ms var(--ease-out-quart);
+}
+
+/*
+ * Horizontal scrollers (date ranges, filters, tabs): the edge that hides more content fades out, so a seller
+ * sees there is more to swipe to. Scroll-driven where supported; rows that don't overflow get no fade at all
+ * (an inactive scroll timeline leaves the custom properties at 0). Elsewhere it is a plain scroller.
+ */
+@property --edge-l {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+@property --edge-r {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+@keyframes scroll-edges {
+  0% { --edge-l: 0px; --edge-r: 32px; }
+  6%, 94% { --edge-l: 32px; --edge-r: 32px; }
+  100% { --edge-l: 32px; --edge-r: 0px; }
+}
+@utility scroll-x {
+  overflow-x: auto;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  @supports (animation-timeline: scroll()) {
+    mask-image: linear-gradient(to right, transparent, #000 var(--edge-l), #000 calc(100% - var(--edge-r)), transparent);
+    animation: scroll-edges linear both;
+    animation-timeline: scroll(self inline);
+  }
+}
+
+/*
+ * Page changes (react-router `viewTransition` on the nav links): only the content pane moves; the rail,
+ * tab bar and pop-ups stay put. Old page fades quickly, new page rises 8px — enough to read as "new screen".
+ */
+/* Named only while a transition runs: a permanent name would make the pane a stacking context and trap
+   its pop-ups (z-40) under the phone tab bar (z-30). */
+:root:active-view-transition .page-pane {
+  view-transition-name: page;
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+}
+::view-transition-old(page) {
+  animation: fade-out 90ms ease-in both;
+}
+::view-transition-new(page) {
+  animation: rise-in 220ms var(--ease-out-quart) both;
+  animation-delay: 40ms;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
     animation-duration: 1ms !important;
     transition-duration: 1ms !important;
+  }
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
   }
 }
 

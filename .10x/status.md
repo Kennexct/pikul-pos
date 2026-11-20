@@ -19,8 +19,11 @@
 - [ ] Final prices (set them in `/admin/` after deploy) and custom domain
 - [ ] Choose a payment provider (or keep extending accounts by hand in Neon)
 
+## UI polish — Delivered (2026-11-20)
+Branch `feat/ui-polish` on top of `feat/rebrand-pikul`. Pop-up open/close motion + swipe-to-dismiss + focus handling, page transitions, tap feedback, scroll-edge cues, plain monogram tiles, landing fixes. Review `reviews/2026-11-20-ui-polish-review.md`; motion table in `design-system/MASTER.md`.
+
 ### Open engineering items
-- [ ] Re-shoot landing screenshots (`public/landing/*.png` still show the old logo in the side rail)
+- [ ] Re-shoot remaining landing screenshots (`bon.png`, `timbang.png`, `tutup-kasir.png`; `pos.png` and `varian.png` done 2026-11-20)
 - [ ] Cloudflare WAF rate-limit rule on `/api/auth/code` (5 / 10 min / IP)
 - [ ] CSP header in `public/_headers`
 - [ ] Expired banner says "Perpanjang" but there is no online payment (ADR-015)

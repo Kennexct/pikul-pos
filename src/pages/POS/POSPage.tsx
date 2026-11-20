@@ -261,7 +261,7 @@ export function POSPage() {
                 )}
               </button>
             </div>
-            <div className="-mx-3 min-w-0 overflow-x-auto px-3 [scrollbar-width:none] md:mx-0 md:max-w-[55%] md:px-0">
+            <div className="scroll-x -mx-3 min-w-0 px-3 md:mx-0 md:max-w-[55%] md:px-0">
               <SegmentedControl
                 label={t('Mode penjualan')}
                 options={activeModes.map((m) => ({ value: m.id, label: m.name }))}
@@ -296,7 +296,7 @@ export function POSPage() {
             onClick={() => setPanel('cart')}
             className="animate-sheet flex h-14 w-full items-center gap-3 rounded-xl bg-ink px-4 text-white shadow-pop active:translate-y-px"
           >
-            <span className="num flex h-7 min-w-7 items-center justify-center rounded-md bg-brand-500 px-1.5 text-[13px] font-bold">{itemCount}</span>
+            <span key={itemCount} className="num animate-pop flex h-7 min-w-7 items-center justify-center rounded-md bg-brand-500 px-1.5 text-[13px] font-bold">{itemCount}</span>
             <span className="text-[15px] font-semibold">{t('Lihat pesanan')}</span>
             <span className="num ml-auto text-[16px] font-bold">{formatRupiah(totals.grandTotal)}</span>
           </button>
