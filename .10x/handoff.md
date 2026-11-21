@@ -1,6 +1,6 @@
 # Handoff — admin console revamp (2026-11-21)
 
-**Now:** spec approved by Kenny ("confirm … build it"). Strategy done (`decisions/cto|product-manager/admin-console-revamp.md`). Design done: ADR-020 (supersedes ADR-019), `decisions/architect|staff-engineer/admin-console-revamp.md`. Next: EM plan. Next ADR: 021.
+**Now:** spec approved by Kenny ("confirm … build it"). Strategy done (`decisions/cto|product-manager/admin-console-revamp.md`). Design done: ADR-020 (supersedes ADR-019), `decisions/architect|staff-engineer/admin-console-revamp.md`. Plan: `decisions/engineering-manager/admin-console-revamp.md` (A1…C3). SDE starts at A1. Next ADR: 021.
 
 # Handoff — remove mock data (2026-11-21)
 

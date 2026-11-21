@@ -1,7 +1,11 @@
 # Status
 
-## Admin console revamp (v0.17) — Design complete (ADR-020) (2026-11-21)
+## Admin console revamp (v0.17) — Planning complete; building release A (2026-11-21)
 Branch `feat/admin-console-revamp` on top of `feat/admin-no-signin`. Spec `specs/2026-11-21-admin-console-revamp-design.md`. Kenny chose: business console first (merchant back-office after sync), admin password sign-in, email only, daily totals always on. Releases A (sign-in, merchants, payments) → B (daily totals, executive report) → C (landing content, FAQ, register pop-up). Next ADR: 021.
+- [ ] A1 migration 003, repo split · [ ] A2 admin password sign-in · [ ] A3 ledger + merchant handlers · [ ] A4 console A
+- [ ] B1 app daily totals · [ ] B2 daily endpoint · [ ] B3 analytics · [ ] B4 console Laporan
+- [ ] C1 landing content · [ ] C2 Konten tab · [ ] C3 register pop-up
+- [ ] QA + security, runbook, bundle
 
 **Phase:** Delivery complete — admin console without sign-in, temporary (ADR-019) on top of remove mock data (ADR-018) on top of v0.16 register open/close, Kategori tab, variant expand (ADR-017) on top of UI polish → rebrand → v0.15. Not deployed.
 **Branch:** `feat/rebrand-pikul` (on top of `feat/v0.15-admin-console`, on top of `main` `aaac4dc`). Delivered as a git bundle in the project folder; GitHub repo not reachable from the build session.
