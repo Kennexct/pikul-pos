@@ -4,9 +4,11 @@ import toast from 'react-hot-toast';
 import { RupiahInput } from '../components/ui/RupiahInput';
 import { Sheet } from '../components/ui/Sheet';
 import { btnPrimary, btnSecondary, helperText, inputBase, labelBase, sectionTitle } from '../components/ui/styles';
+import { SegmentedControl } from '../components/ui/SegmentedControl';
 import { Switch } from '../components/ui/Switch';
 import { formatRupiah } from '../lib/money';
 import { t } from '../i18n';
+import { fitBanner, nearestFormat, type BannerFormat } from './bannerFormat';
 import { AdminError, saveCampaign, uploadImage, type CampaignInput, type CampaignRow, type PlanDef } from './api';
 import { errorText, isAuthError } from './errors';
 
@@ -17,6 +19,11 @@ const toLocal = (ms: number) => {
   return d.toISOString().slice(0, 16);
 };
 const fromLocal = (v: string) => (v ? new Date(v).getTime() : NaN);
+
+const FORMAT_OPTIONS = [
+  { value: 'square', label: t('1:1 Persegi') },
+  { value: 'wide', label: t('16:9 Lebar') },
+] as const satisfies readonly { value: BannerFormat; label: string }[];
 
 interface Props {
   campaign: CampaignRow | null;
@@ -48,12 +55,20 @@ export function CampaignForm({ campaign, plans, now, onClose, onSaved, onError }
       setBusy(false);
     }
   };
-  const upload = (f: File | undefined) =>
+  const [format, setFormat] = useState<BannerFormat>('square');
+  // Last picked file, so switching the format re-crops it without asking for the file again.
+  const source = useRef<File | null>(null);
+  const upload = (f: File | undefined, fmt = format) =>
     f &&
     void handle(async () => {
-      if (f.size > 500_000) throw new AdminError('image_too_large', 413);
-      set('imageUrl', await uploadImage(f));
+      if (f.size > 10_000_000) throw new AdminError('image_source_too_large', 413);
+      source.current = f;
+      set('imageUrl', await uploadImage(await fitBanner(f, fmt)));
     });
+  const pickFormat = (fmt: BannerFormat) => {
+    setFormat(fmt);
+    if (source.current) upload(source.current, fmt);
+  };
   const save = () =>
     void handle(async () => {
       await saveCampaign(campaign?.id ?? null, { ...d, imageUrl: d.imageUrl || null, linkUrl: d.linkUrl || null });
@@ -92,6 +107,7 @@ export function CampaignForm({ campaign, plans, now, onClose, onSaved, onError }
         <div className="flex flex-col gap-3">
           {field('name', t('Nama internal'), 60, t('Hanya terlihat di konsol.'))}
           <p className={sectionTitle}>{t('Banner')}</p>
+          <SegmentedControl label={t('Format banner')} options={FORMAT_OPTIONS} value={format} onChange={pickFormat} />
           <div className="flex flex-wrap items-center gap-2">
             <input ref={file} type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" onChange={(e) => upload(e.target.files?.[0])} />
             <button type="button" className={btnSecondary} disabled={busy} onClick={() => file.current?.click()}>
@@ -104,7 +120,7 @@ export function CampaignForm({ campaign, plans, now, onClose, onSaved, onError }
               </button>
             )}
           </div>
-          <p className={helperText}>{t('PNG, JPG, atau WebP, maks. 500 KB. Saran 1080×1350 px (4:5) atau 1080×1080 px. Banner tampil utuh dan besar, tanpa judul dan teks.')}</p>
+          <p className={helperText}>{format === 'square' ? t('Persegi 1:1, saran 1080×1080 px. Gambar dipotong di tengah ke format ini. Banner tampil besar tanpa judul dan teks.') : t('Lebar 16:9, saran 1920×1080 px. Gambar dipotong di tengah ke format ini. Banner tampil besar tanpa judul dan teks.')}</p>
           {field('title', t('Judul'), 80, d.imageUrl ? t('Tidak tampil di pop-up bila ada banner; dipakai sebagai teks alternatif gambar.') : undefined)}
           <div>
             <label htmlFor="c-body" className={labelBase}>
@@ -173,8 +189,13 @@ export function CampaignForm({ campaign, plans, now, onClose, onSaved, onError }
         <div>
           <p className={`${sectionTitle} mb-2`}>{t('Pratinjau')}</p>
           {d.imageUrl ? (
-            <div className="relative mx-auto max-w-[360px] overflow-hidden rounded-xl bg-surface shadow-pop">
-              <img src={d.imageUrl} alt={d.title} className="block h-auto w-full" />
+            <div className={`relative mx-auto overflow-hidden rounded-xl bg-surface shadow-pop ${format === 'wide' ? 'max-w-[480px]' : 'max-w-[320px]'}`}>
+              <img
+                src={d.imageUrl}
+                alt={d.title}
+                className="block h-auto w-full"
+                onLoad={(e) => !source.current && setFormat(nearestFormat(e.currentTarget.naturalWidth, e.currentTarget.naturalHeight))}
+              />
               <span aria-hidden className="absolute right-2 top-2 flex h-9 w-9 items-center justify-center rounded-full bg-surface/90 text-ink shadow-pop">
                 <X size={16} />
               </span>

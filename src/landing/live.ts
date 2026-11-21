@@ -41,8 +41,9 @@ const INK = '#0f1a16';
 const SOFT = '#3d4a44';
 const MUTED = '#5b6862';
 const SEEN_KEY = 'kk.landingPopupsSeen';
-/** Largest banner width in the landing pop-up (tablet and desktop). */
-const BANNER_MAX = 720;
+/** Largest banner width in the landing pop-up (tablet and desktop): square (1:1) and wide (16:9) banners. */
+const BANNER_MAX_SQUARE = 720;
+const BANNER_MAX_WIDE = 960;
 const rupiah = (n: number) => `Rp${new Intl.NumberFormat('id-ID', { maximumFractionDigits: 0 }).format(n)}`;
 const date = (ms: number) => new Date(ms).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
 
@@ -159,7 +160,7 @@ function showPopup(p: Popup) {
     box.setAttribute('aria-label', p.title);
     box.removeAttribute('aria-labelledby');
     const fit = (ratio: number) =>
-      `min(${BANNER_MAX}px, calc(100vw - 32px), calc((100dvh - 32px) * ${ratio}))`;
+      `min(${ratio > 1.3 ? BANNER_MAX_WIDE : BANNER_MAX_SQUARE}px, calc(100vw - 32px), calc((100dvh - 32px) * ${ratio}))`;
     box.style.width = fit(1);
     box.style.maxWidth = 'none';
     box.style.overflow = 'hidden';

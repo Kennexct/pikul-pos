@@ -5,8 +5,9 @@ import { t } from '../../i18n';
 /** Space kept around the banner: 16px gutter each side, a little more top and bottom for the close button. */
 const SIDE_GUTTER = 32;
 const TOP_BOTTOM_GUTTER = 48;
-/** Largest banner width on a tablet or desktop. */
-const MAX_WIDTH = 640;
+/** Largest banner width on a tablet or desktop: square (1:1) and wide (16:9) banners. */
+const MAX_SQUARE = 640;
+const MAX_WIDE = 880;
 const EXIT_MS = 200;
 
 interface BannerDialogProps {
@@ -71,10 +72,11 @@ export function BannerDialog({ title, imageUrl, onOpen, onClose, onError }: Bann
     return () => window.removeEventListener('keydown', onKey, true);
   });
 
-  // Width fits the screen both ways: never wider than the viewport, never taller than it, never past MAX_WIDTH.
+  // Width fits the screen both ways: never wider than the viewport, never taller than it, never past the max for its shape.
+  const maxWidth = ratio && ratio > 1.3 ? MAX_WIDE : MAX_SQUARE;
   const width = ratio
-    ? `min(${MAX_WIDTH}px, calc(100vw - ${SIDE_GUTTER}px), calc((100dvh - ${TOP_BOTTOM_GUTTER}px) * ${ratio}))`
-    : `min(${MAX_WIDTH}px, calc(100vw - ${SIDE_GUTTER}px))`;
+    ? `min(${maxWidth}px, calc(100vw - ${SIDE_GUTTER}px), calc((100dvh - ${TOP_BOTTOM_GUTTER}px) * ${ratio}))`
+    : `min(${MAX_SQUARE}px, calc(100vw - ${SIDE_GUTTER}px))`;
   const image = (
     <img
       src={imageUrl}
