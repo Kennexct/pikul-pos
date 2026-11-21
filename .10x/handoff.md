@@ -1,3 +1,7 @@
+# Handoff — device sync delivered (2026-11-21)
+
+**Latest:** v0.19.0 on `claude/project-thread-zzc5ov` (ADR-024 sync protocol + one store per account, ADR-025 cash register per device). Same account on several devices = one store, synced both ways (outbox push, cursor pull every 15 s online, last write wins, final order status never reverts). New device signs in → downloads the store → cashier. Device with a different store → "Toko mana yang dipakai di perangkat ini?" (backup file first). Settings → Sinkronisasi; Kas → Semua perangkat. Migration `db/migrations/005_device_sync.sql` (also in `neon-setup.sql`). e2e `e2e/v19.py` against `scripts/vercel-local.mjs`. Offline-only e2e scripts take base `http://host/app`. Review PASS. Next ADR: 026. Next feature candidate: merchant back-office (web view of the synced store).
+
 # Handoff — device sync planning (2026-11-21)
 
 **Now:** Kenny approved the device-sync spec ("build it"). ADR-024 + ADR-025 written; plan in `decisions/engineering-manager/device-sync.md` (S1, S2, C1…C6), approach in `decisions/senior-engineer/device-sync.md`. SDE starts at S1. Next ADR: 026.
