@@ -1,6 +1,6 @@
 # ADR-019: Admin console without email sign-in (temporary)
 
-**Status:** Accepted, temporary · 2026-11-21
+**Status:** Superseded by ADR-020 · 2026-11-21
 **Context:** Kenny: "for admin console, remove the email first, so I can access the page". Email codes (Resend) and the admin API run as Cloudflare Pages Functions; the current deploy is static on Vercel, so `/admin/` stopped at the email screen and no code could arrive.
 
 ## Decision
