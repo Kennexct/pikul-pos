@@ -14,6 +14,7 @@ interface Env {
   GOOGLE_CLIENT_ID?: string;
   APP_ORIGIN: string;
   ADMIN_EMAILS?: string; // comma-separated; only these accounts may use /admin (ADR-014)
+  ADMIN_OPEN?: string; // "1" = /admin without sign-in (temporary, ADR-019). Anyone with the link can edit.
   DEV_MODE?: string; // "1" only in `wrangler pages dev`: memory DB + console mail
 }
 
@@ -35,6 +36,7 @@ async function deps(env: Env): Promise<Deps> {
       .split(',')
       .map((e) => e.trim().toLowerCase())
       .filter(Boolean),
+    adminOpen: env.ADMIN_OPEN === '1',
   };
 }
 

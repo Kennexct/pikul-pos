@@ -2,15 +2,12 @@ import { t } from '../i18n';
 import { AdminError } from './api';
 
 const ERRORS: Record<string, string> = {
-  invalid_email: t('Alamat email tidak valid.'),
-  too_soon: t('Tunggu 1 menit sebelum meminta kode baru.'),
-  invalid_code: t('Kode salah. Periksa lagi email Anda.'),
-  code_expired: t('Kode sudah kedaluwarsa. Minta kode baru.'),
-  too_many_attempts: t('Terlalu banyak percobaan. Minta kode baru.'),
   offline: t('Tidak ada internet.'),
-  forbidden: t('Akun ini bukan admin Pikul.'),
-  signed_out: t('Sesi berakhir. Masuk lagi.'),
-  session_too_old: t('Demi keamanan, masuk lagi setiap 12 jam.'),
+  forbidden: t('Server admin masih meminta login. Set ADMIN_OPEN=1 di server lalu muat ulang halaman.'),
+  signed_out: t('Server admin masih meminta login. Set ADMIN_OPEN=1 di server lalu muat ulang halaman.'),
+  session_too_old: t('Server admin masih meminta login. Set ADMIN_OPEN=1 di server lalu muat ulang halaman.'),
+  preview_upload: t('Unggah gambar butuh server admin. Di mode pratinjau, simpan kampanye tanpa gambar.'),
+  not_found: t('Data tidak ditemukan. Muat ulang halaman.'),
   invalid_plan_id: t('Kode paket hanya huruf kecil, angka, dan tanda minus (2–24 karakter).'),
   plan_exists: t('Kode paket ini sudah dipakai.'),
   invalid_name: t('Nama paket wajib diisi (maks. 40 karakter).'),

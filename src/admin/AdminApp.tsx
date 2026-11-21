@@ -1,32 +1,30 @@
-import { LogOut, ShieldCheck } from 'lucide-react';
+import { ShieldCheck, TriangleAlert } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { LoadingScreen } from '../components/ui/LoadingScreen';
-import { btnGhost } from '../components/ui/styles';
+import { btnSecondary } from '../components/ui/styles';
 import { Tabs } from '../components/ui/Tabs';
 import { t } from '../i18n';
-import { hasSession, loadCatalog, me, signOut, type Catalog } from './api';
-import { AdminSignIn } from './AdminSignIn';
+import { loadCatalog, openConsole, type Catalog, type Mode } from './api';
 import { CampaignsPanel } from './CampaignsPanel';
-import { errorText, isAuthError } from './errors';
+import { errorText } from './errors';
 import { PlansPanel } from './PlansPanel';
 
 type Tab = 'plans' | 'campaigns';
 
-/** /admin (ADR-014): Kenny's console for plans and promo campaigns. Not part of the POS PWA. */
+const PREVIEW_NOTE: Record<Exclude<Mode, 'server'>, string> = {
+  no_server: t('Mode pratinjau: server admin belum aktif di situs ini. Perubahan hanya tersimpan di browser ini dan belum tampil di halaman depan atau aplikasi.'),
+  locked: t('Mode pratinjau: server admin masih meminta login. Set ADMIN_OPEN=1 di server agar perubahan tersimpan.'),
+};
+
+/** /admin (ADR-014, ADR-019): Kenny's console for plans and promo campaigns. Sign-in removed for now. Not part of the POS PWA. */
 export function AdminApp() {
-  const [email, setEmail] = useState<string | null>(null);
-  const [checking, setChecking] = useState(hasSession());
+  const [mode, setMode] = useState<Mode | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [catalog, setCatalog] = useState<Catalog | null>(null);
   const [tab, setTab] = useState<Tab>('plans');
 
   const fail = useCallback(async (e: unknown) => {
-    if (isAuthError(e)) {
-      await signOut();
-      setEmail(null);
-      setCatalog(null);
-    }
     setNotice(errorText(e));
   }, []);
 
@@ -38,31 +36,34 @@ export function AdminApp() {
     }
   }, [fail]);
 
-  const enter = useCallback(async () => {
-    setChecking(true);
+  const open = useCallback(async () => {
+    setNotice(null);
     try {
-      setEmail((await me()).email);
-      setNotice(null);
-      await reload();
+      const r = await openConsole();
+      setMode(r.mode);
+      setCatalog(r.catalog);
     } catch (e) {
       await fail(e);
-    } finally {
-      setChecking(false);
     }
-  }, [fail, reload]);
+  }, [fail]);
 
   useEffect(() => {
-    if (hasSession()) void enter();
-  }, [enter]);
+    void open();
+  }, [open]);
 
   const toaster = <Toaster position="top-center" toastOptions={{ className: '!rounded-lg !border !border-line !bg-surface !text-[14px] !text-ink' }} />;
-  if (checking) return <LoadingScreen message={t('Memeriksa akun…')} />;
-  if (!email)
-    return (
-      <>
-        <AdminSignIn onSignedIn={() => void enter()} notice={notice} />
-        {toaster}
-      </>
+  if (!mode)
+    return notice ? (
+      <main className="flex min-h-dvh flex-col items-center justify-center gap-4 bg-canvas p-4 text-center">
+        <p role="alert" className="text-[15px] text-danger-700">
+          {notice}
+        </p>
+        <button type="button" className={btnSecondary} onClick={() => void open()}>
+          {t('Coba lagi')}
+        </button>
+      </main>
+    ) : (
+      <LoadingScreen message={t('Memuat…')} />
     );
 
   return (
@@ -71,18 +72,6 @@ export function AdminApp() {
         <div className="mx-auto flex max-w-5xl items-center gap-3 px-4 pt-4 md:px-8">
           <ShieldCheck aria-hidden size={22} className="text-brand-600" />
           <h1 className="flex-1 text-[20px] font-bold tracking-[-0.02em] text-ink">{t('Konsol admin Pikul')}</h1>
-          <span className="hidden truncate text-[13px] text-muted sm:inline">{email}</span>
-          <button
-            type="button"
-            className={btnGhost}
-            onClick={() => {
-              void signOut();
-              setEmail(null);
-            }}
-          >
-            <LogOut aria-hidden size={18} />
-            {t('Keluar')}
-          </button>
         </div>
         <div className="mx-auto max-w-5xl px-4 pt-2 md:px-8">
           <Tabs
@@ -97,6 +86,17 @@ export function AdminApp() {
         </div>
       </header>
       <main className="mx-auto max-w-5xl px-4 py-6 md:px-8">
+        {mode !== 'server' && (
+          <p role="status" className="mb-4 flex gap-2 rounded-lg border border-warn-200 bg-warn-50 px-3 py-2.5 text-[14px] text-warn-700">
+            <TriangleAlert aria-hidden size={18} className="mt-0.5 shrink-0" />
+            <span>{PREVIEW_NOTE[mode]}</span>
+          </p>
+        )}
+        {notice && (
+          <p role="alert" className="mb-4 text-[14px] text-danger-700">
+            {notice}
+          </p>
+        )}
         {!catalog ? (
           <LoadingScreen message={t('Memuat…')} />
         ) : tab === 'plans' ? (

@@ -1,6 +1,6 @@
 import { exportJWK, generateKeyPair } from 'jose';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { ADMIN_FRESH_MS } from './admin';
+import { ADMIN_FRESH_MS, OPEN_ADMIN_EMAIL } from './admin';
 import { memoryRepo } from './memoryRepo';
 import { passSigner } from './pass';
 import { route } from './router';
@@ -62,6 +62,21 @@ describe('admin access', () => {
     expect((await call('GET', '/api/admin/me', undefined, admin)).body).toEqual({ email: ADMIN });
     now += ADMIN_FRESH_MS + 1;
     expect((await call('GET', '/api/admin/me', undefined, admin)).body).toEqual({ error: 'session_too_old' });
+  });
+});
+
+describe('ADMIN_OPEN (temporary, ADR-019)', () => {
+  it('off by default: no sign-in means 401', async () => {
+    expect((await call('GET', '/api/admin/catalog')).status).toBe(401);
+    expect((await call('POST', '/api/admin/plans', plan())).status).toBe(401);
+  });
+
+  it('on: the console works without sign-in and the audit names it', async () => {
+    deps = { ...deps, adminOpen: true };
+    expect((await call('GET', '/api/admin/me')).body).toEqual({ email: OPEN_ADMIN_EMAIL });
+    expect((await call('GET', '/api/admin/catalog')).status).toBe(200);
+    expect((await call('POST', '/api/admin/plans', plan())).status).toBe(200);
+    expect(repo.audit.at(-1)).toMatchObject({ email: OPEN_ADMIN_EMAIL, action: 'plan.save', target: 'monthly' });
   });
 });
 
