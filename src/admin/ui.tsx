@@ -37,7 +37,7 @@ export function LoadError({ error, onRetry }: { error: unknown; onRetry: () => v
 
 export function Section({ title, hint, children, className = '' }: { title: string; hint?: string; children: ReactNode; className?: string }) {
   return (
-    <section className={`${card} p-4 md:p-5 ${className}`}>
+    <section aria-label={title} className={`${card} p-4 md:p-5 ${className}`}>
       <h3 className="text-[15px] font-bold tracking-[-0.01em] text-ink">{title}</h3>
       {hint && <p className="text-[13px] text-muted">{hint}</p>}
       <div className="mt-3">{children}</div>

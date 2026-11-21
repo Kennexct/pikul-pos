@@ -114,7 +114,7 @@ export function AdminApp() {
           <ShieldCheck aria-hidden size={22} className="text-brand-600" />
           <h1 className="flex-1 text-[19px] font-bold tracking-[-0.02em] text-ink">{t('Konsol admin Pikul')}</h1>
           {mode === 'server' && (
-            <button type="button" className={btnGhost} onClick={() => void signOut()}>
+            <button type="button" className={btnGhost} onClick={() => void signOut()} aria-label={t('Keluar')}>
               <LogOut aria-hidden size={18} />
               <span className="hidden sm:inline">{t('Keluar')}</span>
             </button>

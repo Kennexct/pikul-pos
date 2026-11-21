@@ -74,8 +74,8 @@ function Business({ r }: { r: ExecutiveReport }) {
   return (
     <section aria-label={t('Bisnis Pikul')} className="space-y-3">
       <h3 className="text-[15px] font-bold text-ink">{t('Bisnis Pikul')}</h3>
-      <div className="grid grid-cols-3 gap-2 md:grid-cols-5">
-        <StatTile isPrimary label={t('Pendapatan langganan')} value={rp(b.revenue)} hint={t('{0} pembayaran', num(b.paymentsCount))} />
+      <div className="grid grid-cols-2 gap-2 md:grid-cols-5">
+        <StatTile isPrimary className="col-span-2! md:col-span-1!" label={t('Pendapatan langganan')} value={rp(b.revenue)} hint={t('{0} pembayaran', num(b.paymentsCount))} />
         <StatTile label={t('Pendaftar baru')} value={num(b.signups)} />
         <StatTile label={t('Berbayar sekarang')} value={num(b.payingNow)} />
         <StatTile label={t('Konversi coba → bayar')} value={pct(b.conversion.converted, b.conversion.eligible)} hint={t('{0} dari {1}', num(b.conversion.converted), num(b.conversion.eligible))} />
@@ -105,8 +105,8 @@ function Merchants({ r, onOpenMerchant }: { r: ExecutiveReport; onOpenMerchant: 
   return (
     <section aria-label={t('Semua merchant')} className="space-y-3">
       <h3 className="text-[15px] font-bold text-ink">{t('Semua merchant')}</h3>
-      <div className="grid grid-cols-3 gap-2 md:grid-cols-5">
-        <StatTile isPrimary label={t('Penjualan bersih')} value={rp(m.totals.net)} hint={t('Kotor {0}', rp(m.totals.gross))} />
+      <div className="grid grid-cols-2 gap-2 md:grid-cols-5">
+        <StatTile isPrimary className="col-span-2! md:col-span-1!" label={t('Penjualan bersih')} value={rp(m.totals.net)} hint={t('Kotor {0}', rp(m.totals.gross))} />
         <StatTile label={t('Transaksi')} value={num(m.totals.transactions)} />
         <StatTile label={t('Rata-rata per struk')} value={rp(m.totals.averageTicket)} />
         <StatTile label={t('Merchant berjualan')} value={num(r.business.activeMerchants)} />

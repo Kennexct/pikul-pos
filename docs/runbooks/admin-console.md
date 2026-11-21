@@ -1,32 +1,45 @@
-# Admin console: plans and promo campaigns (v0.15, ADR-014)
+# Admin console (v0.17, ADR-020)
 
-Open `https://<your-domain>/admin/`, type your email, then the 6-digit code from the email. Only emails in `ADMIN_EMAILS` get in, and the session must be younger than 12 hours (sign in again after that). Closing the tab signs you out.
+Open `https://<your-domain>/admin/` and type the admin password. The session lasts 12 hours in that tab; **Keluar** ends it. Five wrong passwords from one network (or 20 overall) lock sign-in for 15 minutes.
 
-## Plans ("Paket harga")
-- Each card is one plan: name, price (Rupiah), duration in days, small label (e.g. "Hemat 2 bulan"), note, feature lines (one per line, max 8), order, and **Dijual** (shown on the landing page and in the app).
-- **Simpan** publishes immediately: the app shows it at once, the landing page within about a minute.
-- **Tambah paket** creates a new plan. Its code (e.g. `quarterly`) cannot change later.
-- Plans are never deleted; switch **Dijual** off to hide one.
-- Every plan unlocks every feature. Feature lines are marketing text only.
-- No online payment is connected (ADR-015), so plans are shown for information.
+## Set up (once)
+1. Neon SQL editor: run `db/migrations/003_admin_revamp.sql` (after 001 and 002).
+2. Cloudflare Pages → Settings → Variables: add `ADMIN_PASSWORD` as an **encrypted** variable, at least 12 random characters (e.g. `openssl rand -base64 18`). Remove `ADMIN_EMAILS` and `ADMIN_OPEN`. Redeploy.
+3. Smoke test: `/admin/` shows the password screen (not "Konsol belum aktif"); sign in; Ringkasan loads.
+Change the password: edit the variable and redeploy (existing sessions stay valid until they expire; to end them now: `delete from admin_sessions;`).
 
-## Campaigns ("Kampanye promo")
-- **Kampanye baru** → internal name, banner image (PNG/JPG/WebP, max 500 KB, about 1200×800 px works well), title (also the image's alt text), optional text.
-- **Tautan di balik banner**: optional. With a link, clicking the banner or the button opens it. Use `https://…` (e.g. a WhatsApp link) or a page on the site such as `/app/`. External links open in a new tab.
-- **Jadwal**: start and end, in your browser's time zone. **Nyala** off hides it even inside the schedule.
-- **Tempat tampil**: landing page (once per browser), merchant app (once per account, after sign-in or the next time the app opens online), or both.
-- **Harga promo**: optional. Pick a plan and a lower price; while the campaign is live, the landing page and the app show the normal price struck through and the promo price with its end date.
-- The list shows the state: *Tayang sekarang*, *Terjadwal*, *Selesai*, *Mati*. The switch in each row turns it on or off at once. The bin deletes it (it disappears everywhere; the audit log keeps the record).
-- When two campaigns are live in the same place, the one that started last is shown. When two promos target the same plan, the lower price wins.
+## Tabs
+- **Ringkasan**: money in this month vs last, paid / trial / expired counts, sign-ups, trial → paid conversion, merchant sales today and this week, and **Perlu dihubungi** (trial ending ≤ 3 days, subscription ending ≤ 7 days, just expired). Tap a merchant to open it.
+- **Merchant**: plan cards (count per plan; tap to filter), search by email, status filters (Coba, Berbayar, Hampir habis, Kedaluwarsa, Tidak aktif). Opening a merchant shows account facts, the **sales summary** (7/30/90 days: net sales, transactions, active days, refunds, payment types, sales modes, busy hours), payment history and extra trial days. The console never opens a merchant's menu, receipts, customers or staff.
+  - **Catat pembayaran** after the money arrives: pick the plan (fills price and days), method, reference, payment date. The account is extended from its current end date, so remaining trial or paid days are kept.
+  - **Batalkan** on a payment (with a reason) reverses it; it stays in the history.
+  - **Tambah hari coba**: 1–60 free days with a reason.
+- **Pembayaran**: one month at a time, total received, cancelled count, **Unduh CSV** for bookkeeping.
+- **Laporan**: executive report for 7/30/90/365 days. *Bisnis Pikul*: subscription revenue, sign-ups, paying now, conversion, stopped paying, revenue by month, sign-ups by week. *Semua merchant*: net sales, transactions, average receipt, merchants selling, refunds, daily trend, payment types, sales modes, weekday averages, merchants by activity, busy hours, top 10. **CSV per merchant** exports totals per merchant.
+- **Paket harga** and **Kampanye**: as before (ADR-014). New placement **Saat buka kasir pertama hari itu**: the banner shows once per day when a merchant opens the register (clickable when it has a link). New campaigns start at the next full hour; change the start time to show one now.
+- **Konten landing**: headline, subheadline, feature cards, FAQ (add, edit, reorder, hide), footer contact. **Simpan** updates the landing page within about a minute; **Pulihkan bawaan** returns to the built-in text. Plain text only.
 
-## Audit
-Every save, switch, delete and upload is written to the `admin_audit` table in Neon (who, what, when, new values):
-`select at, email, action, target from admin_audit order by at desc limit 50;`
+## Where the sales numbers come from
+Each merchant app sends its daily totals (counts and Rupiah only) when online: on open, every 30 minutes, on reconnect and at day close; the first send covers 35 days. Merchants see a one-time notice and the landing FAQ explains it. Until device sync exists, a store with two devices reports from whichever sent last that day.
+
+## Housekeeping (monthly)
+`delete from rate_events where at < now() - interval '1 day'; delete from admin_sessions where expires_at < now();`
 
 ## Troubleshooting
 | Symptom | Check |
 |---|---|
-| "Akun ini bukan admin Pikul." | Add the email to `ADMIN_EMAILS` and redeploy |
-| "Demi keamanan, masuk lagi setiap 12 jam." | Expected; sign in again |
-| Pop-up does not appear on the landing page | State must be *Tayang sekarang* and "Halaman depan" on; each browser sees it once (clear `kk.landingPopupsSeen` in localStorage to test again) |
-| Pop-up does not appear in the app | "Aplikasi merchant" on, the device online, and the account has not seen it yet (`kk.campaignsSeen`) |
+| "Konsol belum aktif…" | `ADMIN_PASSWORD` missing or shorter than 12 characters; redeploy after setting it |
+| "Terlalu banyak percobaan salah…" | Wait 15 minutes; check Functions logs for 429s on `/api/admin/login` |
+| Yellow "Mode pratinjau" banner | No admin API answered: the site is served without Pages Functions. Data shown is an example |
+| Merchant summary empty | The merchant has not been online since selling; numbers arrive on the next open/reconnect |
+| "Data merchant baru saja berubah" | Someone else changed the account at the same moment; reload and record again |
+| Register banner not showing | Campaign live (not *Terjadwal*), placement on, merchant opened the register for the first time today on that device (`kk.registerPopupShown`) |
+
+## Local test
+```
+node scripts/gen-pass-key.mjs > /tmp/keys.env && set -a && . /tmp/keys.env && set +a && npx vite build
+printf 'PASS_PRIVATE_JWK=%s\nAPP_ORIGIN=http://localhost:8788\nADMIN_PASSWORD=uji-konsol-pikul-2026\nDEV_MODE=1\n' "$PASS_PRIVATE_JWK" > .dev.vars
+npx wrangler pages dev dist --port 8788 > /tmp/wrangler.log &
+python3 e2e/v17.py http://localhost:8788 /tmp/out /tmp/wrangler.log uji-konsol-pikul-2026
+```
+Restart wrangler between runs (memory DB; the wrong-password step counts toward the lockout).

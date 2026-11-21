@@ -18,3 +18,4 @@
 - v0.14 accounts, trial, billing → `accounts-billing.md` (160 unit tests, `e2e/v14.py`)
 - rebrand to Pikul (ADR-016) → `rebrand-pikul.md`
 - register-categories (v0.16) — ADR-017 → `register-categories.md`
+- admin-console-revamp.md — v0.17 business console (ADR-020)

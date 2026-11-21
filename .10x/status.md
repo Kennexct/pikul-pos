@@ -1,11 +1,13 @@
 # Status
 
-## Admin console revamp (v0.17) — Planning complete; building release A (2026-11-21)
-Branch `feat/admin-console-revamp` on top of `feat/admin-no-signin`. Spec `specs/2026-11-21-admin-console-revamp-design.md`. Kenny chose: business console first (merchant back-office after sync), admin password sign-in, email only, daily totals always on. Releases A (sign-in, merchants, payments) → B (daily totals, executive report) → C (landing content, FAQ, register pop-up). Next ADR: 021.
-- [ ] A1 migration 003, repo split · [ ] A2 admin password sign-in · [ ] A3 ledger + merchant handlers · [ ] A4 console A
-- [ ] B1 app daily totals · [ ] B2 daily endpoint · [ ] B3 analytics · [ ] B4 console Laporan
-- [ ] C1 landing content · [ ] C2 Konten tab · [ ] C3 register pop-up
-- [ ] QA + security, runbook, bundle
+## Admin console revamp (v0.17) — Delivered (2026-11-21)
+Branch `feat/admin-console-revamp` on top of `feat/admin-no-signin`. Spec `specs/2026-11-21-admin-console-revamp-design.md`, ADR-020, review `reviews/2026-11-21-admin-console-revamp-review.md` (QA + security PASS), runbook `docs/runbooks/admin-console.md`. Kenny chose: business console first (merchant back-office after sync), admin password sign-in, email only, daily totals always on. Next ADR: 021.
+- [x] A1 migration 003, repo split · [x] A2 admin password sign-in · [x] A3 ledger + merchant handlers · [x] A4 console Ringkasan/Merchant/Pembayaran
+- [x] B1 app daily totals + notice · [x] B2 daily endpoint · [x] B3 analytics · [x] B4 console Laporan + CSV
+- [x] C1 landing content · [x] C2 Konten landing tab · [x] C3 register pop-up placement
+- [x] QA + security (CSP on /admin added), runbook, e2e `v17.py` phone + tablet, bundle
+- [ ] Kenny: run migration 003 on Neon, set `ADMIN_PASSWORD`, remove `ADMIN_EMAILS`/`ADMIN_OPEN`, deploy
+- [ ] Later: merchant back-office (after device sync)
 
 **Phase:** Delivery complete — admin console without sign-in, temporary (ADR-019) on top of remove mock data (ADR-018) on top of v0.16 register open/close, Kategori tab, variant expand (ADR-017) on top of UI polish → rebrand → v0.15. Not deployed.
 **Branch:** `feat/rebrand-pikul` (on top of `feat/v0.15-admin-console`, on top of `main` `aaac4dc`). Delivered as a git bundle in the project folder; GitHub repo not reachable from the build session.
@@ -20,9 +22,9 @@ Branch `feat/admin-console-revamp` on top of `feat/admin-no-signin`. Spec `specs
 ### Waiting on Kenny (blocks go-live)
 - [ ] Rename GitHub repo to `Kennexct/pikul`, create the Cloudflare Pages project as `pikul` (docs/runbooks/rename-cloudflare-github.md)
 - [ ] Trademark search "Pikul" (PDKI classes 9, 42) and buy the domain
-- [ ] Neon project (Singapore) + run `db/migrations/001_accounts_billing.sql` and `002_admin_console.sql`
+- [ ] Neon project (Singapore) + run `db/migrations/001_accounts_billing.sql`, `002_admin_console.sql`, `003_admin_revamp.sql`
 - [ ] Resend account + verified sending domain
-- [ ] Cloudflare Pages project connected to the GitHub repo + variables from `.env.example` (incl. `ADMIN_EMAILS`)
+- [ ] Cloudflare Pages project connected to the GitHub repo + variables from `.env.example` (incl. `ADMIN_PASSWORD`)
 - [ ] Final prices (set them in `/admin/` after deploy) and custom domain
 - [ ] Choose a payment provider (or keep extending accounts by hand in Neon)
 

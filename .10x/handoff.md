@@ -1,4 +1,8 @@
-# Handoff — admin console revamp (2026-11-21)
+# Handoff — admin console revamp delivered (2026-11-21)
+
+**Latest:** v0.17.0 on `feat/admin-console-revamp` (ADR-020, supersedes ADR-019). `/admin/` = password sign-in (`ADMIN_PASSWORD`), tabs Ringkasan, Merchant (summary only, record/cancel payment, trial days), Pembayaran (CSV), Laporan (executive report, CSV), Paket harga, Kampanye (+ register-opening placement), Konten landing. The app sends daily totals in the background (never on the sell path) with a one-time notice. Migration `db/migrations/003_admin_revamp.sql`. Review PASS; runbook `docs/runbooks/admin-console.md`; e2e `e2e/v17.py` needs wrangler + `ADMIN_PASSWORD` (args: base, out, log, password). Next ADR: 021. Next feature candidate: merchant back-office after device sync.
+
+# Previous — admin console revamp planning (2026-11-21)
 
 **Now:** spec approved by Kenny ("confirm … build it"). Strategy done (`decisions/cto|product-manager/admin-console-revamp.md`). Design done: ADR-020 (supersedes ADR-019), `decisions/architect|staff-engineer/admin-console-revamp.md`. Plan: `decisions/engineering-manager/admin-console-revamp.md` (A1…C3). SDE starts at A1. Next ADR: 021.
 

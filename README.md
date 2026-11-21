@@ -93,7 +93,7 @@ npm test                       # pricing, business date, receipt no., UUIDv7
 npm run build                  # typecheck + production build + service worker
 ```
 
-Accounts and the admin console: follow [`docs/runbooks/deploy-cloudflare.md`](docs/runbooks/deploy-cloudflare.md) — Neon (`db/migrations/001_accounts_billing.sql`, `002_admin_console.sql`), access-pass key (`node scripts/gen-pass-key.mjs`), Resend, Cloudflare Pages, `ADMIN_EMAILS`. Using the console: [`docs/runbooks/admin-console.md`](docs/runbooks/admin-console.md). Locally, `npm run build && npm run pages:dev` with `DEV_MODE=1` uses an in-memory DB and prints sign-in codes to the log. `VITE_BILLING=off` builds the app without the account gate.
+Accounts and the admin console: follow [`docs/runbooks/deploy-cloudflare.md`](docs/runbooks/deploy-cloudflare.md) — Neon (`db/migrations/001_accounts_billing.sql`, `002_admin_console.sql`, `003_admin_revamp.sql`), access-pass key (`node scripts/gen-pass-key.mjs`), Resend, Cloudflare Pages, `ADMIN_PASSWORD`. Using the console: [`docs/runbooks/admin-console.md`](docs/runbooks/admin-console.md). Locally, `npm run build && npm run pages:dev` with `DEV_MODE=1` uses an in-memory DB and prints sign-in codes to the log. `VITE_BILLING=off` builds the app without the account gate.
 
 ## 4. Offline sync design
 
@@ -106,7 +106,7 @@ Accounts and the admin console: follow [`docs/runbooks/deploy-cloudflare.md`](do
 
 ## 5. Security model
 
-- **v0.14 accounts:** sign-in codes hashed (10 min, 5 attempts, 60 s resend); refresh tokens stored as SHA-256 and rotated; the access-pass private key is a Cloudflare secret, only the public JWK ships. **v0.15 admin:** allow-listed emails (`ADMIN_EMAILS`) with a session issued in the last 12 hours; every change goes to `admin_audit`; campaign links only `/…` or `https://`; banners only PNG/JPEG/WebP checked by magic bytes. Open before launch: rate-limit rule on `/api/auth/code`, CSP header.
+- **v0.14 accounts:** sign-in codes hashed (10 min, 5 attempts, 60 s resend); refresh tokens stored as SHA-256 and rotated; the access-pass private key is a Cloudflare secret, only the public JWK ships. **v0.17 admin (ADR-020):** one password in the `ADMIN_PASSWORD` secret, hashed 12-hour sessions, lockout after 5 wrong tries per IP (20 overall) in 15 min, strict CSP on `/admin/*`; merchants send daily totals only (no receipts, menus or customers). **v0.15 admin:** every change goes to `admin_audit`; campaign links only `/…` or `https://`; banners only PNG/JPEG/WebP checked by magic bytes. Open before launch: rate-limit rule on `/api/auth/code`, CSP header.
 - The points below describe the planned sync backend (`supabase/migrations`), not yet live.
 - Only the public anon key ships to the client; every table has RLS keyed on `store_id` (`is_store_member`, `is_store_owner`).
 - Catalog/config tables: owner writes, members read. Operational tables: members insert/update, **no delete policy**.

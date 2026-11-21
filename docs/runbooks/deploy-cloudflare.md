@@ -21,7 +21,7 @@ node scripts/gen-pass-key.mjs
 Until the domain is verified, codes only reach the Resend account owner's email.
 
 ## 4. Admin console
-1. Set `ADMIN_EMAILS` (encrypted variable) to the email(s) allowed into `/admin/`, comma-separated. Empty = console closed.
+1. Set `ADMIN_PASSWORD` (encrypted variable, at least 12 random characters) for `/admin/`. Unset or shorter = console closed. Run `db/migrations/003_admin_revamp.sql` first (see `admin-console.md`).
 2. Optional extra lock: Cloudflare Zero Trust → Access → Self-hosted application on `<your-domain>/admin/*`, allow only your email.
 3. How to use it: `docs/runbooks/admin-console.md`.
 
@@ -40,7 +40,7 @@ Not used yet (campaign banners are stored in Neon, max 500 KB each). Reserved fo
 ```
 node scripts/gen-pass-key.mjs > /tmp/keys.env && source /tmp/keys.env
 export VITE_PASS_PUBLIC_JWK && npx vite build
-printf 'PASS_PRIVATE_JWK=%s\nAPP_ORIGIN=http://localhost:8788\nADMIN_EMAILS=admin@pikul.test\nDEV_MODE=1\n' "$PASS_PRIVATE_JWK" > .dev.vars
+printf 'PASS_PRIVATE_JWK=%s\nAPP_ORIGIN=http://localhost:8788\nADMIN_PASSWORD=uji-konsol-pikul-2026\nDEV_MODE=1\n' "$PASS_PRIVATE_JWK" > .dev.vars
 npx wrangler pages dev dist --port 8788 > /tmp/wrangler.log &
 python3 e2e/v14.py http://localhost:8788 /tmp/out /tmp/wrangler.log
 python3 e2e/v15.py http://localhost:8788 /tmp/out /tmp/wrangler.log   # after v14: it changes the prices
@@ -50,7 +50,7 @@ python3 e2e/v15.py http://localhost:8788 /tmp/out /tmp/wrangler.log   # after v1
 | Symptom | Check |
 |---|---|
 | "Terjadi kesalahan di server" on sign-in | Functions log: `missing_config` → a runtime variable is missing; `resend_403` → domain not verified |
-| "Akun ini bukan admin Pikul." in /admin | The email is not in `ADMIN_EMAILS` (lower-case, comma-separated); redeploy after changing it |
+| "Konsol belum aktif" in /admin | `ADMIN_PASSWORD` missing or under 12 characters; redeploy after setting it |
 | Landing still shows the old price | Public data is edge-cached for 60 s; wait a minute and reload |
 | Everyone signed out after deploy | `PASS_PRIVATE_JWK` and `VITE_PASS_PUBLIC_JWK` are not a pair |
 | Grant days by hand | `update accounts set paid_until = now() + interval '30 days' where email = '…';` |
