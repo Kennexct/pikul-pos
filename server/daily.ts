@@ -24,9 +24,15 @@ function tx(v: unknown): TxTotals | null {
 function row(v: unknown, appVersion: string, now: number): DailyRow | null {
   const o = (v ?? {}) as Record<string, unknown>;
   if (!isDate(o.businessDate) || o.businessDate < jakartaDate(now - 400 * DAY_MS) || o.businessDate > jakartaDate(now + DAY_MS)) return null;
-  const nums = ['transactions', 'gross', 'discounts', 'refunds', 'net', 'voidCount', 'voidAmount'].map((k) => int(o[k]));
-  if (nums.some((x) => x === null)) return null;
-  const [transactions, gross, discounts, refunds, net, voidCount, voidAmount] = nums as number[];
+  const transactions = int(o.transactions);
+  const gross = int(o.gross);
+  const discounts = int(o.discounts);
+  const refunds = int(o.refunds);
+  const voidCount = int(o.voidCount);
+  const voidAmount = int(o.voidAmount);
+  // net can be negative: a refund counts on its own day (ADR-002), possibly a day with fewer sales.
+  const net = typeof o.net === 'number' && Number.isInteger(o.net) && Math.abs(o.net) <= BIG ? o.net : null;
+  if (transactions === null || gross === null || discounts === null || refunds === null || voidCount === null || voidAmount === null || net === null) return null;
   const itemsSold = typeof o.itemsSold === 'number' && Number.isFinite(o.itemsSold) && o.itemsSold >= 0 && o.itemsSold <= 1e9 ? Math.round(o.itemsSold * 1000) / 1000 : null;
   const computedAt = int(o.computedAt, now + DAY_MS);
   if (itemsSold === null || computedAt === null) return null;

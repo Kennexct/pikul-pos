@@ -1,3 +1,4 @@
+import { APP_EVENTS, emitAppEvent } from '../lib/appEvents';
 import { CLOSING_NOTE_MAX } from '../constants';
 import { localDb } from '../db/localDb';
 import { buildDrawer, type DrawerInput } from '../lib/cashDrawer';
@@ -49,6 +50,7 @@ export async function setOpeningCash(storeId: Id, date: BusinessDate, amount: nu
     action: previous ? 'opening_cash_changed' : 'register_opened',
     payload: previous ? { businessDate: date, from: Number(previous.value) || 0, to: amount } : { businessDate: date, openingCash: amount },
   });
+  if (!previous) emitAppEvent(APP_EVENTS.registerOpened, { businessDate: date }); // register pop-up (ADR-020)
 }
 
 /** Everything the drawer maths needs for one business day. Also used inside live queries. */
@@ -126,6 +128,7 @@ export async function closeDay(input: CloseDayInput): Promise<DayClosing> {
     payload: { businessDate, expectedCash: closing.expectedCash, countedCash, difference: closing.difference },
   });
   if (input.shouldResetSoldOut) await resetSoldOut(storeId);
+  emitAppEvent(APP_EVENTS.dayClosed, { businessDate }); // send daily totals now (ADR-020)
   return closing;
 }
 

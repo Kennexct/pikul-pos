@@ -43,7 +43,7 @@ export function checkPaymentInput(body: unknown, account: Account, plans: readon
     planId = plan.id;
   }
   const amount = int(f.amount, 0, MAX_PAYMENT);
-  if (amount === null) return fail('invalid_amount');
+  if (amount === null) return fail('invalid_payment_amount');
   const days = int(f.days, 1, 1_095);
   if (days === null) return fail('invalid_days');
   if (typeof f.method !== 'string' || !(PAYMENT_KINDS as readonly string[]).includes(f.method)) return fail('invalid_method');
@@ -86,7 +86,7 @@ export function paidUntilAfterCancel(p: Payment, account: Account, accountPaymen
 export function checkGrantInput(body: unknown): Checked<{ days: number; reason: string }> {
   const f = (body ?? {}) as Record<string, unknown>;
   const days = int(f.days, 1, 60);
-  if (days === null) return fail('invalid_days');
+  if (days === null) return fail('invalid_grant_days');
   const reason = line(f.reason, 200, true);
   if (reason === null) return fail('invalid_reason');
   return { ok: true, value: { days, reason } };

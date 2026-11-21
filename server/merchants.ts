@@ -53,12 +53,13 @@ const matches = (v: AccountView, f: Filter) =>
 
 /** Counts per plan for "Paket merchant": trial, each paid plan, paid without a recorded plan, expired. */
 function planCounts(views: readonly AccountView[], plans: readonly PlanDef[]) {
-  const out: { key: string; label: string | null; count: number }[] = [{ key: 'trial', label: null, count: 0 }];
+  const trial = { key: 'trial', label: null, count: 0 };
+  const out: { key: string; label: string | null; count: number }[] = [trial];
   for (const p of [...plans].sort((a, b) => a.sort - b.sort)) out.push({ key: p.id, label: p.name, count: 0 });
   const other = { key: 'paid', label: null, count: 0 };
   const expired = { key: 'expired', label: null, count: 0 };
   for (const v of views) {
-    if (v.status === 'trial') out[0].count++;
+    if (v.status === 'trial') trial.count++;
     else if (v.status === 'expired') expired.count++;
     else {
       const row = v.planId ? out.find((o) => o.key === v.planId) : undefined;
@@ -144,12 +145,12 @@ export async function adminGrant(deps: Deps, auth: string | null, accountId: str
 
 const MONTH_RE = /^\d{4}-(0[1-9]|1[0-2])$/;
 const monthSpan = (m: string) => {
-  const [y, mo] = m.split('-').map(Number);
+  const [y = 0, mo = 1] = m.split('-').map(Number);
   const last = new Date(Date.UTC(y, mo, 0)).getUTCDate();
   return { from: `${m}-01`, to: `${m}-${String(last).padStart(2, '0')}` };
 };
 export const prevMonth = (m: string) => {
-  const [y, mo] = m.split('-').map(Number);
+  const [y = 0, mo = 1] = m.split('-').map(Number);
   return mo === 1 ? `${y - 1}-12` : `${y}-${String(mo - 1).padStart(2, '0')}`;
 };
 const received = (ps: readonly Payment[]) => ps.filter((p) => p.cancelledAt === null).reduce((s, p) => s + p.amount, 0);

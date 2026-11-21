@@ -63,6 +63,7 @@ export function weekdays(days: readonly { date: string; transactions: number; ne
   const out = Array.from({ length: 7 }, (_, weekday) => ({ weekday, transactions: 0, net: 0, days: 0 }));
   for (const d of days) {
     const w = out[new Date(dayMs(d.date)).getUTCDay()];
+    if (!w) continue;
     w.transactions += d.transactions;
     w.net += d.net;
     w.days++;
@@ -140,7 +141,10 @@ export function merchantsReport(span: DateSpan, now: number, accounts: readonly 
   const { end } = spanMs(span);
   const counted = accounts.filter((a) => a.createdAt < end && (statusOf(a, now) !== 'expired' || by.has(a.id)));
   const buckets = BUCKETS.map((key) => ({ key, count: 0 }));
-  for (const a of counted) buckets[bucketOf((by.get(a.id)?.transactions ?? 0) / n)].count++;
+  for (const a of counted) {
+    const b = buckets[bucketOf((by.get(a.id)?.transactions ?? 0) / n)];
+    if (b) b.count++;
+  }
   return { totals, byPay: payMix(days), days: filled, weekdays: weekdays(filled), top, buckets };
 }
 

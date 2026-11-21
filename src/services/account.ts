@@ -124,5 +124,7 @@ export interface CampaignPopup {
   endsAt: number;
 }
 export const billingOverview = () => api<BillingOverview>('GET', '/api/billing', undefined, true);
-/** The live in-app campaign, if any (public, cached at the edge for a minute). */
-export const appCampaign = () => api<{ popup: CampaignPopup | null }>('GET', '/api/public/app');
+/** The live in-app campaigns, if any (public, cached at the edge for a minute): once per account, and on register open (ADR-020). */
+export const appCampaign = () => api<{ popup: CampaignPopup | null; registerPopup?: CampaignPopup | null }>('GET', '/api/public/app');
+/** Daily sales totals for this account (ADR-020). Bearer = refresh token; never rotates it. */
+export const postDailyTotals = (body: { appVersion: string; rows: unknown[] }) => api<{ ok: true; saved: number }>('POST', '/api/merchant/daily', body, true);

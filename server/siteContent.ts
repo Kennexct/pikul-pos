@@ -28,13 +28,13 @@ export function checkContent(body: unknown): Checked<Omit<SiteContent, 'updatedA
   if (heroTitle === null || heroSubtitle === null) return fail('invalid_hero');
   const contact = str(f.contact ?? '', LIMITS.contact, { required: false });
   if (contact === null) return fail('invalid_contact');
-  if (!Array.isArray(f.features) || f.features.length > LIMITS.features) return fail('invalid_features');
+  if (!Array.isArray(f.features) || f.features.length > LIMITS.features) return fail('invalid_content_features');
   const features: ContentFeature[] = [];
   for (const x of f.features as Record<string, unknown>[]) {
     const title = str(x?.title, LIMITS.featureTitle);
     const text = str(x?.text, LIMITS.featureText);
     const icon = typeof x?.icon === 'string' && (FEATURE_ICONS as readonly string[]).includes(x.icon) ? x.icon : 'check';
-    if (title === null || text === null || typeof x.hidden !== 'boolean') return fail('invalid_features');
+    if (title === null || text === null || typeof x.hidden !== 'boolean') return fail('invalid_content_features');
     features.push({ icon, title, text, hidden: x.hidden } as ContentFeature);
   }
   if (!Array.isArray(f.faqs) || f.faqs.length > LIMITS.faqs) return fail('invalid_faqs');

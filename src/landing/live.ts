@@ -22,9 +22,18 @@ interface Popup {
   linkUrl: string | null;
   ctaLabel: string;
 }
+interface Content {
+  heroTitle: string;
+  heroSubtitle: string;
+  features: { icon: string; title: string; text: string }[];
+  faqs: { q: string; a: string }[];
+  contact: string;
+}
 interface LandingData {
   plans: Offer[];
   popup: Popup | null;
+  /** Text saved in the admin console (ADR-020); null keeps the built-in page text. Hidden items are already removed. */
+  content?: Content | null;
 }
 
 const G = '#0b7a5a';
@@ -186,6 +195,54 @@ function revealOnScroll() {
   }
 }
 
+const hook = (name: string) => document.querySelector<HTMLElement>(`[data-lp="${name}"]`);
+function setText(name: string, text: string) {
+  const n = hook(name);
+  if (n) n.textContent = text;
+}
+
+/** Redraws hero, features, FAQ and contact from saved content by cloning the built page's own markup (textContent only). */
+function renderContent(c: Content) {
+  setText('hero-title', c.heroTitle);
+  setText('hero-subtitle', c.heroSubtitle);
+  setText('contact', c.contact);
+  const feats = hook('features');
+  const featTpl = feats?.firstElementChild;
+  const icons = document.querySelector<HTMLTemplateElement>('template[data-lp="icons"]')?.content;
+  if (feats && featTpl) {
+    const rows = c.features.map((f) => {
+      const row = featTpl.cloneNode(true) as HTMLElement;
+      row.dataset.icon = f.icon;
+      const icon = icons?.querySelector(`[data-icon="${CSS.escape(f.icon)}"] svg`) ?? icons?.querySelector('[data-icon="check"] svg');
+      const slot = row.firstElementChild;
+      if (slot && icon) slot.replaceChildren(icon.cloneNode(true));
+      const h = row.querySelector('h3');
+      const p = row.querySelector('p');
+      if (h) h.textContent = f.title;
+      if (p) p.textContent = f.text;
+      return row;
+    });
+    feats.replaceChildren(...rows);
+  }
+  const faqs = hook('faqs');
+  const faqTpl = faqs?.firstElementChild;
+  if (faqs && faqTpl) {
+    const rows = c.faqs.map((f) => {
+      const row = faqTpl.cloneNode(true) as HTMLDetailsElement;
+      row.open = false;
+      const q = row.querySelector('summary');
+      const a = row.querySelector('p');
+      if (q) q.textContent = f.q;
+      if (a) {
+        a.textContent = f.a;
+        a.style.whiteSpace = 'pre-line';
+      }
+      return row;
+    });
+    faqs.replaceChildren(...rows);
+  }
+}
+
 async function main() {
   let data: LandingData;
   try {
@@ -196,6 +253,7 @@ async function main() {
     return;
   }
   renderPlans(data.plans);
+  if (data.content) renderContent(data.content);
   const p = data.popup;
   if (p && !seenIds().includes(p.id)) {
     window.setTimeout(() => {

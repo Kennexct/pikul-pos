@@ -2,6 +2,7 @@ import { ExternalLink } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { appCampaign, BILLING_ENABLED, type CampaignPopup as Popup } from '../../services/account';
 import { useAccessStore } from '../../store/useAccessStore';
+import { cacheRegisterPopup } from '../../services/registerPopup';
 import { t } from '../../i18n';
 import { btnPrimary } from '../ui/styles';
 import { Sheet } from '../ui/Sheet';
@@ -46,7 +47,8 @@ export function CampaignPopup() {
     let alive = true;
     const timer = window.setTimeout(() => {
       appCampaign()
-        .then(({ popup: p }) => {
+        .then(({ popup: p, registerPopup }) => {
+          cacheRegisterPopup(registerPopup ?? null);
           if (!alive || !p || (seen()[account] ?? []).includes(p.id)) return;
           markSeen(account, p.id);
           setPopup(p);
@@ -59,8 +61,12 @@ export function CampaignPopup() {
     };
   }, [account]);
 
-  if (!popup) return null;
-  const close = () => setPopup(null);
+  return popup ? <CampaignSheet popup={popup} onClose={() => setPopup(null)} /> : null;
+}
+
+/** The banner sheet shared by the account pop-up and the register pop-up. Clickable only when it has a link. */
+export function CampaignSheet({ popup, onClose }: { popup: Popup; onClose: () => void }) {
+  const close = onClose;
   const go = () => {
     if (popup.linkUrl) openLink(popup.linkUrl);
     close();

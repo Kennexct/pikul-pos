@@ -76,7 +76,7 @@ export function CampaignsPanel({ catalog, onChanged, onError }: Props) {
                     {fmtWhen(c.startsAt)} – {fmtWhen(c.endsAt)}
                   </p>
                   <p className="text-[13px] text-muted">
-                    {[c.showOnLanding && t('Halaman depan'), c.showInApp && t('Aplikasi merchant'), plan && c.promoAmount !== null && t('Promo {0}: {1}', plan.name, formatRupiah(c.promoAmount))]
+                    {[c.showOnLanding && t('Halaman depan'), c.showInApp && t('Aplikasi merchant'), c.showOnRegister && t('Buka kasir'), plan && c.promoAmount !== null && t('Promo {0}: {1}', plan.name, formatRupiah(c.promoAmount))]
                       .filter(Boolean)
                       .join(' · ')}
                   </p>

@@ -75,21 +75,23 @@ export async function route(deps: Deps, method: string, path: string, auth: stri
       return adminSaveCampaign(deps, auth, null, body);
   }
   const img = new RegExp(`^GET /api/public/images/${UUID}$`).exec(key);
-  if (img) return publicImage(deps, img[1]);
+  if (img?.[1]) return publicImage(deps, img[1]);
   const m = new RegExp(`^(GET|POST) /api/admin/merchants/${UUID}(/payments|/grants|/summary)?$`).exec(key);
-  if (m) {
-    if (m[1] === 'GET' && !m[3]) return adminMerchant(deps, auth, m[2]);
-    if (m[1] === 'POST' && m[3] === '/payments') return adminRecordPayment(deps, auth, m[2], body);
-    if (m[1] === 'POST' && m[3] === '/grants') return adminGrant(deps, auth, m[2], body);
-    if (m[1] === 'GET' && m[3] === '/summary') return adminMerchantSummary(deps, auth, m[2], ctx);
+  if (m?.[2]) {
+    const [, verb, id, sub] = m;
+    if (verb === 'GET' && !sub) return adminMerchant(deps, auth, id);
+    if (verb === 'POST' && sub === '/payments') return adminRecordPayment(deps, auth, id, body);
+    if (verb === 'POST' && sub === '/grants') return adminGrant(deps, auth, id, body);
+    if (verb === 'GET' && sub === '/summary') return adminMerchantSummary(deps, auth, id, ctx);
   }
   const pc = new RegExp(`^POST /api/admin/payments/${UUID}/cancel$`).exec(key);
-  if (pc) return adminCancelPayment(deps, auth, pc[1], body);
+  if (pc?.[1]) return adminCancelPayment(deps, auth, pc[1], body);
   const c = new RegExp(`^POST /api/admin/campaigns/${UUID}(/toggle|/archive)?$`).exec(key);
-  if (c) {
-    if (c[2] === '/toggle') return adminToggleCampaign(deps, auth, c[1], body);
-    if (c[2] === '/archive') return adminArchiveCampaign(deps, auth, c[1]);
-    return adminSaveCampaign(deps, auth, c[1], body);
+  if (c?.[1]) {
+    const id = c[1];
+    if (c[2] === '/toggle') return adminToggleCampaign(deps, auth, id, body);
+    if (c[2] === '/archive') return adminArchiveCampaign(deps, auth, id);
+    return adminSaveCampaign(deps, auth, id, body);
   }
   return { status: 404, body: { error: 'not_found' } };
 }

@@ -30,7 +30,7 @@ interface Props {
 export function CampaignForm({ campaign, plans, now, onClose, onSaved, onError }: Props) {
   const start = Math.ceil(now / HOUR) * HOUR;
   const [d, setD] = useState<CampaignInput>(
-    campaign ?? { name: '', title: '', body: '', imageUrl: null, linkUrl: '/app/', ctaLabel: t('Coba gratis'), showOnLanding: true, showInApp: false, startsAt: start, endsAt: start + 7 * 24 * HOUR, enabled: true, planId: null, promoAmount: null },
+    campaign ?? { name: '', title: '', body: '', imageUrl: null, linkUrl: '/app/', ctaLabel: t('Coba gratis'), showOnLanding: true, showInApp: false, showOnRegister: false, startsAt: start, endsAt: start + 7 * 24 * HOUR, enabled: true, planId: null, promoAmount: null },
   );
   const [busy, setBusy] = useState(false);
   const file = useRef<HTMLInputElement>(null);
@@ -141,6 +141,7 @@ export function CampaignForm({ campaign, plans, now, onClose, onSaved, onError }
           <p className={sectionTitle}>{t('Tempat tampil')}</p>
           <Switch checked={d.showOnLanding} onChange={(v) => set('showOnLanding', v)} label={t('Halaman depan')} description={t('Pop-up untuk pengunjung, sekali per browser.')} />
           <Switch checked={d.showInApp} onChange={(v) => set('showInApp', v)} label={t('Aplikasi merchant')} description={t('Sekali per akun, setelah masuk atau saat aplikasi dibuka.')} />
+          <Switch checked={d.showOnRegister} onChange={(v) => set('showOnRegister', v)} label={t('Saat buka kasir pertama hari itu')} description={t('Banner muncul sekali per hari saat merchant membuka kasir. Bisa diklik jika ada link.')} />
 
           <p className={sectionTitle}>{t('Harga promo (opsional)')}</p>
           <div className="grid gap-3 sm:grid-cols-2">

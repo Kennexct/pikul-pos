@@ -62,7 +62,9 @@ for n,(k,alt,eb,title,body,phone) in enumerate(deep):
 
 feats = [(f['icon'] if f['icon'] in I else 'check', E(f['title']), E(f['text'])) for f in CONTENT['features'] if not f['hidden']]
 I['check'] = '<path d="M20 6 9 17l-5-5"/>'
-feat_html = ''.join(f'<div style="display: flex; gap: 14px; align-items: flex-start; padding: 18px 0; border-bottom: 1px solid {LINE}"><div style="flex: none; margin-top: 2px">{ic(I[i])}</div><div><h3 style="margin: 0; font-size: 16px; font-weight: 700; color: {INK}">{a}</h3><p style="margin: 4px 0 0; font-size: 14px; line-height: 1.55; color: {MUTED}">{b}</p></div></div>' for i,a,b in feats)
+feat_html = ''.join(f'<div data-icon="{i}" style="display: flex; gap: 14px; align-items: flex-start; padding: 18px 0; border-bottom: 1px solid {LINE}"><div style="flex: none; margin-top: 2px">{ic(I[i])}</div><div><h3 style="margin: 0; font-size: 16px; font-weight: 700; color: {INK}">{a}</h3><p style="margin: 4px 0 0; font-size: 14px; line-height: 1.55; color: {MUTED}">{b}</p></div></div>' for i,a,b in feats)
+# Icons the live script (src/landing/live.ts) reuses when it redraws features saved in the admin console.
+icon_tpl = '<template data-lp="icons">' + ''.join(f'<span data-icon="{k}">{ic(v)}</span>' for k,v in I.items()) + '</template>'
 
 who = [('Kedai kopi','Varian minuman, es/gula/ukuran, harga Takeaway dan ojol.'),('Bakso &amp; warung makan','Pesanan per meja, simpan dulu bayar nanti, level pedas.'),('Gorengan &amp; jajanan','Satu ketuk per item, uang pas, antrean cepat.'),('Lapak pasar','Per kilo atau per nominal, harga harian, bon langganan.')]
 who_html = ''.join(f'<div style="padding: 24px; border-radius: 14px; background: #fff; border: 1px solid {LINE}"><h3 style="margin: 0; font-size: 18px; font-weight: 700; color: {INK}">{a}</h3><p style="margin: 8px 0 0; font-size: 15px; line-height: 1.6; color: {SOFT}">{b}</p></div>' for a,b in who)
@@ -148,7 +150,7 @@ body = f'''<div style="font-family: 'Plus Jakarta Sans', system-ui, sans-serif; 
 <section aria-labelledby="semua-fitur" style="padding: 88px 0">
 <div style="{wrap}">
 <div style="max-width: 720px; margin-bottom: 36px">{eyebrow('Semua fitur')}{h2('Semua yang dibutuhkan satu toko, dalam satu aplikasi.', 'semua-fitur')}</div>
-<div class="lp-feats" data-lp="features">{feat_html}</div>
+<div class="lp-feats" data-lp="features">{feat_html}</div>{icon_tpl}
 </div>
 </section>
 

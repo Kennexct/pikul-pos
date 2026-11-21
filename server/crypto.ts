@@ -13,7 +13,7 @@ export function randomToken(bytes = 32): string {
 export function randomCode(): string {
   const limit = Math.floor(0xffffffff / 1_000_000) * 1_000_000;
   for (;;) {
-    const [n] = crypto.getRandomValues(new Uint32Array(1));
+    const n = crypto.getRandomValues(new Uint32Array(1))[0] ?? limit;
     if (n < limit) return String(n % 1_000_000).padStart(6, '0');
   }
 }
