@@ -17,4 +17,10 @@ describe('devicesDay (ADR-025)', () => {
     ]);
     expect(day.total).toEqual({ net: 35_000, cash: 15_000, transactions: 4 });
   });
+
+  it('shows this device with zeros when only another device sold', () => {
+    const sales = [order('o1', 'B', 10_000)];
+    const day = devicesDay({ sales, refunds: [], closings: [], ordersById: new Map(), names: new Map(), here: 'A' });
+    expect(day.rows.map((r) => [r.deviceId, r.net])).toEqual([['A', 0], ['B', 10_000]]);
+  });
 });

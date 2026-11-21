@@ -143,6 +143,7 @@ export async function syncTick(): Promise<SyncOutcome> {
 
 /** Refreshes the device list (Settings, Kas). Errors leave the cached list. */
 export async function refreshDevices(): Promise<SyncDevice[]> {
+  if (!(await getBinding())) return cachedDevices(); // not syncing (no account, or an offline-only build): no network call
   try {
     const r = await accountApi<{ devices: SyncDevice[] }>('GET', '/api/sync/devices', undefined, true);
     await rememberDevices(r.devices);

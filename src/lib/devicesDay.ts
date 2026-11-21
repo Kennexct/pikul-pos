@@ -57,6 +57,7 @@ export function devicesDay({ sales, refunds, closings, ordersById, names, here }
     if (c.deletedAt) continue;
     row(c.deviceId).closing = { countedCash: c.countedCash, difference: c.difference };
   }
+  if (rows.size > 0) row(here); // this device always has a row once any device has one
   const list = [...rows.values()].sort((a, b) => (a.deviceId === here ? -1 : b.deviceId === here ? 1 : a.name.localeCompare(b.name)));
   const total = list.reduce((s, r) => ({ net: s.net + r.net, cash: s.cash + r.cash, transactions: s.transactions + r.transactions }), { net: 0, cash: 0, transactions: 0 });
   return { rows: list, total };

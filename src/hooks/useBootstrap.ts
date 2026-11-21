@@ -7,6 +7,7 @@ import { removeLegacySampleMenu } from '../services/legacySampleMenu';
 import { backUpAndWipeLocal, downloadStore, StoreNotReadyError, adoptAccountStore, keepDeviceStore } from '../services/storeSwitch';
 import { decideBoot, type StoreFacts } from '../services/syncBinding';
 import { syncTick } from '../services/syncBinding';
+import { useAccessStore } from '../store/useAccessStore';
 import { rememberedMemberId, useSessionStore } from '../store/useSessionStore';
 import { t } from '../i18n';
 
@@ -62,6 +63,8 @@ export function useBootstrap(): BootState {
   const [state, setState] = useState<BootStatus>({ status: 'loading' });
   const [attempt, setAttempt] = useState(0);
   const mismatch = useSessionStore((s) => s.syncStatus === 'mismatch');
+  // The store depends on the account (ADR-024): decide only once signed in, and again after signing in as someone.
+  const isSignedIn = useAccessStore((s) => s.status === 'signedIn');
 
   const enter = useCallback(async () => {
     const found = await findLocalStore();
@@ -88,7 +91,9 @@ export function useBootstrap(): BootState {
 
   useEffect(() => {
     let isActive = true;
+    if (!isSignedIn) return;
     const boot = async () => {
+      setState({ status: 'loading' });
       await getDeviceId();
       const found = await findLocalStore();
       if (found) await removeLegacySampleMenu(found);
@@ -110,7 +115,7 @@ export function useBootstrap(): BootState {
     return () => {
       isActive = false;
     };
-  }, [attempt, download]);
+  }, [attempt, download, isSignedIn]);
 
   // Another device replaced the account's store: ask again which store this device keeps.
   useEffect(() => {

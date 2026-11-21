@@ -1227,7 +1227,6 @@ export const EN = {
   'Hari aktif': 'Active days',
   'Hari coba tambahan': 'Extra trial days',
   'Hari dalam seminggu': 'Day of the week',
-  'Isi struk, nama menu, harga, data pelanggan, dan staf tidak pernah dikirim. Ringkasan ini dipakai untuk layanan dan laporan Pikul.': 'Receipt contents, menu names, prices, customer and staff data are never sent. These totals are used for Pikul\'s service and reports.',
   'Jam ramai': 'Busy hours',
   'Jam ramai semua merchant': 'Busy hours, all merchants',
   'Jawaban': 'Answer',
@@ -1460,4 +1459,5 @@ export const EN = {
   "{0} data ditolak server dan tidak dikirim. Hubungi Pikul bila ini terus muncul.": "{0} records were refused by the server and not sent. Contact Pikul if this keeps appearing.",
   "{0} penjualan": "{0} sales",
   "{0} perubahan menunggu dikirim.": "{0} changes waiting to be sent.",
+  "Data toko (menu, penjualan, pelanggan, staf) juga disinkronkan ke server Pikul supaya bisa dipakai di perangkat lain. Hanya akun Anda yang bisa membukanya. Ringkasan harian dipakai untuk layanan dan laporan Pikul.": "Shop data (menu, sales, customers, staff) is also synced to the Pikul server so it can be used on other devices. Only your account can open it. Daily totals are used for Pikul's service and reports.",
 } as const;

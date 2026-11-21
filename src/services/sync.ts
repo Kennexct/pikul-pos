@@ -185,13 +185,24 @@ export async function pullChanges(binding: Binding, onPage?: (received: number) 
 export type SyncOutcome = 'synced' | 'offline' | 'signedOut' | 'mismatch' | 'error' | 'unbound';
 
 let running: Promise<SyncOutcome> | null = null;
+let queued: Promise<SyncOutcome> | null = null;
 
-/** Push, then pull. One run at a time; errors never throw (the caller only shows status). */
+/**
+ * Push, then pull. One run at a time; errors never throw (the caller only shows status).
+ * Called while a run is going: one more run follows it, so a change saved meanwhile is included.
+ */
 export function syncNow(): Promise<SyncOutcome> {
-  running ??= runSync().finally(() => {
-    running = null;
+  if (!running) {
+    running = runSync().finally(() => {
+      running = null;
+    });
+    return running;
+  }
+  queued ??= running.then(() => {
+    queued = null;
+    return syncNow();
   });
-  return running;
+  return queued;
 }
 
 async function runSync(): Promise<SyncOutcome> {
