@@ -14,3 +14,4 @@
 
 ## Stack update (2026-11-20, ADR-013)
 Backend and hosting are now Cloudflare Pages + Functions, Neon Postgres, Resend, Midtrans; R2 reserved for cloud backup. The Supabase + Vercel lines above are superseded.
+- admin-console-revamp (v0.17) — business console, daily totals always on, build not buy → `admin-console-revamp.md`

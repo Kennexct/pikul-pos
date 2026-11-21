@@ -1,3 +1,7 @@
+# Handoff — admin console revamp (2026-11-21)
+
+**Now:** spec approved by Kenny ("confirm … build it"). Strategy done (`decisions/cto|product-manager/admin-console-revamp.md`). Next: Architect writes ADR-020.
+
 # Handoff — remove mock data (2026-11-21)
 
 **Latest:** `feat/admin-no-signin` (on top of `feat/register-categories` incl. remove-mock-data): `/admin/` opens without email sign-in (ADR-019). Static host = preview mode (browser only); Pages Functions with `ADMIN_OPEN=1` = real saves, open to anyone with the link. Revert before launch.
