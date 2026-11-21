@@ -152,7 +152,7 @@ Design rules, tokens and component inventory: [`design-system/MASTER.md`](design
 | Expenses (v0.9) | Done: record by category, from the drawer or not; owner deletes; in reports and exports | `pages/Cash/`, `services/expenses.ts` |
 | Close of day (v0.9) | Done: "Tutup kasir" — expected vs counted cash, difference, WhatsApp summary, sold-out reset, reopen (owner), history | `lib/cashDrawer.ts`, `services/dayClosing.ts` |
 | Backup file (v0.9) | Done: save all device data to one file; replace-all restore with validation (ADR-008) | `lib/backup.ts`, `services/backup.ts`, `pages/Settings/BackupSettings.tsx` |
-| First-time journey (v0.10) | Done: store name + business template (5), payment choices, how-it-works cards; "Langkah awal" checklist derived from data (ADR-009) | `pages/Onboarding/`, `services/seedTemplate.ts`, `lib/checklist.ts` |
+| First-time journey (v0.10, v0.17) | Done: store name, payment choices, how-it-works cards; the menu starts empty (ADR-018); "Langkah awal" checklist derived from data (ADR-009) | `pages/Onboarding/`, `services/storeSetup.ts`, `lib/checklist.ts` |
 | Help centre (v0.10) | Done: 15 offline topics with search, contextual "?" on each page, intro replay | `content/help*.ts`, `pages/Help/`, `components/Help/` |
 | English (v0.11) | Done: Indonesian + English for every screen, receipt, WhatsApp text, export and help topic; per-device language with reload on change; typed source-string dictionary (ADR-010) | `src/i18n/`, `content/help.en.ts`, `scripts/i18n-*.mjs` |
 | Flexible price (v0.12) | Done: per-product switch; the seller types the price at the register; the normal price is stored next to the charged price and shown in history and the Item export (ADR-011) | `pages/POS/components/SaleEntrySheet.tsx`, `lib/quantity.ts` |
@@ -164,7 +164,7 @@ Design rules, tokens and component inventory: [`design-system/MASTER.md`](design
 | Online payment | Removed (Midtrans, ADR-015); entitlement can be granted by hand in Neon until a provider is chosen | — |
 | Multi-device sync, cloud backup | Not started — will reuse v0.14 accounts (Neon, R2) | — |
 
-First run opens a three-step journey; the chosen template (`services/seedTemplate.ts`) seeds a small editable menu so the seller can sell immediately.
+First run opens a three-step journey (`services/storeSetup.ts`). Since v0.17 the store starts with an empty menu and no example data (ADR-018); the cashier screen points the seller to Produk to add their first item. Example menus live only in `src/test/sampleMenu.ts` for tests.
 
 Tests: 173 unit/integration tests (incl. server auth, admin and campaigns against an in-memory repo) (incl. a 20k-order performance guard) (`npm test`) cover pricing, variants, receipt numbering, business date, WhatsApp receipt text, and the order service against an in-memory IndexedDB (paid, open → resume → paid, cancel + audit, validation, StrictMode double-seed guard) and void/refund rules (same-day void, refund window, partial → full, permission, reason).
 

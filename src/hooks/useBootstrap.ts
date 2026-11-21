@@ -1,14 +1,15 @@
 import { useCallback, useEffect, useState } from 'react';
 import { localDb } from '../db/localDb';
 import { createLocalStore, findLocalStore, type BootstrapResult } from '../services/bootstrap';
-import type { SeedSetup } from '../services/seedTemplate';
+import type { StoreSetup } from '../services/storeSetup';
+import { removeLegacySampleMenu } from '../services/legacySampleMenu';
 import { rememberedMemberId, useSessionStore } from '../store/useSessionStore';
 import { t } from '../i18n';
 
 type BootStatus = { status: 'loading' } | { status: 'onboarding' } | { status: 'ready' } | { status: 'error'; message: string };
 export type BootState = BootStatus & {
   /** Finishes the first-time journey: creates the store from the merchant's choices and enters the app. */
-  completeOnboarding: (setup?: SeedSetup) => Promise<void>;
+  completeOnboarding: (setup?: StoreSetup) => Promise<void>;
 };
 
 /** Restores who is selling for a loaded store (ADR-004). */
@@ -39,7 +40,10 @@ export function useBootstrap(): BootState {
     let isActive = true;
     const boot = async () => {
       const found = await findLocalStore();
-      if (found) await startSession(found);
+      if (found) {
+        await removeLegacySampleMenu(found);
+        await startSession(found);
+      }
       if (isActive) setState({ status: found ? 'ready' : 'onboarding' });
     };
     boot().catch((error: unknown) => {
@@ -51,7 +55,7 @@ export function useBootstrap(): BootState {
     };
   }, []);
 
-  const completeOnboarding = useCallback(async (setup?: SeedSetup) => {
+  const completeOnboarding = useCallback(async (setup?: StoreSetup) => {
     await startSession(await createLocalStore(setup));
     setState({ status: 'ready' });
   }, []);

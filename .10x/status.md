@@ -1,6 +1,6 @@
 # Status
 
-**Phase:** Delivery complete — v0.16 register open/close, Kategori tab, variant expand (ADR-017) on top of UI polish → rebrand → v0.15. Not deployed.
+**Phase:** Delivery complete — remove mock data (ADR-018) on top of v0.16 register open/close, Kategori tab, variant expand (ADR-017) on top of UI polish → rebrand → v0.15. Not deployed.
 **Branch:** `feat/rebrand-pikul` (on top of `feat/v0.15-admin-console`, on top of `main` `aaac4dc`). Delivered as a git bundle in the project folder; GitHub repo not reachable from the build session.
 **Repo:** GitHub `Kennexct/kasirku` (per deploy runbook). Project folder copy: `kasirku-full/` + `kasirku-history.bundle`.
 **Last refreshed:** 2026-11-20 (v0.16)
@@ -18,6 +18,15 @@
 - [ ] Cloudflare Pages project connected to the GitHub repo + variables from `.env.example` (incl. `ADMIN_EMAILS`)
 - [ ] Final prices (set them in `/admin/` after deploy) and custom domain
 - [ ] Choose a payment provider (or keep extending accounts by hand in Neon)
+
+## Remove mock data — Delivered (2026-11-21)
+Branch `feat/remove-mock-data` on top of `feat/register-categories`. ADR-018. Kenny: "remove all the mockup data".
+- [x] New store starts empty: no example menu, categories, add-ons or discounts (`services/storeSetup.ts`); template picker removed from the journey; "Lewati" = empty store
+- [x] Empty states: cashier "Menu masih kosong" + "Tambah produk"; Langkah awal item "Tambah menu"
+- [x] One-time cleanup on existing devices (`services/legacySampleMenu.ts`): soft-deletes untouched, unsold seed rows; audit `sample_menu_removed`
+- [x] Example menus kept for tests only (`src/test/sampleMenu.ts`, `e2e/fixtures/sample-menus.json`, `e2e/sample_menu.py`); not in the bundle (checked `dist/`)
+- [x] Checks: typecheck, i18n:check, 170 tests, build; e2e flow, manage, staff, customers, v08–v13, v16, reports pass on phone + tablet. `history.py` fails at the Void step on the base branch too (pre-existing, not from this change). v14/v15 need wrangler, not run.
+- [ ] Manual: update an old device that has the example menu and confirm only untouched items disappear
 
 ## v0.16 register open/close, categories, variant expand — Delivered (2026-11-20)
 Branch `feat/register-categories` on top of `feat/ui-polish`. Spec `specs/2026-11-20-register-categories-design.md`, ADR-017, review `reviews/2026-11-20-v16-review.md` (QA + security PASS).

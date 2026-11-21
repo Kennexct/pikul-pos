@@ -1,0 +1,469 @@
+{
+ "bakso": {
+  "categories": {
+   "makanan": "Makanan",
+   "minuman": "Minuman"
+  },
+  "groups": {
+   "pedas": {
+    "name": "Level Pedas",
+    "isRequired": true,
+    "max": 1,
+    "options": [
+     [
+      "Tidak pedas",
+      0
+     ],
+     [
+      "Sedang",
+      0
+     ],
+     [
+      "Pedas",
+      0
+     ]
+    ]
+   },
+   "topping": {
+    "name": "Topping",
+    "isRequired": false,
+    "max": 3,
+    "options": [
+     [
+      "Telur",
+      3000
+     ],
+     [
+      "Tahu",
+      2000
+     ],
+     [
+      "Pangsit",
+      2000
+     ]
+    ]
+   },
+   "ukuran": {
+    "name": "Ukuran",
+    "isRequired": true,
+    "max": 1,
+    "options": [
+     [
+      "Reguler",
+      0
+     ],
+     [
+      "Jumbo",
+      3000
+     ]
+    ]
+   }
+  },
+  "products": [
+   [
+    "Bakso Urat",
+    "makanan",
+    15000,
+    16000,
+    [
+     "pedas",
+     "topping"
+    ]
+   ],
+   [
+    "Mie Ayam",
+    "makanan",
+    13000,
+    14000,
+    [
+     "pedas",
+     "topping"
+    ]
+   ],
+   [
+    "Bakso Campur",
+    "makanan",
+    18000,
+    19000,
+    [
+     "pedas"
+    ]
+   ],
+   [
+    "Kerupuk",
+    "makanan",
+    2000,
+    null,
+    []
+   ],
+   [
+    "Es Teh",
+    "minuman",
+    5000,
+    6000,
+    [
+     "ukuran"
+    ]
+   ],
+   [
+    "Es Jeruk",
+    "minuman",
+    7000,
+    8000,
+    [
+     "ukuran"
+    ]
+   ],
+   [
+    "Air Mineral",
+    "minuman",
+    4000,
+    null,
+    []
+   ]
+  ]
+ },
+ "kopi": {
+  "categories": {
+   "kopi": "Kopi",
+   "nonkopi": "Non-kopi",
+   "camilan": "Camilan"
+  },
+  "groups": {
+   "es": {
+    "name": "Es",
+    "isRequired": true,
+    "max": 1,
+    "options": [
+     [
+      "Es normal",
+      0
+     ],
+     [
+      "Sedikit es",
+      0
+     ],
+     [
+      "Tanpa es",
+      0
+     ],
+     [
+      "Panas",
+      0
+     ]
+    ]
+   },
+   "gula": {
+    "name": "Gula",
+    "isRequired": true,
+    "max": 1,
+    "options": [
+     [
+      "Gula normal",
+      0
+     ],
+     [
+      "Sedikit gula",
+      0
+     ],
+     [
+      "Tanpa gula",
+      0
+     ]
+    ]
+   },
+   "ukuran": {
+    "name": "Ukuran",
+    "isRequired": true,
+    "max": 1,
+    "options": [
+     [
+      "Tall",
+      0
+     ],
+     [
+      "Grande",
+      4000
+     ],
+     [
+      "Venti",
+      7000
+     ]
+    ]
+   }
+  },
+  "products": [
+   [
+    "Kopi",
+    "kopi",
+    15000,
+    null,
+    [
+     "es",
+     "gula",
+     "ukuran"
+    ],
+    [
+     [
+      "Americano",
+      18000,
+      19000
+     ],
+     [
+      "Latte",
+      25000,
+      26000
+     ],
+     [
+      "Cappuccino",
+      25000,
+      26000
+     ],
+     [
+      "Espresso",
+      15000,
+      16000
+     ],
+     [
+      "Kopi Susu Gula Aren",
+      20000,
+      21000
+     ]
+    ]
+   ],
+   [
+    "Teh",
+    "nonkopi",
+    15000,
+    null,
+    [
+     "es",
+     "gula",
+     "ukuran"
+    ],
+    [
+     [
+      "Teh Tarik",
+      15000,
+      16000
+     ],
+     [
+      "Lemon Tea",
+      15000,
+      16000
+     ],
+     [
+      "Matcha Latte",
+      25000,
+      26000
+     ]
+    ]
+   ],
+   [
+    "Cokelat",
+    "nonkopi",
+    22000,
+    23000,
+    [
+     "es",
+     "gula",
+     "ukuran"
+    ]
+   ],
+   [
+    "Roti Bakar",
+    "camilan",
+    15000,
+    null,
+    []
+   ],
+   [
+    "Kentang Goreng",
+    "camilan",
+    15000,
+    null,
+    []
+   ]
+  ]
+ },
+ "gorengan": {
+  "categories": {
+   "gorengan": "Gorengan",
+   "minuman": "Minuman"
+  },
+  "groups": {},
+  "products": [
+   [
+    "Tahu Isi",
+    "gorengan",
+    2000,
+    null,
+    []
+   ],
+   [
+    "Tempe Mendoan",
+    "gorengan",
+    2000,
+    null,
+    []
+   ],
+   [
+    "Bakwan",
+    "gorengan",
+    2000,
+    null,
+    []
+   ],
+   [
+    "Pisang Goreng",
+    "gorengan",
+    2500,
+    null,
+    []
+   ],
+   [
+    "Cireng",
+    "gorengan",
+    2000,
+    null,
+    []
+   ],
+   [
+    "Risoles",
+    "gorengan",
+    3000,
+    null,
+    []
+   ],
+   [
+    "Es Teh",
+    "minuman",
+    4000,
+    null,
+    []
+   ],
+   [
+    "Air Mineral",
+    "minuman",
+    4000,
+    null,
+    []
+   ]
+  ]
+ },
+ "warung": {
+  "categories": {
+   "nasi": "Nasi & lauk",
+   "minuman": "Minuman"
+  },
+  "groups": {
+   "pedas": {
+    "name": "Level Pedas",
+    "isRequired": true,
+    "max": 1,
+    "options": [
+     [
+      "Tidak pedas",
+      0
+     ],
+     [
+      "Sedang",
+      0
+     ],
+     [
+      "Pedas",
+      0
+     ]
+    ]
+   },
+   "nasi": {
+    "name": "Porsi nasi",
+    "isRequired": true,
+    "max": 1,
+    "options": [
+     [
+      "Biasa",
+      0
+     ],
+     [
+      "Setengah",
+      0
+     ],
+     [
+      "Tambah nasi",
+      3000
+     ]
+    ]
+   }
+  },
+  "products": [
+   [
+    "Nasi Ayam Goreng",
+    "nasi",
+    18000,
+    19000,
+    [
+     "nasi",
+     "pedas"
+    ]
+   ],
+   [
+    "Nasi Lele",
+    "nasi",
+    17000,
+    18000,
+    [
+     "nasi",
+     "pedas"
+    ]
+   ],
+   [
+    "Nasi Rames",
+    "nasi",
+    15000,
+    16000,
+    [
+     "nasi"
+    ]
+   ],
+   [
+    "Nasi Telur",
+    "nasi",
+    12000,
+    13000,
+    [
+     "nasi",
+     "pedas"
+    ]
+   ],
+   [
+    "Sayur",
+    "nasi",
+    5000,
+    null,
+    []
+   ],
+   [
+    "Tempe / Tahu",
+    "nasi",
+    2000,
+    null,
+    []
+   ],
+   [
+    "Es Teh",
+    "minuman",
+    4000,
+    null,
+    []
+   ],
+   [
+    "Teh Hangat",
+    "minuman",
+    3000,
+    null,
+    []
+   ]
+  ]
+ }
+}

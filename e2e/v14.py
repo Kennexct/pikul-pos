@@ -6,6 +6,9 @@ import sys
 import time
 
 from playwright.sync_api import sync_playwright
+import os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from sample_menu import skip_with_sample_menu  # noqa: E402
 
 BASE, OUT, LOG = sys.argv[1:4]
 errors = []
@@ -67,7 +70,7 @@ def run(p, name, viewport, is_mobile):
     page.get_by_role('button', name='Masuk', exact=True).click()
 
     # 2. First-time journey, then a sale during the trial
-    page.get_by_role('button', name='Lewati, pakai contoh toko').click()
+    skip_with_sample_menu(page)  # first-time journey: empty store + test-only sample menu (ADR-018)
     page.get_by_role('button', name='Kerupuk').first.wait_for()
     sell(page, is_mobile)
     page.get_by_text('Pembayaran berhasil').wait_for()

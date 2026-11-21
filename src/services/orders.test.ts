@@ -46,11 +46,11 @@ beforeEach(async () => {
 });
 
 describe('ensureLocalStore', () => {
-  it('seeds exactly one store even when called concurrently', async () => {
+  it('creates exactly one store even when called concurrently, with an empty menu (ADR-018)', async () => {
     const [a, b] = await Promise.all([ensureLocalStore(), ensureLocalStore()]);
     expect(a.store.id).toBe(b.store.id);
     expect(await localDb.stores.count()).toBe(1);
-    expect(await localDb.products.count()).toBeGreaterThan(0);
+    expect([await localDb.products.count(), await localDb.categories.count(), await localDb.variantGroups.count(), await localDb.discounts.count()]).toEqual([0, 0, 0, 0]);
   });
 });
 

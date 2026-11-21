@@ -10,6 +10,9 @@ from pathlib import Path
 import openpyxl
 
 from playwright.sync_api import sync_playwright
+import os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from sample_menu import add_sample_menu  # noqa: E402
 
 BASE, OUT = sys.argv[1], sys.argv[2]
 errors = []
@@ -47,14 +50,13 @@ def run(p, name, viewport, is_mobile):
     page.on('response', lambda r: r.status >= 400 and errors.append(f'{name}: {r.status} {r.url}'))
     dialog = page.get_by_role('dialog')
 
-    # Journey in English (device language), coffee template.
+    # Journey in English (device language), coffee sample menu.
     page.goto(BASE + '/')
     page.get_by_role('heading', name='Bahasa / Language').wait_for()
     english_preselected = page.get_by_role('radio', name='English').get_attribute('aria-checked') == 'true'
     scan(page, name, 'journey-language')
     page.get_by_role('button', name='Continue').click()
     page.locator('#store-name').fill('Sunset Coffee')
-    page.get_by_role('radio', name=re.compile('Coffee & drinks')).click()
     scan(page, name, 'journey-shop')
     page.get_by_role('button', name='Continue').click()
     scan(page, name, 'journey-payments')
@@ -62,6 +64,7 @@ def run(p, name, viewport, is_mobile):
     scan(page, name, 'journey-how')
     page.get_by_role('button', name='Start selling').click()
     page.get_by_role('navigation').first.wait_for()
+    add_sample_menu(page, 'kopi')  # v0.17: the store starts empty (ADR-018)
     open_register(page, 'Open register')
 
     # Sale with a variant, cash.

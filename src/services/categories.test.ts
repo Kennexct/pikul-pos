@@ -2,6 +2,7 @@ import 'fake-indexeddb/auto';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { localDb } from '../db/localDb';
 import { ensureLocalStore } from './bootstrap';
+import { seedSampleMenu } from '../test/sampleMenu';
 import { createCategory, deleteCategory, moveCategory, renameCategory } from './categories';
 
 beforeEach(async () => {
@@ -51,6 +52,7 @@ describe('categories', () => {
   it('deletes softly and moves its products to no category', async () => {
     const { store } = await ensureLocalStore();
     const category = await createCategory('Musiman', store.id);
+    await seedSampleMenu(store.id);
     const product = await localDb.products.where('storeId').equals(store.id).first();
     if (!product) throw new Error('seed missing');
     await localDb.products.put({ ...product, categoryId: category.id });

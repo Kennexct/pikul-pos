@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { HELP_TOPIC_IDS, HELP_TOPICS, INTRO_CARDS, searchHelp } from '../content/help';
 import { buildChecklist, checklistProgress, type ChecklistFacts } from './checklist';
 
-const none: ChecklistFacts = { hasEditedMenu: false, hasSale: false, hasOwnerPin: false, usesQris: true, hasQrisImage: false, hasClosing: false, hasBackup: false };
+const none: ChecklistFacts = { hasMenu: false, hasSale: false, hasOwnerPin: false, usesQris: true, hasQrisImage: false, hasClosing: false, hasBackup: false };
 
 describe('Langkah awal checklist', () => {
   it('lists six steps for a store that uses QRIS, five otherwise', () => {
@@ -13,7 +13,7 @@ describe('Langkah awal checklist', () => {
   it('ticks items from facts and knows when everything is done', () => {
     const some = buildChecklist({ ...none, hasSale: true, hasOwnerPin: true });
     expect(checklistProgress(some)).toEqual({ done: 2, total: 6, isComplete: false });
-    const all = buildChecklist({ hasEditedMenu: true, hasSale: true, hasOwnerPin: true, usesQris: true, hasQrisImage: true, hasClosing: true, hasBackup: true });
+    const all = buildChecklist({ hasMenu: true, hasSale: true, hasOwnerPin: true, usesQris: true, hasQrisImage: true, hasClosing: true, hasBackup: true });
     expect(checklistProgress(all).isComplete).toBe(true);
   });
 });

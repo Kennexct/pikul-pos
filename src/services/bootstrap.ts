@@ -1,8 +1,9 @@
 import { localDb } from '../db/localDb';
 import type { Store, StoreMember, SyncTable } from '../types';
 import { nowIso } from '../lib/id';
-import { buildSeedBundle, DEFAULT_SETUP, type SeedSetup } from './seedTemplate';
+import { buildStoreBundle, DEFAULT_SETUP, type StoreSetup } from './storeSetup';
 import { saveAndQueue } from './sync';
+import { LEGACY_SAMPLE_REMOVED_KEY } from './legacySampleMenu';
 import { t } from '../i18n';
 
 export interface BootstrapResult {
@@ -27,40 +28,37 @@ export async function findLocalStore(): Promise<BootstrapResult | null> {
 }
 
 /**
- * Creates the store from a starter template and the merchant's choices. Returns the existing store if there is one.
- * De-duplicated so a double tap or React StrictMode's double effect never seeds twice.
+ * Creates an empty store from the merchant's choices (ADR-018: no example menu). Returns the existing store if there is one.
+ * De-duplicated so a double tap or React StrictMode's double effect never creates two.
  */
-export function createLocalStore(setup: SeedSetup = DEFAULT_SETUP): Promise<BootstrapResult> {
-  inFlight ??= seedOnce(setup).finally(() => {
+export function createLocalStore(setup: StoreSetup = DEFAULT_SETUP): Promise<BootstrapResult> {
+  inFlight ??= createOnce(setup).finally(() => {
     inFlight = null;
   });
   return inFlight;
 }
 
-/** Loads the store, or creates the default one. Used by tests and by "Lewati" in the first-time journey. */
+/** Loads the store, or creates the default (empty) one. Used by tests and by "Lewati" in the first-time journey. */
 export const ensureLocalStore = (): Promise<BootstrapResult> => createLocalStore();
 
-async function seedOnce(setup: SeedSetup): Promise<BootstrapResult> {
+async function createOnce(setup: StoreSetup): Promise<BootstrapResult> {
   const existing = await findLocalStore();
   if (existing) return existing;
 
-  const seed = buildSeedBundle(setup);
+  const seed = buildStoreBundle(setup);
   const queued: Array<[SyncTable, Array<{ id: string }>]> = [
     ['storeMembers', [seed.owner]],
-    ['categories', seed.categories],
-    ['variantGroups', seed.variantGroups],
     ['salesModes', seed.salesModes],
     ['paymentMethods', seed.paymentMethods],
-    ['products', seed.products],
-    ['discounts', seed.discounts],
   ];
-  // All or nothing: closing the app mid-setup must not leave half a menu behind. The store row goes last —
+  // All or nothing: closing the app mid-setup must not leave half a store behind. The store row goes last —
   // its presence means "this device is fully set up".
   await localDb.transaction('rw', localDb.tables, async () => {
     for (const [table, records] of queued) {
       for (const record of records) await saveAndQueue(table, record);
     }
     await localDb.meta.put({ key: ONBOARDED_AT_KEY, value: nowIso() });
+    await localDb.meta.put({ key: LEGACY_SAMPLE_REMOVED_KEY, value: nowIso() }); // nothing to clean up on a new store
     await localDb.stores.put(seed.store);
   });
   return { store: seed.store, owner: seed.owner };

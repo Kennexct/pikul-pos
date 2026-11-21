@@ -1,10 +1,13 @@
-"""v0.10 flow (tablet + phone): first-time journey with a business template, the Langkah awal banner and checklist,
+"""v0.10 flow (tablet + phone): first-time journey (v0.17: the menu starts empty, ADR-018), the Langkah awal banner and checklist,
 the help page (search, topic, replay intro) and contextual help. A reload must not show the journey again."""
 import json
 import re
 import sys
 
 from playwright.sync_api import sync_playwright
+import os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from sample_menu import add_sample_menu  # noqa: E402
 
 BASE, OUT = sys.argv[1], sys.argv[2]
 errors = []
@@ -53,7 +56,6 @@ def run(p, name, viewport, is_mobile):
     page.get_by_role('heading', name='Toko Anda').wait_for()
     stores_before = page.evaluate(READ_DB)['stores'] if page.evaluate("async () => (await indexedDB.databases()).some((d) => d.name === 'kasirku')") else []
     page.locator('#store-name').fill('Kopi Senja')
-    page.get_by_role('radio', name=re.compile('Kopi & minuman')).click()
     shot(page, f'{name}-x1-store')
     page.get_by_role('button', name='Lanjut').click()
     page.get_by_role('heading', name='Cara pembayaran').wait_for()
@@ -64,9 +66,15 @@ def run(p, name, viewport, is_mobile):
     shot(page, f'{name}-x3-intro')
     page.get_by_role('button', name='Mulai jualan').click()
     page.get_by_role('navigation').first.wait_for()
+    # 2. The cashier starts with an empty menu and points to Produk; nothing example-like was created.
+    page.get_by_text('Menu masih kosong').wait_for()
+    empty_menu_cta = page.get_by_role('link', name='Tambah produk').count() > 0
+    empty_db = page.evaluate(READ_DB)
+    shot(page, f'{name}-x4-empty-menu')
+    add_sample_menu(page, 'kopi')  # test-only menu so the rest of the flow can sell
     open_register(page)
 
-    # 2. Cashier opens with the chosen menu and the Langkah awal banner; first sale ticks a step.
+    # 3. Cashier with a menu and the Langkah awal banner; first sale ticks a step.
     page.get_by_role('button', name=re.compile('Kentang Goreng')).first.wait_for()
     banner_start = page.get_by_role('link', name=re.compile('Langkah awal')).inner_text()
     shot(page, f'{name}-x4-pos')
@@ -82,7 +90,7 @@ def run(p, name, viewport, is_mobile):
     page.get_by_role('button', name='Transaksi baru').click()
     banner_after_sale = page.get_by_role('link', name=re.compile('Langkah awal')).inner_text()
 
-    # 3. Help page: checklist, search, a topic, replay the intro.
+    # 4. Help page: checklist, search, a topic, replay the intro.
     page.get_by_role('link', name=re.compile('Langkah awal')).click()
     page.get_by_role('heading', name='Bantuan').wait_for()
     checklist = page.get_by_role('region', name='Langkah awal').inner_text()
@@ -96,7 +104,7 @@ def run(p, name, viewport, is_mobile):
     intro_cards = dialog.locator('li').count()
     page.get_by_role('button', name='Mengerti').click()
 
-    # 4. Contextual help on Kas; dismiss the banner; reload does not restart the journey.
+    # 5. Contextual help on Kas; dismiss the banner; reload does not restart the journey.
     page.goto(BASE + '/kas')
     page.get_by_role('button', name='Bantuan untuk halaman ini').click()
     dialog.get_by_text('Uang seharusnya = modal awal').wait_for()
@@ -113,11 +121,12 @@ def run(p, name, viewport, is_mobile):
     browser.close()
     return {
         'nothing_created_before_finish': stores_before == [],
+        'empty_menu_after_journey': empty_db['products'] == 0 and empty_db['categories'] == [] and empty_menu_cta,
         'banner_start': banner_start.replace('\n', ' '),
         'banner_after_sale': banner_after_sale.replace('\n', ' '),
         'pay_methods': method_names,
         'receipt_has_store_name': 'Kopi Senja' in receipt,
-        'checklist_ok': '1 dari 6 selesai' in checklist and 'Pasang PIN pemilik' in checklist,
+        'checklist_ok': '2 dari 6 selesai' in checklist and 'Tambah menu' in checklist and 'Pasang PIN pemilik' in checklist,
         'topics_for_refund': topics_for_refund,
         'intro_cards': intro_cards,
         'banner_gone_after_dismiss_and_reload': banner_gone,
