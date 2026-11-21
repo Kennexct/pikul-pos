@@ -1,4 +1,4 @@
-import { Upload } from 'lucide-react';
+import { Upload, X } from 'lucide-react';
 import { useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { RupiahInput } from '../components/ui/RupiahInput';
@@ -104,11 +104,11 @@ export function CampaignForm({ campaign, plans, now, onClose, onSaved, onError }
               </button>
             )}
           </div>
-          <p className={helperText}>{t('PNG, JPG, atau WebP, maks. 500 KB. Saran 1200×800 px.')}</p>
-          {field('title', t('Judul'), 80, t('Juga dipakai sebagai teks alternatif gambar.'))}
+          <p className={helperText}>{t('PNG, JPG, atau WebP, maks. 500 KB. Saran 1080×1350 px (4:5) atau 1080×1080 px. Banner tampil utuh dan besar, tanpa judul dan teks.')}</p>
+          {field('title', t('Judul'), 80, d.imageUrl ? t('Tidak tampil di pop-up bila ada banner; dipakai sebagai teks alternatif gambar.') : undefined)}
           <div>
             <label htmlFor="c-body" className={labelBase}>
-              {t('Teks (opsional)')}
+              {d.imageUrl ? t('Teks (hanya tampil tanpa banner)') : t('Teks (opsional)')}
             </label>
             <textarea id="c-body" rows={3} maxLength={400} className={`${inputBase} h-auto py-2.5`} value={d.body} onChange={(e) => set('body', e.target.value)} />
           </div>
@@ -119,7 +119,7 @@ export function CampaignForm({ campaign, plans, now, onClose, onSaved, onError }
             <input id="c-link" className={inputBase} placeholder="https://… atau /app/" value={d.linkUrl ?? ''} onChange={(e) => set('linkUrl', e.target.value)} />
             <p className={helperText}>{t('Klik banner atau tombol membuka tautan ini. Kosongkan jika hanya informasi.')}</p>
           </div>
-          {d.linkUrl && field('ctaLabel', t('Teks tombol'), 30)}
+          {d.linkUrl && !d.imageUrl && field('ctaLabel', t('Teks tombol'), 30)}
 
           <p className={sectionTitle}>{t('Jadwal')}</p>
           <div className="grid gap-3 sm:grid-cols-2">
@@ -172,14 +172,22 @@ export function CampaignForm({ campaign, plans, now, onClose, onSaved, onError }
 
         <div>
           <p className={`${sectionTitle} mb-2`}>{t('Pratinjau')}</p>
-          <div className="mx-auto max-w-[360px] overflow-hidden rounded-xl border border-line bg-surface shadow-pop">
-            {d.imageUrl && <img src={d.imageUrl} alt={d.title} className="block h-auto w-full" />}
-            <div className="p-4">
-              <p className="text-[16px] font-bold text-ink">{d.title || t('Judul')}</p>
-              {d.body && <p className="mt-1 whitespace-pre-line text-[14px] text-ink-soft">{d.body}</p>}
-              {d.linkUrl && <span className={`${btnPrimary} mt-3 h-11 w-full`}>{d.ctaLabel || t('Lihat promo')}</span>}
+          {d.imageUrl ? (
+            <div className="relative mx-auto max-w-[360px] overflow-hidden rounded-xl bg-surface shadow-pop">
+              <img src={d.imageUrl} alt={d.title} className="block h-auto w-full" />
+              <span aria-hidden className="absolute right-2 top-2 flex h-9 w-9 items-center justify-center rounded-full bg-surface/90 text-ink shadow-pop">
+                <X size={16} />
+              </span>
             </div>
-          </div>
+          ) : (
+            <div className="mx-auto max-w-[360px] overflow-hidden rounded-xl border border-line bg-surface shadow-pop">
+              <div className="p-4">
+                <p className="text-[16px] font-bold text-ink">{d.title || t('Judul')}</p>
+                {d.body && <p className="mt-1 whitespace-pre-line text-[14px] text-ink-soft">{d.body}</p>}
+                {d.linkUrl && <span className={`${btnPrimary} mt-3 h-11 w-full`}>{d.ctaLabel || t('Lihat promo')}</span>}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </Sheet>
