@@ -1,3 +1,7 @@
+# Handoff — admin sidebar nav delivered (2026-11-21)
+
+**Latest:** `feat/admin-sidebar-nav` on top of `feat/admin-console-revamp`. /admin/ menu is a left sidebar (Bisnis: Ringkasan, Merchant, Pembayaran, Laporan; Situs & promosi: Paket harga, Kampanye, Konten landing) on ≥768 px and a left drawer behind "Buka menu" on a phone (ADR-021). e2e helper `tab()` in `v17.py` opens the drawer when needed. Next ADR: 022.
+
 # Handoff — admin console revamp delivered (2026-11-21)
 
 **Latest:** v0.17.0 on `feat/admin-console-revamp` (ADR-020, supersedes ADR-019). `/admin/` = password sign-in (`ADMIN_PASSWORD`), tabs Ringkasan, Merchant (summary only, record/cancel payment, trial days), Pembayaran (CSV), Laporan (executive report, CSV), Paket harga, Kampanye (+ register-opening placement), Konten landing. The app sends daily totals in the background (never on the sell path) with a one-time notice. Migration `db/migrations/003_admin_revamp.sql`. Review PASS; runbook `docs/runbooks/admin-console.md`; e2e `e2e/v17.py` needs wrangler + `ADMIN_PASSWORD` (args: base, out, log, password). Next ADR: 021. Next feature candidate: merchant back-office after device sync.

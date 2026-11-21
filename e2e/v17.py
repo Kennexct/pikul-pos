@@ -36,7 +36,17 @@ def watch(page, name, ok_status=()):
 
 
 def tab(page, label):
-    page.get_by_role('tab', name=label).click()
+    """Pick a console section from the left menu (ADR-021); on a phone the menu is a drawer behind a button."""
+    console_ready(page)  # after a reload the console may still be loading
+    menu_button = page.get_by_role('button', name='Buka menu')
+    if menu_button.is_visible():
+        menu_button.click()
+    page.get_by_role('navigation', name='Menu konsol').get_by_role('button', name=re.compile(rf'^{re.escape(label)}( \d+)?$')).click()
+    page.get_by_role('dialog', name='Menu konsol').wait_for(state='detached')
+
+
+def console_ready(page):
+    page.get_by_role('button', name='Buka menu').or_(page.get_by_role('navigation', name='Menu konsol')).wait_for()
 
 
 def admin_sign_in(page, name):
@@ -48,7 +58,17 @@ def admin_sign_in(page, name):
     shot(page, f'{name}-c1-login')
     page.locator('#admin-password').fill(PASSWORD)
     page.get_by_role('button', name='Masuk').click()
-    page.get_by_role('tab', name='Ringkasan').wait_for()
+    console_ready(page)
+    menu_button = page.get_by_role('button', name='Buka menu')
+    if menu_button.is_visible():
+        menu_button.click()
+        page.get_by_role('dialog', name='Menu konsol').wait_for()
+        shot(page, f'{name}-c0-menu')
+        page.keyboard.press('Escape')
+        page.get_by_role('dialog', name='Menu konsol').wait_for(state='detached')
+        assert page.evaluate('document.activeElement?.getAttribute("aria-label")') == 'Buka menu', 'focus back on menu button'
+    else:
+        shot(page, f'{name}-c0-menu')
 
 
 def edit_landing(page, name, faq_q, faq_a):

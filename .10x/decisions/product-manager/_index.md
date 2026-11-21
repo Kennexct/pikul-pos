@@ -19,3 +19,4 @@ Status: M1–M14 shipped on device (M6 item-level discount, M9 receipt-as-image 
 - rebrand-pikul (2026-11-20) → `rebrand-pikul.md`
 - register-categories (v0.16) — ADR-017 → `register-categories.md`
 - admin-console-revamp (v0.17) — stories + success criteria → `admin-console-revamp.md`; spec `specs/2026-11-21-admin-console-revamp-design.md`
+- `admin-sidebar-nav` — admin console left sidebar (ADR-021)
