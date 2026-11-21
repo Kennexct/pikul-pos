@@ -3,7 +3,7 @@ import { INTRO_CARDS } from '../../content/help';
 
 const ICONS = [Store, ClipboardList, CalendarCheck, HardDriveDownload] as const;
 
-/** "Cara kerja KasirKu": four short cards, shown at the end of the first-time journey and replayable from Bantuan. */
+/** "Cara kerja Pikul": four short cards, shown at the end of the first-time journey and replayable from Bantuan. */
 export function IntroCards() {
   return (
     <ol className="flex flex-col gap-2.5">

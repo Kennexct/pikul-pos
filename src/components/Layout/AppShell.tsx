@@ -41,6 +41,7 @@ function RailLink({ item, badge, isLocked }: { item: NavItem; badge: number; isL
     <NavLink
       to={to}
       end={to === ROUTES.pos}
+      viewTransition
       className={({ isActive }) =>
         `group relative flex h-[60px] flex-col items-center justify-center gap-1 rounded-lg text-[11px] font-semibold transition-colors ${
           isActive ? 'bg-brand-50 text-brand-700' : 'text-muted hover:bg-subtle hover:text-ink'
@@ -66,6 +67,7 @@ function TabLink({ to, label, icon: Icon, badge, isLocked }: { to: string; label
     <NavLink
       to={to}
       end={to === ROUTES.pos}
+      viewTransition
       className={({ isActive }) =>
         `relative flex flex-col items-center justify-center gap-0.5 text-[11px] font-semibold ${isActive ? 'text-brand-700' : 'text-muted'}`
       }
@@ -124,7 +126,7 @@ export function AppShell() {
         </div>
       </nav>
 
-      <main className="relative flex min-w-0 flex-1 flex-col pb-[calc(64px+env(safe-area-inset-bottom))] md:pb-0">
+      <main className="page-pane relative flex min-w-0 flex-1 flex-col pb-[calc(64px+env(safe-area-inset-bottom))] md:pb-0">
         <SubscriptionBanner />
         <Outlet />
       </main>

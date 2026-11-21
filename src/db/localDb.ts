@@ -40,6 +40,7 @@ export class LocalDb extends Dexie {
   dayClosings!: EntityTable<DayClosing, 'id'>;
 
   constructor() {
+    // Legacy database name, frozen (ADR-016): renaming it would orphan every sale on the device.
     super('kasirku');
     this.version(1).stores({
       categories: 'id, storeId, sortOrder',

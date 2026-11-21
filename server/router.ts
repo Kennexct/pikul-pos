@@ -1,11 +1,15 @@
 import { googleSignIn, refresh, requestCode, signOut, verifyCode } from './auth';
-import { checkout, notification, overview, paymentStatus } from './billing';
+import { overview } from './billing';
+import { adminArchiveCampaign, adminCatalog, adminMe, adminSaveCampaign, adminSavePlan, adminToggleCampaign, adminUploadImage, appPopupData, landingData, MAX_IMAGE_BYTES, publicImage } from './admin';
 import type { ApiResponse, Deps } from './types';
+
+const UUID = '([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})';
 
 const MAX_BODY = 16_384;
 
 export async function route(deps: Deps, method: string, path: string, auth: string | null, rawBody: string): Promise<ApiResponse> {
-  if (rawBody.length > MAX_BODY) return { status: 413, body: { error: 'too_large' } };
+  const limit = method === 'POST' && path === '/api/admin/images' ? Math.ceil((MAX_IMAGE_BYTES * 4) / 3) + 1_024 : MAX_BODY;
+  if (rawBody.length > limit) return { status: 413, body: { error: 'too_large' } };
   let body: unknown = null;
   if (rawBody) {
     try {
@@ -28,12 +32,28 @@ export async function route(deps: Deps, method: string, path: string, auth: stri
       return signOut(deps, body);
     case 'GET /api/billing':
       return overview(deps, auth);
-    case 'POST /api/billing/checkout':
-      return checkout(deps, auth, body);
-    case 'POST /api/billing/midtrans':
-      return notification(deps, body);
+    case 'GET /api/public/landing':
+      return landingData(deps);
+    case 'GET /api/public/app':
+      return appPopupData(deps);
+    case 'POST /api/admin/images':
+      return adminUploadImage(deps, auth, body);
+    case 'GET /api/admin/me':
+      return adminMe(deps, auth);
+    case 'GET /api/admin/catalog':
+      return adminCatalog(deps, auth);
+    case 'POST /api/admin/plans':
+      return adminSavePlan(deps, auth, body);
+    case 'POST /api/admin/campaigns':
+      return adminSaveCampaign(deps, auth, null, body);
   }
-  const m = /^GET \/api\/billing\/status\/([A-Z0-9-]{6,64})$/.exec(key);
-  if (m) return paymentStatus(deps, auth, m[1]);
+  const img = new RegExp(`^GET /api/public/images/${UUID}$`).exec(key);
+  if (img) return publicImage(deps, img[1]);
+  const c = new RegExp(`^POST /api/admin/campaigns/${UUID}(/toggle|/archive)?$`).exec(key);
+  if (c) {
+    if (c[2] === '/toggle') return adminToggleCampaign(deps, auth, c[1], body);
+    if (c[2] === '/archive') return adminArchiveCampaign(deps, auth, c[1]);
+    return adminSaveCampaign(deps, auth, c[1], body);
+  }
   return { status: 404, body: { error: 'not_found' } };
 }

@@ -1,8 +1,53 @@
-export type Plan = 'monthly' | 'yearly';
-export const PLANS: Record<Plan, { amount: number; days: number; label: string }> = {
-  monthly: { amount: 49_000, days: 30, label: 'KasirKu Bulanan' },
-  yearly: { amount: 490_000, days: 365, label: 'KasirKu Tahunan' },
-};
+/** A plan Kenny sets in the admin console (ADR-014). `id` is a fixed slug; payments point at it. */
+export interface PlanDef {
+  id: string;
+  name: string;
+  amount: number; // integer Rupiah
+  days: number;
+  note: string;
+  badge: string;
+  features: string[];
+  active: boolean; // shown on the landing page and in the app, and sellable
+  sort: number;
+  updatedAt: number;
+}
+
+/** A scheduled pop-up banner for the landing page and/or the merchant app, optionally with a promo price (ADR-014). */
+export interface Campaign {
+  id: string;
+  name: string; // internal
+  title: string; // heading, and the banner's alt text
+  body: string;
+  imageUrl: string | null; // uploaded (/api/public/images/<id>) or https
+  linkUrl: string | null; // the whole banner opens this when set
+  ctaLabel: string; // button under the banner; shown only with a link
+  showOnLanding: boolean;
+  showInApp: boolean; // once per merchant account, after sign-in / next app open
+  startsAt: number;
+  endsAt: number;
+  enabled: boolean;
+  archived: boolean;
+  planId: string | null;
+  promoAmount: number | null;
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface StoredImage {
+  id: string;
+  mime: 'image/png' | 'image/jpeg' | 'image/webp';
+  data: Uint8Array;
+  createdAt: number;
+}
+
+export interface AdminAuditEntry {
+  at: number;
+  email: string;
+  action: string;
+  target: string;
+  detail: unknown;
+}
+
 export const TRIAL_DAYS = 14;
 export const DAY_MS = 86_400_000;
 
@@ -12,7 +57,7 @@ export interface Account {
   googleSub: string | null;
   createdAt: number;
   trialEndsAt: number;
-  paidUntil: number | null;
+  paidUntil: number | null; // entitlement beyond the trial; no payment provider sets it yet
 }
 
 export interface LoginCode {
@@ -27,18 +72,6 @@ export interface RefreshToken {
   tokenHash: string;
   accountId: string;
   expiresAt: number;
-}
-
-export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'expired';
-export interface Payment {
-  orderId: string;
-  accountId: string;
-  plan: Plan;
-  amount: number;
-  status: PaymentStatus;
-  createdAt: number;
-  paidAt: number | null;
-  method: string | null;
 }
 
 export interface Repo {
@@ -58,32 +91,18 @@ export interface Repo {
   takeRefreshToken(tokenHash: string): Promise<RefreshToken | null>; // read and delete (rotation)
   deleteRefreshTokens(accountId: string): Promise<void>;
 
-  createPayment(p: Payment): Promise<void>;
-  findPayment(orderId: string): Promise<Payment | null>;
-  /** Moves a pending payment to paid exactly once; returns false when it was not pending. */
-  markPaymentPaid(orderId: string, paidAt: number, method: string | null): Promise<boolean>;
-  setPaymentStatus(orderId: string, status: PaymentStatus): Promise<void>;
-  listPayments(accountId: string): Promise<Payment[]>;
+  listPlans(): Promise<PlanDef[]>;
+  putPlan(p: PlanDef): Promise<void>;
+  listCampaigns(): Promise<Campaign[]>; // not archived
+  findCampaign(id: string): Promise<Campaign | null>;
+  putCampaign(c: Campaign): Promise<void>;
+  putImage(i: StoredImage): Promise<void>;
+  getImage(id: string): Promise<StoredImage | null>;
+  addAudit(e: AdminAuditEntry): Promise<void>;
 }
 
 export interface Mailer {
   sendLoginCode(email: string, code: string): Promise<void>;
-}
-
-export interface SnapResult {
-  token: string;
-  redirectUrl: string;
-}
-export interface MidtransStatus {
-  transactionStatus: string;
-  fraudStatus: string | null;
-  grossAmount: number;
-  paymentType: string | null;
-}
-export interface Midtrans {
-  createSnap(input: { orderId: string; amount: number; itemName: string; email: string; finishUrl: string }): Promise<SnapResult>;
-  getStatus(orderId: string): Promise<MidtransStatus | null>;
-  serverKey: string;
 }
 
 export interface PassSigner {
@@ -97,14 +116,21 @@ export interface GoogleVerifier {
 export interface Deps {
   repo: Repo;
   mailer: Mailer;
-  midtrans: Midtrans;
   signer: PassSigner;
   google: GoogleVerifier | null;
   now: () => number;
   appOrigin: string;
+  /** Lower-cased emails allowed into /admin (ADMIN_EMAILS). Empty = console closed. */
+  adminEmails: readonly string[];
 }
 
 export interface ApiResponse {
   status: number;
   body: unknown;
+  /** Edge-cacheable for this many seconds (public GETs only). */
+  cacheSeconds?: number;
+  /** Set on admin writes so the wrapper can drop the cached public landing data. */
+  purgePublic?: boolean;
+  /** Binary body (images); `body` is ignored when set. */
+  raw?: { contentType: string; bytes: Uint8Array };
 }

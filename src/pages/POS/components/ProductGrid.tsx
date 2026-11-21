@@ -1,4 +1,7 @@
-import { Layers, SearchX } from 'lucide-react';
+import { Layers, PackagePlus, SearchX } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ROUTES } from '../../../constants';
+import { btnPrimary } from '../../../components/ui/styles';
 import { EmptyState } from '../../../components/ui/EmptyState';
 import { ProductThumb } from '../../../components/ui/ProductThumb';
 import { formatRupiah } from '../../../lib/money';
@@ -14,9 +17,21 @@ interface ProductGridProps {
   qtyByProduct: ReadonlyMap<Id, number>;
   /** Called for sold-out products too; the page decides what a tap on one does. */
   onSelect: (product: Product) => void;
+  /** The store has no sellable product at all (a new store starts with an empty menu, ADR-018). */
+  isMenuEmpty?: boolean;
 }
 
-export function ProductGrid({ products, salesMode, qtyByProduct, onSelect }: ProductGridProps) {
+export function ProductGrid({ products, salesMode, qtyByProduct, onSelect, isMenuEmpty = false }: ProductGridProps) {
+  if (isMenuEmpty) {
+    return (
+      <EmptyState
+        icon={PackagePlus}
+        title={t('Menu masih kosong')}
+        description={t('Tambahkan produk yang Anda jual beserta harganya, lalu mulai mencatat penjualan.')}
+        action={<Link to={ROUTES.products} className={btnPrimary}>{t('Tambah produk')}</Link>}
+      />
+    );
+  }
   if (products.length === 0) {
     return <EmptyState icon={SearchX} title={t('Produk tidak ditemukan')} description={t('Coba kata kunci lain atau pilih kategori Semua.')} />;
   }
@@ -58,7 +73,7 @@ export function ProductGrid({ products, salesMode, qtyByProduct, onSelect }: Pro
                 <span className="absolute left-1.5 top-1.5 flex h-6 items-center rounded-md bg-ink px-2 text-[12px] font-semibold text-white">{t('Habis')}</span>
               )}
               {isSelected && (
-                <span className="num absolute right-1.5 top-1.5 flex h-6 min-w-6 items-center justify-center rounded-md bg-brand-600 px-1.5 text-[13px] font-bold text-white shadow-xs">
+                <span key={qty} className="num animate-pop absolute right-1.5 top-1.5 flex h-6 min-w-6 items-center justify-center rounded-md bg-brand-600 px-1.5 text-[13px] font-bold text-white shadow-xs">
                   {qty}
                 </span>
               )}

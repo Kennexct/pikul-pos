@@ -100,7 +100,7 @@ export function SignInPage() {
 
   return (
     <main className="flex min-h-dvh flex-col items-center bg-canvas px-4 py-8 text-ink md:justify-center">
-      <a href="/" className="mb-6" aria-label={t('KasirKu, ke halaman utama')}>
+      <a href="/" className="mb-6" aria-label={t('Pikul, ke halaman utama')}>
         <Logo size={34} />
       </a>
       <div className="w-full max-w-[420px] rounded-xl border border-line bg-surface p-6 shadow-xs">

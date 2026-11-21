@@ -35,10 +35,10 @@ export function parseBackup(text: string, currentSchemaVersion: number, knownTab
   try {
     raw = JSON.parse(text);
   } catch {
-    throw new BackupError(t('Berkas rusak atau bukan berkas cadangan KasirKu.'));
+    throw new BackupError(t('Berkas rusak atau bukan berkas cadangan Pikul.'));
   }
   if (!isRecord(raw) || raw.app !== BACKUP_APP_ID || !isRecord(raw.tables)) {
-    throw new BackupError(t('Ini bukan berkas cadangan KasirKu.'));
+    throw new BackupError(t('Ini bukan berkas cadangan Pikul.'));
   }
   if (typeof raw.formatVersion !== 'number' || raw.formatVersion > BACKUP_FORMAT_VERSION || typeof raw.schemaVersion !== 'number' || raw.schemaVersion > currentSchemaVersion) {
     throw new BackupError(t('Cadangan ini dibuat dengan versi aplikasi yang lebih baru. Perbarui aplikasi, lalu coba lagi.'));
@@ -73,8 +73,8 @@ export function parseBackup(text: string, currentSchemaVersion: number, knownTab
 const slug = (value: string) => value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'toko';
 const pad = (n: number) => String(n).padStart(2, '0');
 
-/** kasirku-cadangan-warung-bakso-20261119-2130.json (device local time). */
+/** pikul-cadangan-warung-bakso-20261119-2130.json (device local time). */
 export function backupFileName(storeName: string, at: Date): string {
   const stamp = `${at.getFullYear()}${pad(at.getMonth() + 1)}${pad(at.getDate())}-${pad(at.getHours())}${pad(at.getMinutes())}`;
-  return `kasirku-cadangan-${slug(storeName)}-${stamp}.json`;
+  return `pikul-cadangan-${slug(storeName)}-${stamp}.json`;
 }

@@ -119,7 +119,7 @@ export const HELP_EN: HelpContent = {
       title: 'Cash, expenses and closing the register',
       summary: 'The Cash screen answers "how much should be in the drawer?" and records money going out.',
       steps: [
-        'In the morning, enter the Opening cash: the change already in the drawer.',
+        'Before the first sale, the register asks you to "Open register": count the change in the drawer and type the amount.',
         'Whenever money goes out (ingredients, gas, wages), tap "Record expense". Turn off "Paid from the drawer" if the money did not come from the drawer.',
         'At night, tap "Close register", count the cash in the drawer and type the amount.',
         'The app records the difference. The summary can be sent to the owner by WhatsApp.',
@@ -129,7 +129,7 @@ export const HELP_EN: HelpContent = {
         'A sale after closing? The owner can "Reopen" and close again.',
         'When closing, items marked Sold out can be made available again automatically for tomorrow.',
       ],
-      keywords: 'drawer deposit difference short over closing shift cost shopping till',
+      keywords: 'drawer deposit difference short over closing shift cost shopping till open register float',
     },
     produk: {
       title: 'Products, cost price and sold out',
@@ -139,7 +139,7 @@ export const HELP_EN: HelpContent = {
         'Fill in "Cost price" (what one portion costs to make) if you want to see profit in Reports.',
         'Item run out today? In the Register, tap the crossed-box button next to search and switch the item on.',
       ],
-      notes: ['A Sold out item stays visible in the register but cannot be sold. Cashiers may change it too.', 'Inactive products are hidden from the register but stay in history.', 'Changing a cost price does not change the profit of past sales.'],
+      notes: ['Category tab: add, rename, reorder or delete categories. Products of a deleted category move to No category.', 'Products with variants have an arrow button in the list to see each variant\'s prices.', 'A Sold out item stays visible in the register but cannot be sold. Cashiers may change it too.', 'Inactive products are hidden from the register but stay in history.', 'Changing a cost price does not change the profit of past sales.'],
       keywords: 'menu item photo category cogs sold out empty stock',
     },
     timbang: {
@@ -190,7 +190,7 @@ export const HELP_EN: HelpContent = {
     },
     offline: {
       title: 'Working offline and where data is kept',
-      summary: 'KasirKu keeps everything on this device, so it still works when the signal drops.',
+      summary: 'Pikul keeps everything on this device, so it still works when the signal drops.',
       steps: ['Sell as usual. There is nothing to do when the internet is down.', 'The "Local" mark in the corner means the data is saved on this device.'],
       notes: [
         'Data is not yet copied to other devices automatically. Reports only include sales made on this device.',
@@ -215,11 +215,11 @@ export const HELP_EN: HelpContent = {
     },
     pasang: {
       title: 'Install on the home screen',
-      summary: 'KasirKu can be installed like a normal app so it opens full screen and faster.',
+      summary: 'Pikul can be installed like a normal app so it opens full screen and faster.',
       steps: [
         'Android (Chrome): tap the three-dot menu, then "Add to Home screen" or "Install app".',
         'iPhone or iPad (Safari): tap the Share button, then "Add to Home Screen".',
-        'Open KasirKu from the icon on the home screen.',
+        'Open Pikul from the icon on the home screen.',
       ],
       notes: ['Open the app once with internet after installing, so every part is stored for offline use.'],
       keywords: 'install pwa app icon homescreen',

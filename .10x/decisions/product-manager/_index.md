@@ -11,7 +11,10 @@
 - Feedback round roadmap v0.8–v0.11 → `specs/2026-11-19-feedback-round-roadmap.md`
 - v0.12–v0.13 flexible price, weight, variants → specs `2026-11-19-v12-*`, `2026-11-19-v13-*`
 - landing page v1 → `specs/2026-11-19-landing-page-design.md`
-- accounts-billing (v0.14): 14-day trial, Pro Rp49.000/month or Rp490.000/year (placeholders) → `accounts-billing.md`
+- accounts-billing (v0.14): 14-day trial → `accounts-billing.md` (Midtrans removed 2026-11-20, ADR-015)
+- admin-console (v0.15): plans + scheduled promo pop-up banners (landing + app), promo price shown; prices now set in /admin → `specs/2026-11-20-admin-console-design.md`
 
 ## Update 2026-11-20
 Status: M1–M14 shipped on device (M6 item-level discount, M9 receipt-as-image still open); M15 part 1 shipped; owner login replaced by v0.14 accounts. Pending: multi-device sync, cloud backup.
+- rebrand-pikul (2026-11-20) → `rebrand-pikul.md`
+- register-categories (v0.16) — ADR-017 → `register-categories.md`

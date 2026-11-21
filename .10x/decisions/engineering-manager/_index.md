@@ -6,3 +6,5 @@
 ## Features
 - reports-export — 7 tasks, ≈12 h → `reports-export.md`
 - staff-pin — 8 tasks, ≈13.5 h → `staff-pin.md`
+- rebrand-pikul → `rebrand-pikul.md`
+- register-categories (v0.16) — ADR-017 → `register-categories.md`

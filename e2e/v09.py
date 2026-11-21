@@ -9,6 +9,9 @@ from urllib.parse import unquote
 
 import openpyxl
 from playwright.sync_api import sync_playwright
+import os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from sample_menu import skip_with_sample_menu  # noqa: E402
 
 BASE, OUT = sys.argv[1], sys.argv[2]
 errors = []
@@ -32,6 +35,16 @@ READ_DB = """async () => {
 }"""
 
 
+
+def open_register(page, label='Buka kasir'):
+    """v0.16 (ADR-017): the register must be opened before the first sale; open it with the suggested float."""
+    back = page.url
+    page.goto(BASE + '/kas')
+    page.get_by_role('button', name=label).first.click()
+    page.get_by_role('dialog').get_by_role('button', name=label).click()
+    page.get_by_role('dialog').wait_for(state='detached')
+    page.goto(back)
+
 def shot(page, name):
     page.wait_for_timeout(400)
     page.screenshot(path=f'{OUT}/{name}.png')
@@ -47,6 +60,9 @@ def sell(page, is_mobile, product, method):
     page.goto(BASE + '/')
     page.get_by_role('button', name=product).first.click()
     page.wait_for_timeout(300)  # products with variants open a sheet first
+    if page.get_by_role('button', name='Tetap jual').count():  # v0.16: selling after closing warns once
+        page.get_by_role('button', name='Tetap jual').click()
+        page.wait_for_timeout(300)
     if page.get_by_role('button', name='Tambah ke pesanan').count():
         page.get_by_role('button', name='Tambah ke pesanan').click()
     if is_mobile:
@@ -84,8 +100,10 @@ def run(p, name, viewport, is_mobile):
 
     # 1. Cost price on one product; the other stays without.
     page.goto(BASE + '/produk')
-    page.get_by_role('button', name='Lewati, pakai contoh toko').click()  # first-time journey: take the example store
+    skip_with_sample_menu(page)  # first-time journey: empty store + test-only sample menu (ADR-018)
     page.get_by_role('navigation').first.wait_for()  # the store exists once the app shell is up
+    page.get_by_role('navigation').first.wait_for()
+    open_register(page)
     page.get_by_role('button', name=re.compile('^Kerupuk')).first.click()
     page.locator('#cost-price').fill('1200')
     page.get_by_text('Untung per porsi Rp800').wait_for()
@@ -186,7 +204,7 @@ def run(p, name, viewport, is_mobile):
     bad = Path(tempfile.mkdtemp()) / 'bukan-cadangan.json'
     bad.write_text('{"app": "lain"}')
     page.get_by_label('Berkas cadangan').set_input_files(str(bad))
-    page.get_by_text('Ini bukan berkas cadangan KasirKu.').wait_for()
+    page.get_by_text('Ini bukan berkas cadangan Pikul.').wait_for()
     page.get_by_label('Berkas cadangan').set_input_files(str(backup_path))
     dialog.get_by_text('Pulihkan cadangan ini?').wait_for()
     restore_blocked = dialog.get_by_role('button', name='Ganti semua data').is_disabled()

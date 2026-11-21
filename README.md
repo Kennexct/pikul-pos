@@ -1,7 +1,9 @@
-# KasirKu — Project Infrastructure
+# Pikul — Project Infrastructure
+
+> Formerly **KasirKu** (renamed 2026-11-20, ADR-016). A few device-side identifiers keep the old name on purpose: see "Legacy identifiers" in `design-system/MASTER.md`.
 
 Offline-first, web-based POS for Indonesian UMKM and street food sellers. Built mobile and tablet first, installable as a PWA.
-This repo implements the infrastructure for the PRD *"KasirKu — PRD: Simple POS for UMKM & Street Food Sellers"* (module refs M1–M15).
+This repo implements the infrastructure for the PRD *"KasirKu (now Pikul) — PRD: Simple POS for UMKM & Street Food Sellers"* (module refs M1–M15).
 
 ## 1. Architecture
 
@@ -21,9 +23,9 @@ This repo implements the infrastructure for the PRD *"KasirKu — PRD: Simple PO
 ┌───────────────────────────────────────────▼──────────────────────────────────────────┐
 │  Cloudflare Pages: / landing (static) · /app/ PWA · /api/* Pages Functions             │
 │   functions/api/[[path]].ts wires env → server/ (framework-free handlers, Deps object) │
-│   • Neon Postgres (ap-southeast-1): accounts, login_codes, refresh_tokens, payments    │
+│   • Neon Postgres (ap-southeast-1): accounts, login codes, tokens, plans, campaigns     │
 │   • Resend: 6-digit email sign-in code · optional Google ID token                      │
-│   • Midtrans Snap redirect + verified notification → extends paid_until                │
+│   • /admin/ owner console: plans + scheduled promo pop-ups (ADR-014)                   │
 │   • R2: reserved for cloud backup (not used yet)                                       │
 └──────────────────────────────────────────────────────────────────────────────────────┘
 Before v0.14 the plan was Supabase + Vercel; ADR-013 replaced it. supabase/migrations is kept as the
@@ -39,7 +41,7 @@ reference schema for future multi-device sync and is not applied anywhere.
 | State | Zustand | Small, no boilerplate; cart persisted to localStorage to survive reloads |
 | Styling | Tailwind CSS v4 | Fast responsive layouts, tiny CSS output |
 | Backend | Cloudflare Pages Functions + Neon Postgres (ADR-013) | Serverless, free tiers, Singapore region; server code is framework-free and tested with an in-memory repo |
-| Auth & billing | Email code (Resend) + offline ES256 access pass + Midtrans Snap | Selling keeps working offline through trial, paid period and a 3-day grace |
+| Auth & access | Email code (Resend) + offline ES256 access pass | Selling keeps working offline through trial, paid period and a 3-day grace. No payment provider is connected (ADR-015) |
 | Hosting | Cloudflare Pages | Landing at `/`, app at `/app/`, API at `/api/*` in one project |
 | IDs | Client UUIDv7 | Create records offline without collisions; time-sortable |
 | Money | Integer Rupiah | No floating-point errors; IDR has no minor unit in practice |
@@ -47,15 +49,16 @@ reference schema for future multi-device sync and is not applied anywhere.
 ## 2. Folder structure
 
 ```
-kasirku/
+pikul/                           # GitHub repo: Kennexct/kasirku (rename: docs/runbooks/rename-cloudflare-github.md)
 ├── .github/workflows/ci.yml     # typecheck → test → build on every PR
-├── public/icons/                # PWA icons (placeholder "K" — replace with brand)
+├── public/icons/                # PWA icons from the Pikul brand kit v1
 ├── supabase/migrations/         # reference sync schema (RLS, triggers, views) — not applied anywhere
-├── db/migrations/               # Neon schema for accounts + billing (v0.14)
-├── server/                      # framework-free API handlers: auth, billing, pass, midtrans, repos
+├── db/migrations/               # Neon schema: accounts (v0.14), plans + campaigns (v0.15)
+├── server/                      # framework-free API handlers: auth, subscription overview, admin, catalog, pass, repos
 ├── functions/api/[[path]].ts    # Cloudflare Pages Functions entry → server/
 ├── landing/                     # landing page source (built to / by scripts/landing/build.py)
 ├── app/index.html               # PWA entry served at /app/
+├── admin/index.html             # owner console served at /admin/ (src/admin/, ADR-014)
 ├── docs/runbooks/               # how-to per feature, incl. deploy-cloudflare.md
 ├── e2e/                         # Playwright browser flows (Python)
 ├── src/
@@ -90,7 +93,7 @@ npm test                       # pricing, business date, receipt no., UUIDv7
 npm run build                  # typecheck + production build + service worker
 ```
 
-Accounts and billing (v0.14): follow [`docs/runbooks/deploy-cloudflare.md`](docs/runbooks/deploy-cloudflare.md) — Neon (`db/migrations/001_accounts_billing.sql`), access-pass key (`node scripts/gen-pass-key.mjs`), Resend, Midtrans sandbox, Cloudflare Pages. Locally, `npm run build && npm run pages:dev` with `DEV_MODE=1` uses an in-memory DB and prints sign-in codes to the log. `VITE_BILLING=off` builds the app without the account gate.
+Accounts and the admin console: follow [`docs/runbooks/deploy-cloudflare.md`](docs/runbooks/deploy-cloudflare.md) — Neon (`db/migrations/001_accounts_billing.sql`, `002_admin_console.sql`), access-pass key (`node scripts/gen-pass-key.mjs`), Resend, Cloudflare Pages, `ADMIN_EMAILS`. Using the console: [`docs/runbooks/admin-console.md`](docs/runbooks/admin-console.md). Locally, `npm run build && npm run pages:dev` with `DEV_MODE=1` uses an in-memory DB and prints sign-in codes to the log. `VITE_BILLING=off` builds the app without the account gate.
 
 ## 4. Offline sync design
 
@@ -103,7 +106,7 @@ Accounts and billing (v0.14): follow [`docs/runbooks/deploy-cloudflare.md`](docs
 
 ## 5. Security model
 
-- **v0.14 accounts:** sign-in codes hashed (10 min, 5 attempts, 60 s resend); refresh tokens stored as SHA-256 and rotated; the access-pass private key is a Cloudflare secret, only the public JWK ships; Midtrans notifications verified by signature + amount and applied idempotently per `order_id`. Open before launch: rate-limit rule on `/api/auth/code`, CSP header.
+- **v0.14 accounts:** sign-in codes hashed (10 min, 5 attempts, 60 s resend); refresh tokens stored as SHA-256 and rotated; the access-pass private key is a Cloudflare secret, only the public JWK ships. **v0.15 admin:** allow-listed emails (`ADMIN_EMAILS`) with a session issued in the last 12 hours; every change goes to `admin_audit`; campaign links only `/…` or `https://`; banners only PNG/JPEG/WebP checked by magic bytes. Open before launch: rate-limit rule on `/api/auth/code`, CSP header.
 - The points below describe the planned sync backend (`supabase/migrations`), not yet live.
 - Only the public anon key ships to the client; every table has RLS keyed on `store_id` (`is_store_member`, `is_store_owner`).
 - Catalog/config tables: owner writes, members read. Operational tables: members insert/update, **no delete policy**.
@@ -116,12 +119,12 @@ Accounts and billing (v0.14): follow [`docs/runbooks/deploy-cloudflare.md`](docs
 | Env | Where | Backend | Deploy trigger |
 | --- | --- | --- | --- |
 | Local | `npm run dev` / `npm run pages:dev` | none, or `DEV_MODE=1` in-memory API | — |
-| Preview | Cloudflare Pages preview URL | Neon branch + Midtrans sandbox | every PR (once the Pages project exists) |
-| Production | Cloudflare Pages + custom domain | Neon (Singapore) + Midtrans production | merge to `main` |
+| Preview | Cloudflare Pages preview URL | Neon branch | every PR (once the Pages project exists) |
+| Production | Cloudflare Pages + custom domain | Neon (Singapore) | merge to `main` |
 
-CI (`.github/workflows/ci.yml`): `npm ci` → `typecheck` → `i18n:check` → `test` → `build`. The Cloudflare Pages project, Neon project, Resend domain and Midtrans keys do not exist yet (see `.10x/status.md`).
+CI (`.github/workflows/ci.yml`): `npm ci` → `typecheck` → `i18n:check` → `test` → `build`. The Cloudflare Pages project, Neon project and Resend domain do not exist yet (see `.10x/status.md`).
 
-## 7. Current status (v0.14 — + accounts, trial, billing)
+## 7. Current status (v0.16 — register open/close, categories, variant expand)
 
 Design rules, tokens and component inventory: [`design-system/MASTER.md`](design-system/MASTER.md). Browser flow checks: [`e2e/`](e2e/README.md).
 
@@ -149,18 +152,21 @@ Design rules, tokens and component inventory: [`design-system/MASTER.md`](design
 | Expenses (v0.9) | Done: record by category, from the drawer or not; owner deletes; in reports and exports | `pages/Cash/`, `services/expenses.ts` |
 | Close of day (v0.9) | Done: "Tutup kasir" — expected vs counted cash, difference, WhatsApp summary, sold-out reset, reopen (owner), history | `lib/cashDrawer.ts`, `services/dayClosing.ts` |
 | Backup file (v0.9) | Done: save all device data to one file; replace-all restore with validation (ADR-008) | `lib/backup.ts`, `services/backup.ts`, `pages/Settings/BackupSettings.tsx` |
-| First-time journey (v0.10) | Done: store name + business template (5), payment choices, how-it-works cards; "Langkah awal" checklist derived from data (ADR-009) | `pages/Onboarding/`, `services/seedTemplate.ts`, `lib/checklist.ts` |
+| First-time journey (v0.10, v0.17) | Done: store name, payment choices, how-it-works cards; the menu starts empty (ADR-018); "Langkah awal" checklist derived from data (ADR-009) | `pages/Onboarding/`, `services/storeSetup.ts`, `lib/checklist.ts` |
 | Help centre (v0.10) | Done: 15 offline topics with search, contextual "?" on each page, intro replay | `content/help*.ts`, `pages/Help/`, `components/Help/` |
 | English (v0.11) | Done: Indonesian + English for every screen, receipt, WhatsApp text, export and help topic; per-device language with reload on change; typed source-string dictionary (ADR-010) | `src/i18n/`, `content/help.en.ts`, `scripts/i18n-*.mjs` |
 | Flexible price (v0.12) | Done: per-product switch; the seller types the price at the register; the normal price is stored next to the charged price and shown in history and the Item export (ADR-011) | `pages/POS/components/SaleEntrySheet.tsx`, `lib/quantity.ts` |
 | Sell by weight / measure (v0.12) | Done: store setting; products sold per kg, ons, gram, litre or metre; weight or money amount typed at the register; decimal quantity, whole-Rupiah line totals; receipts, refunds, profit and exports aware of units | `lib/quantity.ts`, `lib/pricing.ts`, `pages/Products/ProductForm.tsx`, `pages/Settings/StoreSettings.tsx` |
 | Variants & add-ons (v0.13) | Done: product → variant (own full price, takeaway price, cost, sold-out) → add-ons (ice, sugar, size…; previously called "Varian"); cashier sheet variant-then-add-on; reports per variant (ADR-012) | `lib/productVariants.ts`, `pages/POS/components/OptionSheet.tsx`, `pages/Products/ProductVariantsEditor.tsx` |
-| Accounts, trial & billing (v0.14) | Done in code: email-code sign-in (optional Google), 14-day trial, offline ES256 access pass with 3-day grace, read-only on expiry, Midtrans Snap subscription, landing at `/`, app at `/app/` (ADR-013). Not deployed yet | `server/`, `functions/api/`, `src/lib/accessPass.ts`, `pages/Auth/`, `pages/Settings/SubscriptionSettings.tsx` |
+| Accounts, trial & billing (v0.14) | Done in code: email-code sign-in (optional Google), 14-day trial, offline ES256 access pass with 3-day grace, read-only on expiry, landing at `/`, app at `/app/` (ADR-013). Online payment removed for now (ADR-015). Not deployed yet | `server/`, `functions/api/`, `src/lib/accessPass.ts`, `pages/Auth/`, `pages/Settings/SubscriptionSettings.tsx` |
+| Admin console (v0.15) | Done: owner-only `/admin/` — plans (name, price, days, features, on sale) feed the landing page and the app; scheduled pop-up banners with upload, optional link, on/off, landing and/or merchant app (once per account), optional promo price (ADR-014) | `server/admin.ts`, `server/catalog.ts`, `src/admin/`, `src/landing/live.ts`, `src/components/Access/CampaignPopup.tsx` |
+| Register open/close, categories (v0.16) | Done: "Buka kasir" with the opening count before the first sale (cashier gate, audited, never online), Kategori tab (add, rename, reorder, delete → Tanpa kategori), inline variant expand in the product list (ADR-017) | `lib/register.ts`, `pages/POS/useRegisterGate.tsx`, `components/Register/`, `services/categories.ts`, `pages/Products/CategoriesPanel.tsx`, `pages/Products/ProductRow.tsx` |
+| Online payment | Removed (Midtrans, ADR-015); entitlement can be granted by hand in Neon until a provider is chosen | — |
 | Multi-device sync, cloud backup | Not started — will reuse v0.14 accounts (Neon, R2) | — |
 
-First run opens a three-step journey; the chosen template (`services/seedTemplate.ts`) seeds a small editable menu so the seller can sell immediately.
+First run opens a three-step journey (`services/storeSetup.ts`). Since v0.17 the store starts with an empty menu and no example data (ADR-018); the cashier screen points the seller to Produk to add their first item. Example menus live only in `src/test/sampleMenu.ts` for tests.
 
-Tests: 160 unit/integration tests (incl. server auth/billing against an in-memory repo) (incl. a 20k-order performance guard) (`npm test`) cover pricing, variants, receipt numbering, business date, WhatsApp receipt text, and the order service against an in-memory IndexedDB (paid, open → resume → paid, cancel + audit, validation, StrictMode double-seed guard) and void/refund rules (same-day void, refund window, partial → full, permission, reason).
+Tests: 173 unit/integration tests (incl. server auth, admin and campaigns against an in-memory repo) (incl. a 20k-order performance guard) (`npm test`) cover pricing, variants, receipt numbering, business date, WhatsApp receipt text, and the order service against an in-memory IndexedDB (paid, open → resume → paid, cancel + audit, validation, StrictMode double-seed guard) and void/refund rules (same-day void, refund window, partial → full, permission, reason).
 
 ## 8. Build order (maps to PRD release plan)
 

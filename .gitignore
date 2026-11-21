@@ -10,3 +10,4 @@ coverage
 supabase/.temp
 .dev.vars
 .wrangler
+__pycache__/

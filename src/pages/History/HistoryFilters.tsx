@@ -43,7 +43,7 @@ export function HistoryFilters(props: HistoryFiltersProps) {
         <div className="lg:max-w-xs lg:flex-1">
           <SearchInput value={filter.query} onChange={(query) => set({ query })} placeholder={t('No. struk, label, pelanggan…')} label={t('Cari transaksi')} />
         </div>
-        <div className="-mx-4 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none] md:mx-0 md:px-0">
+        <div className="scroll-x -mx-4 flex gap-2 px-4 md:mx-0 md:px-0">
           <Select
             label={t('Status')}
             value={filter.status}

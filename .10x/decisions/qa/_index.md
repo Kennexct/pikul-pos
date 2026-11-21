@@ -7,3 +7,5 @@
 - reports-export — PASS, 2 manual checks pending → `reports-export.md`
 - staff-pin — PASS → `staff-pin.md`
 - customers — PASS → `reviews/2026-11-18-customers-review.md`
+- rebrand-pikul → `rebrand-pikul.md` (PASS)
+- register-categories (v0.16) — ADR-017 → `register-categories.md`

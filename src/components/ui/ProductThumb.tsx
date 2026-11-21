@@ -15,20 +15,16 @@ function monogram(name: string): string {
 
 /**
  * Product photo, or a quiet neutral monogram when there is none (PRD M3).
- * Deliberately monochrome: the photo — not random pastel colors — should be the only color on a tile.
+ * Deliberately monochrome: the photo — not random pastel colors or a stock dot texture — should be the only
+ * color and pattern on a tile. The initials sit straight on the well, so the 40px list thumb stays one box.
  */
 export function ProductThumb({ name, photoUrl, className = '' }: ProductThumbProps) {
   if (photoUrl) {
-    return <img src={photoUrl} alt="" loading="lazy" className={`bg-subtle object-cover ${className}`} />;
+    return <img src={photoUrl} alt="" loading="lazy" decoding="async" className={`bg-subtle object-cover ${className}`} />;
   }
   return (
-    <div
-      aria-hidden
-      className={`flex items-center justify-center bg-subtle bg-[radial-gradient(var(--color-line)_1px,transparent_1px)] [background-size:10px_10px] ${className}`}
-    >
-      <span className="rounded-md bg-surface px-2 py-1 text-[15px] font-bold tracking-[-0.02em] text-muted ring-1 ring-line">
-        {monogram(name)}
-      </span>
+    <div aria-hidden className={`@container flex items-center justify-center bg-subtle ${className}`}>
+      <span className="text-[clamp(13px,20cqw,26px)] font-bold tracking-[-0.02em] text-muted">{monogram(name)}</span>
     </div>
   );
 }

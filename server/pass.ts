@@ -1,7 +1,7 @@
 import { importJWK, SignJWT, createRemoteJWKSet, jwtVerify, type JWK } from 'jose';
 import type { GoogleVerifier, PassSigner } from './types';
 
-export const PASS_ISSUER = 'kasirku';
+export const PASS_ISSUER = 'pikul';
 export const PASS_TTL_S = 30 * 24 * 3600; // re-checked long before this; the device decides by `until`
 
 export async function passSigner(privateJwk: JWK): Promise<PassSigner> {

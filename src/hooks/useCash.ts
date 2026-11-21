@@ -4,7 +4,8 @@ import { localDb } from '../db/localDb';
 import type { DrawerInput } from '../lib/cashDrawer';
 import type { DateRange } from '../lib/dateRange';
 import { isCountedSale } from '../lib/reports';
-import { getClosing, loadDrawerInput } from '../services/dayClosing';
+import { registerStatus, type RegisterStatus } from '../lib/register';
+import { getClosing, getOpeningCash, hasOpening, loadDrawerInput } from '../services/dayClosing';
 import type { BusinessDate, DayClosing, Expense, Id } from '../types';
 
 export interface DrawerDay {
@@ -30,6 +31,26 @@ export function useIsUnclosed(storeId: Id | null, date: BusinessDate): boolean {
       return sale !== undefined;
     }, [storeId, date]) ?? false
   );
+}
+
+export interface RegisterInfo {
+  status: RegisterStatus;
+  /** What the opening sheet suggests: today's typed amount, else the last closing's opening cash. */
+  suggestedOpening: number;
+}
+
+/** Live register state for one business day (ADR-017). Undefined while loading: callers never block on it. */
+export function useRegister(storeId: Id | null, date: BusinessDate): RegisterInfo | undefined {
+  return useLiveQuery(async () => {
+    if (!storeId) return undefined;
+    const sale = await localDb.orders.where('[storeId+businessDate]').equals([storeId, date]).filter(isCountedSale).first();
+    const status = registerStatus({
+      hasOpening: await hasOpening(storeId, date),
+      hasCountedSale: sale !== undefined,
+      hasClosing: (await getClosing(storeId, date)) !== undefined,
+    });
+    return { status, suggestedOpening: await getOpeningCash(storeId, date) };
+  }, [storeId, date]);
 }
 
 /** Live expenses in the period, newest first. */

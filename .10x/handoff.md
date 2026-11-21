@@ -1,11 +1,14 @@
-# Handoff — after v0.14 (refreshed 2026-11-20)
+# Handoff — remove mock data (2026-11-21)
 
-**Where things stand:** v0.14 is built, reviewed (`reviews/2026-11-19-v14-review.md`) and merged to `main`, but nothing is deployed. Go-live is blocked on accounts only Kenny can create: Neon, Resend domain, Midtrans sandbox keys, Cloudflare Pages project, final prices and domain.
+**Latest:** `feat/remove-mock-data` (on top of `feat/register-categories`): a new store starts with an empty menu, no example discounts (ADR-018). Existing devices drop untouched, unsold example items once on start. e2e flows that need a menu call `skip_with_sample_menu(page)` / `add_sample_menu(page, 'kopi')` from `e2e/sample_menu.py` (the "Lewati, pakai contoh toko" button is gone; it is now "Lewati").
 
-Shipped in code: accounts (email code, optional Google), 14-day trial, offline ES256 access pass with 3-day grace, read-only on expiry, Midtrans Snap billing, app at `/app`, landing at `/`.
+# Previous — v0.16 register open/close, categories, variant expand (2026-11-20)
 
-**To go live:** follow `docs/runbooks/deploy-cloudflare.md`.
-**Open items:** rate-limit rule, CSP, disable Bayar when expired, real prices.
-**Next candidates:** multi-device sync + cloud backup (reuse accounts, Neon + R2), photo upload, item-level discount, receipt as image, split payment.
+**Latest:** v0.16 delivered on `feat/register-categories` (stacked on `feat/ui-polish` → `feat/rebrand-pikul` → `feat/v0.15-admin-console`). Register must be opened (counted float) before the first sale; count by note/coin at open and close; Kategori tab; variant expand. ADR-017, review `reviews/2026-11-20-v16-review.md`, runbook `docs/runbooks/cash-profit-backup.md` (v0.16 section).
 
-**For any new thread:** read `status.md`, the relevant `decisions/<role>/_index.md`, the latest ADR (013) and `design-system/MASTER.md` before proposing changes. Interface text is Indonesian-first with English in `src/i18n/en.ts` (`npm run i18n:check`).
+**e2e note:** since v0.16 every older flow calls `open_register(page)` after the first-time journey.
+
+**Never rename:** IndexedDB `kasirku`, localStorage `kasirku-cart|lang|active-member`, backup marker `app: "kasirku"`.
+
+**To go live:** `docs/runbooks/rename-cloudflare-github.md`, then `deploy-cloudflare.md` and `admin-console.md`.
+**For any new thread:** read `status.md`, the relevant `decisions/<role>/_index.md`, ADRs 013–018 and `design-system/MASTER.md`. Next ADR: 019.

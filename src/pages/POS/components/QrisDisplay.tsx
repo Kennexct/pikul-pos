@@ -29,7 +29,7 @@ export function QrisDisplay({ method, storeName, amount, reference, onReferenceC
   }, [onClose]);
 
   return (
-    <div role="dialog" aria-modal="true" aria-label={t('Pembayaran QRIS')} className="animate-fade fixed inset-0 z-50 flex flex-col bg-canvas">
+    <div role="dialog" aria-modal="true" aria-label={t('Pembayaran QRIS')} className="animate-rise fixed inset-0 z-50 flex flex-col bg-canvas">
       <header className="flex items-center gap-2 border-b border-line bg-surface px-3 py-2">
         <button type="button" aria-label={t('Kembali ke pembayaran')} onClick={onClose} className="flex h-11 w-11 items-center justify-center rounded-lg text-ink-soft hover:bg-subtle">
           <ArrowLeft aria-hidden size={20} />

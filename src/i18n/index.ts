@@ -8,6 +8,7 @@ export type Lang = 'id' | 'en';
 export type Msg = keyof typeof EN;
 type Arg = string | number;
 
+/** Legacy identifier, frozen (ADR-016). */
 export const LANGUAGE_STORAGE_KEY = 'kasirku-lang';
 export const LANGUAGES: ReadonlyArray<{ value: Lang; label: string }> = [
   { value: 'id', label: 'Bahasa Indonesia' },
