@@ -10,6 +10,9 @@ import time
 from datetime import datetime, timedelta
 
 from playwright.sync_api import sync_playwright
+import os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from sample_menu import skip_with_sample_menu  # noqa: E402
 
 BASE, OUT, LOG = sys.argv[1:4]
 ADMIN = 'admin@pikul.test'
@@ -130,7 +133,7 @@ def merchant_flow(p, viewport, is_mobile, name):
     page.get_by_role('button', name='Kirim kode masuk').click()
     page.locator('#signin-code').fill(latest_code(email))
     page.get_by_role('button', name='Masuk', exact=True).click()
-    page.get_by_role('button', name='Lewati, pakai contoh toko').click()
+    skip_with_sample_menu(page)  # first-time journey: empty store + test-only sample menu (ADR-018)
     dialog = page.get_by_role('dialog', name='Diskon 20% paket tahunan')
     dialog.wait_for(timeout=8000)
     shot(page, f'{name}-d1-app-popup')

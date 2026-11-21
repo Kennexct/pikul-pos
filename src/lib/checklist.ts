@@ -3,7 +3,7 @@ import { t } from '../i18n';
 
 /** "Langkah awal" (ADR-009): every item is derived from facts in the database — nothing is ticked by hand. */
 export interface ChecklistFacts {
-  hasEditedMenu: boolean;
+  hasMenu: boolean;
   hasSale: boolean;
   hasOwnerPin: boolean;
   /** QRIS is one of the active payment methods. */
@@ -23,7 +23,7 @@ export interface ChecklistItem {
 
 export function buildChecklist(facts: ChecklistFacts): ChecklistItem[] {
   const items: Array<ChecklistItem | null> = [
-    { id: 'menu', label: t('Sesuaikan menu'), hint: t('Ubah nama, harga, atau tambah menu Anda sendiri.'), isDone: facts.hasEditedMenu, to: ROUTES.products },
+    { id: 'menu', label: t('Tambah menu'), hint: t('Masukkan produk yang Anda jual beserta harganya.'), isDone: facts.hasMenu, to: ROUTES.products },
     { id: 'sale', label: t('Coba transaksi pertama'), hint: t('Ketuk menu, lalu Bayar.'), isDone: facts.hasSale, to: ROUTES.pos },
     facts.usesQris
       ? { id: 'qris', label: t('Unggah gambar QRIS'), hint: t('Supaya bisa ditampilkan ke pelanggan saat membayar.'), isDone: facts.hasQrisImage, to: `${ROUTES.settings}?tab=payments` }

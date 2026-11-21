@@ -27,3 +27,7 @@ Old flows: build without `VITE_PASS_PUBLIC_JWK` (billing off), `npx vite preview
 
 ## v0.16: open the register first
 Since v0.16 (ADR-017) the first sale of the day asks to open the register. Every older flow calls `open_register(page)` right after the first-time journey (it opens Kas, presses "Buka kasir" with the suggested float and goes back).
+
+## v0.17: the store starts empty (ADR-018)
+The first-time journey no longer offers example menus and "Lewati, pakai contoh toko" is now "Lewati" (empty store).
+Flows that need something to sell use `e2e/sample_menu.py`: `skip_with_sample_menu(page)` presses Lewati and writes the bakso sample menu into IndexedDB; `add_sample_menu(page, 'kopi')` does the same after a full journey. The data is `fixtures/sample-menus.json`, a mirror of `src/test/sampleMenu.ts` (a unit test keeps them equal). `v10.py` also checks the empty-menu state.

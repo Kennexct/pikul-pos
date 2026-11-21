@@ -28,7 +28,7 @@ export function useChecklist(storeId: Id | null): ChecklistState | undefined {
     const owner = await localDb.storeMembers.where('storeId').equals(storeId).filter((m) => m.role === 'owner' && !m.deletedAt).first();
 
     const items = buildChecklist({
-      hasEditedMenu: products.some((p) => (onboardedAt ? p.updatedAt > onboardedAt : p.updatedAt !== p.createdAt)),
+      hasMenu: products.some((p) => !p.deletedAt),
       hasSale: (await localDb.orders.where('storeId').equals(storeId).filter(isCountedSale).first()) !== undefined,
       hasOwnerPin: (owner?.pinHash ?? '') !== '',
       usesQris: qris.length > 0,

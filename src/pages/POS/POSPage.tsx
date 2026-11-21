@@ -288,7 +288,7 @@ export function POSPage() {
           />
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto p-3 pb-24 md:p-5">
-          <ProductGrid products={visibleProducts} salesMode={mode} qtyByProduct={qtyByProduct} onSelect={handleSelectProduct} />
+          <ProductGrid products={visibleProducts} salesMode={mode} qtyByProduct={qtyByProduct} onSelect={handleSelectProduct} isMenuEmpty={sellableProducts.length === 0} />
         </div>
       </section>
 

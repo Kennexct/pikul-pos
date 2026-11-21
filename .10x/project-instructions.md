@@ -15,7 +15,7 @@ Paste the block below into the project's instructions. Refreshed 2026-11-20 from
 - Use the design system in `design-system/MASTER.md` (semantic tokens, shared components). Files under 400 lines, no `any`, no `console.log`.
 - Secrets never in the repo or the client. Only the public access-pass JWK ships in the app.
 
-**How we work (10x-Team).** Every feature goes brainstorm → spec → ADR → plan → build → QA + security review → runbook. State lives in `.10x/` (`status.md`, `handoff.md`, `decisions/<role>/`, `adrs/`, `specs/`, `reviews/`); read `status.md` and `handoff.md` first and update them at each phase. Next ADR number: 018. Branches `feat/<slug>`, commits `feat(...)` / `fix(...)` / `state(<phase>): ...`.
+**How we work (10x-Team).** Every feature goes brainstorm → spec → ADR → plan → build → QA + security review → runbook. State lives in `.10x/` (`status.md`, `handoff.md`, `decisions/<role>/`, `adrs/`, `specs/`, `reviews/`); read `status.md` and `handoff.md` first and update them at each phase. Next ADR number: 019. Branches `feat/<slug>`, commits `feat(...)` / `fix(...)` / `state(<phase>): ...`.
 
 **Checks before calling work done.** `npm run typecheck`, `npm run i18n:check`, `npm test`, `npm run build`, plus the matching Playwright script in `e2e/` on a phone and tablet viewport.
 

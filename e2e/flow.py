@@ -1,5 +1,8 @@
 import sys
 from playwright.sync_api import sync_playwright
+import os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from sample_menu import skip_with_sample_menu  # noqa: E402
 
 BASE = sys.argv[1]
 OUT = sys.argv[2]
@@ -22,7 +25,7 @@ def run(p, name, viewport, is_mobile):
     page.on('pageerror', lambda e: errors.append(f'{name} pageerror: {e}'))
     page.on('console', lambda m: m.type == 'error' and errors.append(f'{name} console: {m.text}'))
     page.goto(BASE)
-    page.get_by_role('button', name='Lewati, pakai contoh toko').click()  # first-time journey: take the example store
+    skip_with_sample_menu(page)  # first-time journey: empty store + test-only sample menu (ADR-018)
     page.get_by_role('navigation').first.wait_for()  # the store exists once the app shell is up
     page.get_by_role('navigation').first.wait_for()
     open_register(page)

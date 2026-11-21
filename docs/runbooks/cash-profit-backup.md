@@ -23,7 +23,7 @@ Backup file hygiene: it contains customer phone numbers and PIN hashes — keep 
 | Symptom | Cause | Action |
 | --- | --- | --- |
 | The journey appears on a device that had data | Browser data was cleared, or a different browser/profile is used | Restore from a backup file: finish or skip the journey, then Pengaturan → Cadangan. |
-| Wrong business template chosen | — | Edit or delete the example products in Produk; there is no "re-run" (it would discard sales). |
+| Example menu still showing (device set up before v0.17) | — | Removed automatically on the first start of v0.17 if never edited or sold; anything edited or sold stays and can be turned off in Produk. |
 | "Langkah awal" banner is gone | It was dismissed or all steps are done | The checklist stays on the Bantuan page until complete. |
 | A checklist step will not tick | It follows the data: e.g. QRIS needs an uploaded image, backup needs "Simpan cadangan" pressed on this device | Do the step; it ticks by itself. |
 

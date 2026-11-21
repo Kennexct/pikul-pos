@@ -4,6 +4,7 @@ import { localDb } from '../db/localDb';
 import { getBusinessDate } from '../lib/businessDate';
 import type { OrderItem } from '../types';
 import { ensureLocalStore } from './bootstrap';
+import { seedSampleMenu } from '../test/sampleMenu';
 import { setProductSoldOut } from './catalog';
 import { closeDay, getOpeningCash, hasOpening, reopenDay, setOpeningCash } from './dayClosing';
 import { addExpense, deleteExpense } from './expenses';
@@ -53,6 +54,7 @@ describe('closeDay', () => {
     await completeOrder(cart, ctx, { method: qris, amount: 30_000 });
     await addExpense(store.id, { businessDate: today, category: 'ingredients', amount: 12_000, note: '', isFromDrawer: true, actorId: owner.id });
     await addExpense(store.id, { businessDate: today, category: 'rent', amount: 500_000, note: '', isFromDrawer: false, actorId: owner.id });
+    await seedSampleMenu(store.id);
     const product = await localDb.products.where('storeId').equals(store.id).first();
     if (!product) throw new Error('seed missing');
     await setProductSoldOut(product.id, true);

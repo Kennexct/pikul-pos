@@ -1,35 +1,33 @@
-import { ArrowLeft, Banknote, Coffee, Cookie, Landmark, QrCode, Soup, SquareDashed, Upload, UtensilsCrossed } from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
+import { ArrowLeft, Banknote, Landmark, QrCode, Upload } from 'lucide-react';
 import { useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Logo } from '../../components/Brand/Logo';
 import { IntroCards } from '../../components/Help/IntroCards';
 import { LanguagePicker } from '../../components/LanguagePicker';
 import { Switch } from '../../components/ui/Switch';
-import { btnGhost, btnPrimary, btnSecondary, helperText, inputBase, labelBase, option } from '../../components/ui/styles';
+import { btnGhost, btnPrimary, btnSecondary, helperText, inputBase, labelBase } from '../../components/ui/styles';
 import { compressQrisImage } from '../../lib/image';
-import { DEFAULT_SETUP, STORE_NAME_MAX, TEMPLATE_IDS, TEMPLATES, type SeedSetup, type TemplateId } from '../../services/seedTemplate';
+import { DEFAULT_SETUP, STORE_NAME_MAX, type StoreSetup } from '../../services/storeSetup';
 import { t } from '../../i18n';
 
-const TEMPLATE_ICON: Record<TemplateId, LucideIcon> = { bakso: Soup, kopi: Coffee, gorengan: Cookie, warung: UtensilsCrossed, kosong: SquareDashed };
 /** The first title is shown in both languages: the reader has not chosen one yet. */
 const STEP_TITLES = ['Bahasa / Language', t('Toko Anda'), t('Cara pembayaran'), t('Cara kerja Pikul')] as const;
 const LAST_STEP = STEP_TITLES.length - 1;
 
 interface OnboardingPageProps {
-  /** Creates the store and enters the app. Without a setup: the default example store ("Lewati"). */
-  onComplete: (setup?: SeedSetup) => Promise<void>;
+  /** Creates the store and enters the app. Without a setup: an empty store with the default name ("Lewati"). */
+  onComplete: (setup?: StoreSetup) => Promise<void>;
 }
 
 /** First-time journey (ADR-009): shown only when this device has no store yet. Language, then three short steps; no account. */
 export function OnboardingPage({ onComplete }: OnboardingPageProps) {
   const fileInput = useRef<HTMLInputElement>(null);
   const [step, setStep] = useState(0);
-  const [setup, setSetup] = useState<SeedSetup>({ ...DEFAULT_SETUP, storeName: '' });
+  const [setup, setSetup] = useState<StoreSetup>({ ...DEFAULT_SETUP, storeName: '' });
   const [isBusy, setIsBusy] = useState(false);
-  const update = (patch: Partial<SeedSetup>) => setSetup((current) => ({ ...current, ...patch }));
+  const update = (patch: Partial<StoreSetup>) => setSetup((current) => ({ ...current, ...patch }));
 
-  const finish = async (chosen?: SeedSetup) => {
+  const finish = async (chosen?: StoreSetup) => {
     setIsBusy(true);
     try {
       await onComplete(chosen);
@@ -84,25 +82,7 @@ export function OnboardingPage({ onComplete }: OnboardingPageProps) {
                 <input id="store-name" autoFocus value={setup.storeName} maxLength={STORE_NAME_MAX} placeholder={t('mis. Bakso Pak Kumis')} onChange={(e) => update({ storeName: e.target.value })} className={inputBase} />
                 <p className={helperText}>{t('Tampil di struk. Bisa diubah nanti.')}</p>
               </div>
-              <div>
-                <p className={labelBase}>{t('Jenis usaha')}</p>
-                <div role="radiogroup" aria-label={t('Jenis usaha')} className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                  {TEMPLATE_IDS.map((id) => {
-                    const Icon = TEMPLATE_ICON[id];
-                    const isSelected = setup.template === id;
-                    return (
-                      <button key={id} type="button" role="radio" aria-checked={isSelected} onClick={() => update({ template: id })} className={`${option(isSelected)} h-auto min-h-[60px] justify-start! gap-3 px-3.5 py-2.5 text-left`}>
-                        <Icon aria-hidden size={22} className="shrink-0" />
-                        <span className="min-w-0">
-                          <span className="block text-[15px] font-semibold">{TEMPLATES[id].label}</span>
-                          <span className={`block text-[13px] font-normal ${isSelected ? 'text-brand-700' : 'text-muted'}`}>{TEMPLATES[id].description}</span>
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-                <p className={helperText}>{t('Kami siapkan contoh menu yang bisa Anda ubah atau hapus.')}</p>
-              </div>
+              <p className={helperText}>{t('Menu masih kosong. Setelah ini, tambahkan produk yang Anda jual beserta harganya.')}</p>
             </div>
           )}
 
@@ -146,7 +126,7 @@ export function OnboardingPage({ onComplete }: OnboardingPageProps) {
             <button type="button" disabled={isBusy} onClick={() => void finish(setup)} className={`${btnPrimary} w-full`}>{t('Mulai jualan')}</button>
           )}
           {step <= 1 && (
-            <button type="button" disabled={isBusy} onClick={() => void finish()} className={`${btnGhost} w-full text-[14px]`}>{t('Lewati, pakai contoh toko')}</button>
+            <button type="button" disabled={isBusy} onClick={() => void finish()} className={`${btnGhost} w-full text-[14px]`}>{t('Lewati')}</button>
           )}
         </footer>
       </div>

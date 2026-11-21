@@ -5,6 +5,9 @@ import re
 import sys
 
 from playwright.sync_api import sync_playwright
+import os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from sample_menu import add_sample_menu  # noqa: E402
 
 BASE, OUT = sys.argv[1:3]
 errors = []
@@ -43,10 +46,11 @@ def run(p, name, viewport, is_mobile):
     page.goto(BASE + '/')
     page.get_by_role('button', name='Lanjut').click()
     page.locator('#store-name').fill('Kopi Senja')
-    page.get_by_role('radio', name=re.compile('Kopi & minuman')).click()
     page.get_by_role('button', name='Lanjut').click()
     page.get_by_role('button', name='Lanjut').click()
     page.get_by_role('button', name='Mulai jualan').click()
+    page.get_by_role('navigation').first.wait_for()
+    add_sample_menu(page, 'kopi')  # v0.17: the store starts empty (ADR-018)
 
     # 1. Register not open: banner, and the first product tap asks for the opening count.
     page.get_by_text('Kasir belum dibuka hari ini').wait_for()
