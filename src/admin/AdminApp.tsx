@@ -1,9 +1,8 @@
-import { LogOut, ShieldCheck, TriangleAlert } from 'lucide-react';
+import { LogOut, Menu, TriangleAlert } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { LoadingScreen } from '../components/ui/LoadingScreen';
-import { btnGhost, btnSecondary } from '../components/ui/styles';
-import { Tabs } from '../components/ui/Tabs';
+import { btnSecondary } from '../components/ui/styles';
 import { t } from '../i18n';
 import { loadCatalog, logout, openConsole, SIGNED_OUT_EVENT, type Catalog, type Gate, type Mode } from './api';
 import { CampaignsPanel } from './CampaignsPanel';
@@ -11,13 +10,16 @@ import { ContentPanel } from './ContentPanel';
 import { errorText } from './errors';
 import { LoginScreen } from './LoginScreen';
 import { MerchantsPanel } from './MerchantsPanel';
+import { SECTIONS, sectionLabel, type Section } from './nav';
+import { NavDrawer } from './NavDrawer';
 import { OverviewPanel } from './OverviewPanel';
 import { PaymentsPanel } from './PaymentsPanel';
 import { PlansPanel } from './PlansPanel';
 import { ReportPanel } from './ReportPanel';
+import { Sidebar } from './Sidebar';
 
-type Tab = 'overview' | 'merchants' | 'payments' | 'report' | 'plans' | 'campaigns' | 'content';
-const TABS: readonly Tab[] = ['overview', 'merchants', 'payments', 'report', 'plans', 'campaigns', 'content'];
+type Tab = Section;
+const TABS = SECTIONS;
 const TAB_KEY = 'pikul.admin.tab';
 const readTab = (): Tab => {
   try {
@@ -36,6 +38,8 @@ export function AdminApp() {
   const [catalog, setCatalog] = useState<Catalog | null>(null);
   const [tab, setTabState] = useState<Tab>(readTab);
   const [openMerchant, setOpenMerchant] = useState<string | null>(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const closeMenu = useCallback(() => setIsMenuOpen(false), []);
 
   const setTab = (v: Tab) => {
     setTabState(v);
@@ -107,37 +111,50 @@ export function AdminApp() {
     setGate('login');
   };
 
+  const pick = (v: Tab) => {
+    setTab(v);
+    setIsMenuOpen(false);
+  };
+  const sidebar = (
+    <Sidebar
+      value={tab}
+      onSelect={pick}
+      counts={{ plans: catalog?.plans.length, campaigns: catalog?.campaigns.length }}
+      isPreview={mode === 'preview'}
+      onSignOut={mode === 'server' ? () => void signOut() : undefined}
+    />
+  );
+
   return (
-    <div className="min-h-dvh bg-canvas">
-      <header className="border-b border-line bg-surface">
-        <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 pt-3 md:px-8">
-          <ShieldCheck aria-hidden size={22} className="text-brand-600" />
-          <h1 className="flex-1 text-[19px] font-bold tracking-[-0.02em] text-ink">{t('Konsol admin Pikul')}</h1>
-          {mode === 'server' && (
-            <button type="button" className={btnGhost} onClick={() => void signOut()} aria-label={t('Keluar')}>
-              <LogOut aria-hidden size={18} />
-              <span className="hidden sm:inline">{t('Keluar')}</span>
-            </button>
-          )}
-        </div>
-        <div className="mx-auto max-w-6xl px-2 pt-1 md:px-6">
-          <Tabs
-            label={t('Bagian konsol')}
-            value={tab}
-            onChange={setTab}
-            items={[
-              { value: 'overview', label: t('Ringkasan') },
-              { value: 'merchants', label: t('Merchant') },
-              { value: 'payments', label: t('Pembayaran') },
-              { value: 'report', label: t('Laporan') },
-              { value: 'plans', label: t('Paket harga'), count: catalog?.plans.length },
-              { value: 'campaigns', label: t('Kampanye'), count: catalog?.campaigns.length },
-              { value: 'content', label: t('Konten landing') },
-            ]}
-          />
-        </div>
+    <div className="min-h-dvh bg-canvas md:pl-[240px]">
+      <aside className="fixed inset-y-0 left-0 hidden w-[240px] border-r border-line md:block">{sidebar}</aside>
+      <NavDrawer isOpen={isMenuOpen} onClose={closeMenu}>
+        {sidebar}
+      </NavDrawer>
+      <header className="sticky top-0 z-30 flex h-14 items-center gap-1 border-b border-line bg-surface px-2 md:hidden">
+        <button
+          type="button"
+          aria-label={t('Buka menu')}
+          aria-expanded={isMenuOpen}
+          onClick={() => setIsMenuOpen(true)}
+          className="flex h-11 w-11 items-center justify-center rounded-lg text-ink-soft transition-colors hover:bg-subtle"
+        >
+          <Menu aria-hidden size={22} />
+        </button>
+        <p className="min-w-0 flex-1 truncate text-[17px] font-bold tracking-[-0.01em] text-ink">{sectionLabel(tab)}</p>
+        {mode === 'server' && (
+          <button
+            type="button"
+            aria-label={t('Keluar')}
+            onClick={() => void signOut()}
+            className="flex h-11 w-11 items-center justify-center rounded-lg text-muted transition-colors hover:bg-subtle"
+          >
+            <LogOut aria-hidden size={20} />
+          </button>
+        )}
       </header>
       <main className="mx-auto max-w-6xl px-4 py-5 md:px-8 md:py-6">
+        <h1 className="sr-only">{sectionLabel(tab)}</h1>
         {mode === 'preview' && (
           <p role="status" className="mb-4 flex gap-2 rounded-lg border border-warn-200 bg-warn-50 px-3 py-2.5 text-[14px] text-warn-700">
             <TriangleAlert aria-hidden size={18} className="mt-0.5 shrink-0" />
