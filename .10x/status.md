@@ -1,5 +1,16 @@
 # Status
 
+## Vercel + Neon launch, merchant sign-up (v0.18) — Delivered (2026-11-21)
+Branch `feat/vercel-neon-launch` on top of `main` `cbd5680`. Spec `specs/2026-11-21-vercel-neon-launch-design.md`, ADR-022 (Vercel Build Output API + Neon, preview mode removed), ADR-023 (email + password sign-up with profile; Kenny chose it). Review `reviews/2026-11-21-vercel-neon-launch-review.md` PASS. Runbook `docs/runbooks/deploy-vercel-neon.md`. Next ADR: 024.
+- [x] Example data: admin preview mode + example merchants deleted; no seed accounts in SQL (only the 2 starting plans)
+- [x] Vercel: `npm run build:vercel` → `.vercel/output`; `vercel.json`; local check `scripts/vercel-local.mjs`
+- [x] Sign-up (owner, store, WhatsApp, city, email, password), sign-in, forgot password (email code if Resend, else admin temp password), change password
+- [x] Admin Merchant: sign-up details in list, sheet, search, CSV; temporary password
+- [x] DB: `004_merchant_signup.sql`, `db/neon-setup.sql` (001–004, idempotent)
+- [x] Checks: typecheck, i18n, 229 tests, build, Vercel build; e2e v18 + v17 phone/tablet on Vercel output; flow, v10, v16
+- [ ] Kenny: Neon project + run `db/neon-setup.sql`; Vercel env vars; deploy; smoke test (runbook steps 1–5)
+- [ ] Later: delete Cloudflare adapter files once Vercel is live; Vercel Firewall rule on `/api/auth/*`
+
 ## Admin sidebar navigation (v0.17.1) — Delivered (2026-11-21)
 Branch `feat/admin-sidebar-nav` on top of `feat/admin-console-revamp`. Review `reviews/2026-11-21-admin-sidebar-nav-review.md` PASS. Spec `specs/2026-11-21-admin-sidebar-nav-design.md`, ADR-021. Kenny: "create the menu show at left navbar". Phone: drawer (Kenny chose). Next ADR: 022.
 - [x] Spec, ADR-021, PM/architect/staff/EM decisions

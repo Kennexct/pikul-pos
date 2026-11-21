@@ -20,3 +20,5 @@ Status: M1–M14 shipped on device (M6 item-level discount, M9 receipt-as-image 
 - register-categories (v0.16) — ADR-017 → `register-categories.md`
 - admin-console-revamp (v0.17) — stories + success criteria → `admin-console-revamp.md`; spec `specs/2026-11-21-admin-console-revamp-design.md`
 - `admin-sidebar-nav` — admin console left sidebar (ADR-021)
+
+- vercel-neon-launch (v0.18) — ADR-022, ADR-023 → `vercel-neon-launch.md`

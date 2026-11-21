@@ -17,3 +17,5 @@
 Two schemas: `db/migrations/` (Neon, live target for accounts + billing) and `supabase/migrations/` (reference sync schema, never applied). Dexie remains the source of truth for store data.
 - register-categories (v0.16) — ADR-017 → `register-categories.md`
 - admin-console-revamp.md — v0.17 business console (ADR-020)
+
+- vercel-neon-launch (v0.18) — ADR-022, ADR-023 → `vercel-neon-launch.md`
