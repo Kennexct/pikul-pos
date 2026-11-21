@@ -21,6 +21,8 @@ interface SessionState {
   ownerUnlockedUntil: number | null;
   isOnline: boolean;
   pendingSyncCount: number;
+  /** Result of the last background sync run (ADR-024). */
+  syncStatus: SyncStatus;
   setStore: (storeId: Id | null) => void;
   setOwnerInfo: (ownerId: Id, hasOwnerPin: boolean) => void;
   /** Switching seller always ends owner mode. */
@@ -32,7 +34,10 @@ interface SessionState {
   lockOwner: () => void;
   setOnline: (isOnline: boolean) => void;
   setPendingSyncCount: (count: number) => void;
+  setSyncStatus: (status: SyncStatus) => void;
 }
+
+export type SyncStatus = 'idle' | 'synced' | 'offline' | 'signedOut' | 'mismatch' | 'error' | 'unbound';
 
 function rememberMember(memberId: Id | null): void {
   try {
@@ -59,6 +64,7 @@ export const useSessionStore = create<SessionState>()((set, get) => ({
   ownerUnlockedUntil: null,
   isOnline: typeof navigator === 'undefined' ? true : navigator.onLine,
   pendingSyncCount: 0,
+  syncStatus: 'idle',
   setStore: (storeId) => set({ storeId }),
   setOwnerInfo: (ownerId, hasOwnerPin) => set({ ownerId, hasOwnerPin }),
   signInCashier: (cashier) => {
@@ -76,4 +82,5 @@ export const useSessionStore = create<SessionState>()((set, get) => ({
   lockOwner: () => set({ ownerUnlockedUntil: null }),
   setOnline: (isOnline) => set({ isOnline }),
   setPendingSyncCount: (pendingSyncCount) => set({ pendingSyncCount }),
+  setSyncStatus: (syncStatus) => set({ syncStatus }),
 }));

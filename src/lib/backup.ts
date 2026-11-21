@@ -19,8 +19,10 @@ export interface BackupFile {
 
 /** Tables keyed by something other than `id`. */
 const KEY_FIELD: Record<string, string> = { meta: 'key' };
-/** Device-local state that must not travel: PIN lockout counters. */
-export const isPortableMetaKey = (key: string): boolean => !key.startsWith('pinlock:');
+/** This device's identity and sync position (ADR-024, ADR-025): never copied to or from a file. */
+export const isDeviceMetaKey = (key: string): boolean => key === 'deviceId' || key === 'deviceCode' || key.startsWith('sync.');
+/** Device-local state that must not travel: PIN lockout counters, device identity, sync position. */
+export const isPortableMetaKey = (key: string): boolean => !key.startsWith('pinlock:') && !isDeviceMetaKey(key);
 
 const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
 

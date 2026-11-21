@@ -6,16 +6,19 @@ import { nowIso } from '../lib/id';
 import type { BusinessDate, DayClosing, Id, Product } from '../types';
 import { writeAudit } from './audit';
 import { newMeta } from './catalog';
+import { getDeviceId, isThisDevice } from './device';
 import { saveAndQueue } from './sync';
 import { t } from '../i18n';
 
 const openingKey = (storeId: Id, date: BusinessDate) => `openingCash:${storeId}:${date}`;
 
+/** This device's live closing of the day (ADR-025: each device closes its own drawer). */
 export async function getClosing(storeId: Id, date: BusinessDate): Promise<DayClosing | undefined> {
+  const here = await getDeviceId();
   return localDb.dayClosings
     .where('[storeId+businessDate]')
     .equals([storeId, date])
-    .filter((c) => !c.deletedAt)
+    .filter((c) => !c.deletedAt && isThisDevice(c, here))
     .first();
 }
 
@@ -23,10 +26,11 @@ export async function getClosing(storeId: Id, date: BusinessDate): Promise<DayCl
 export async function getOpeningCash(storeId: Id, date: BusinessDate): Promise<number> {
   const typed = await localDb.meta.get(openingKey(storeId, date));
   if (typed) return Number(typed.value) || 0;
+  const here = await getDeviceId();
   const earlier = await localDb.dayClosings
     .where('[storeId+businessDate]')
     .between([storeId, ''], [storeId, date], true, false)
-    .filter((c) => !c.deletedAt)
+    .filter((c) => !c.deletedAt && isThisDevice(c, here))
     .last();
   return earlier?.openingCash ?? 0;
 }
@@ -53,20 +57,21 @@ export async function setOpeningCash(storeId: Id, date: BusinessDate, amount: nu
   if (!previous) emitAppEvent(APP_EVENTS.registerOpened, { businessDate: date }); // register pop-up (ADR-020)
 }
 
-/** Everything the drawer maths needs for one business day. Also used inside live queries. */
+/** Everything this device's drawer maths needs for one business day (ADR-025). Also used inside live queries. */
 export async function loadDrawerInput(storeId: Id, date: BusinessDate): Promise<DrawerInput> {
   const key = [storeId, date];
+  const here = await getDeviceId();
   const sales = await localDb.orders
     .where('[storeId+businessDate]')
     .equals(key)
-    .filter((o) => o.status !== 'open' && !o.deletedAt)
+    .filter((o) => o.status !== 'open' && !o.deletedAt && isThisDevice(o, here))
     .toArray();
-  const refunds = await localDb.refunds.where('[storeId+businessDate]').equals(key).toArray();
+  const refunds = await localDb.refunds.where('[storeId+businessDate]').equals(key).filter((r) => isThisDevice(r, here)).toArray();
   const ordersById = new Map(sales.map((o) => [o.id, o]));
   const missing = [...new Set(refunds.map((r) => r.orderId))].filter((id) => !ordersById.has(id));
   for (const order of missing.length > 0 ? await localDb.orders.bulkGet(missing) : []) if (order) ordersById.set(order.id, order);
 
-  const expenses = await localDb.expenses.where('[storeId+businessDate]').equals(key).filter((e) => !e.deletedAt).toArray();
+  const expenses = await localDb.expenses.where('[storeId+businessDate]').equals(key).filter((e) => !e.deletedAt && isThisDevice(e, here)).toArray();
   const openOrders = await localDb.orders.where('[storeId+status]').equals([storeId, 'open']).filter((o) => !o.deletedAt).toArray();
   return { openingCash: await getOpeningCash(storeId, date), sales, refunds, ordersById, expenses, openOrders };
 }
@@ -104,6 +109,7 @@ export async function closeDay(input: CloseDayInput): Promise<DayClosing> {
   const now = nowIso();
   const closing: DayClosing = {
     ...newMeta(storeId),
+    deviceId: await getDeviceId(),
     ...drawer,
     businessDate,
     countedCash,

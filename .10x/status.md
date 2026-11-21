@@ -1,5 +1,13 @@
 # Status
 
+## Device sync (v0.19) — Delivered, PR open (2026-11-21)
+Branch `claude/project-thread-zzc5ov` on top of `main` `f376b98`. Spec `specs/2026-11-21-device-sync-design.md`, ADR-024 (sync protocol, store binding), ADR-025 (register per device). Kenny chose: everything both ways, ask which store to keep, register per device; "build it". Next ADR: 026.
+- [x] Spec, ADRs, strategy/design/plan decisions
+- [x] S1 migration 005 · [x] S2 server sync API
+- [x] C1 device id · [x] C2 sync engine · [x] C3 binding on boot · [x] C4 cash per device · [x] C5 Settings → Sinkronisasi · [x] C6 i18n, e2e, runbook
+- [x] Review `reviews/2026-11-21-device-sync-review.md` PASS · runbook `docs/runbooks/deploy-vercel-neon.md` → Device sync
+- [ ] Kenny: run `db/migrations/005_device_sync.sql` on Neon, then merge
+
 ## Vercel + Neon launch, merchant sign-up (v0.18) — Delivered (2026-11-21)
 Branch `feat/vercel-neon-launch` on top of `main` `cbd5680`. Spec `specs/2026-11-21-vercel-neon-launch-design.md`, ADR-022 (Vercel Build Output API + Neon, preview mode removed), ADR-023 (email + password sign-up with profile; Kenny chose it). Review `reviews/2026-11-21-vercel-neon-launch-review.md` PASS. Runbook `docs/runbooks/deploy-vercel-neon.md`. Next ADR: 024.
 - [x] Example data: admin preview mode + example merchants deleted; no seed accounts in SQL (only the 2 starting plans)

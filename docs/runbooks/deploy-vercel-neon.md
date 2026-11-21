@@ -1,4 +1,4 @@
-# Runbook — deploy Pikul on Vercel + Neon (v0.18, ADR-022 / ADR-023)
+# Runbook — deploy Pikul on Vercel + Neon (v0.18–v0.19, ADR-022 / ADR-023 / ADR-024)
 
 One Vercel project serves everything: the landing page `/`, the cashier app `/app/` (PWA), the admin console `/admin/` and the API `/api/*`. The database is Neon Postgres. Email (Resend) is **optional**: merchants sign up and sign in with email + password.
 
@@ -17,13 +17,15 @@ Time needed: about 30 minutes. You need: a GitHub account with the `Kennexct/pik
    `postgresql://neondb_owner:xxxx@ep-xxxx-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require`
    This is your **`DATABASE_URL`**. Keep it secret (it contains the password).
 3. Create the tables. Choose one:
-   - **Browser:** left menu **SQL Editor** → open `db/neon-setup.sql` from the repo in a text editor → copy everything → paste → **Run**. The last result lists 13 tables: `account_grants, accounts, admin_audit, admin_sessions, campaigns, images, login_codes, merchant_daily, payments, plans, rate_events, refresh_tokens, site_content`.
+   - **Browser:** left menu **SQL Editor** → open `db/neon-setup.sql` from the repo in a text editor → copy everything → paste → **Run**. The last result lists 16 tables: `account_grants, account_store, accounts, admin_audit, admin_sessions, campaigns, images, login_codes, merchant_daily, payments, plans, rate_events, refresh_tokens, site_content, sync_devices, sync_records`.
    - **Terminal (Ubuntu):** `sudo apt install -y postgresql-client`, then
      `psql "postgresql://…your DATABASE_URL…" -f db/neon-setup.sql`
 
    The file is safe to run again; it never deletes data. It contains no example merchants. It does add the two starting price plans (Bulanan Rp49.000, Tahunan Rp490.000), which you change later in `/admin/` → Paket harga.
 
 > Already ran migrations 001–003 on Neon earlier? Run only `db/migrations/004_merchant_signup.sql` (or the whole `neon-setup.sql`, same result).
+>
+> **Upgrading to v0.19 (device sync)?** Run `db/migrations/005_device_sync.sql` (or the whole `neon-setup.sql`) **before** deploying v0.19. It only adds three tables (`account_store`, `sync_records`, `sync_devices`) and one sequence.
 
 ## 2. Make the access-pass keys (2 min)
 
@@ -102,6 +104,22 @@ Vercel → project → **Settings → Domains** → add `pikul.id` (or yours) an
 - **Landing / plans / campaign edits** show on the public site within 60 seconds (CDN cache).
 - **Cleanup (monthly, optional):** in Neon SQL Editor: `delete from rate_events where at < now() - interval '7 days';`
 
+## Device sync (v0.19, ADR-024 / ADR-025)
+
+Every device signed in to the same account shares one store: menu, sales, customers, expenses, settings. Each device keeps its **own cash drawer** (open / close register); the owner sees all drawers in Kas → **Semua perangkat**.
+
+**First rollout for a merchant who already has more than one device:**
+1. Update the **main** phone or tablet first (the one with the real sales). Open the app online once; it uploads its store to the account (Pengaturan → **Sinkronisasi** shows "Tersinkron …").
+2. Then open the app on the other devices. A device that already has its own store asks **"Toko mana yang dipakai di perangkat ini?"** → choose **Pakai toko dari akun**. The app saves a backup file of the old local store first, then downloads the account store.
+3. A brand-new device just signs in and lands on the cashier with the menu ("Mengunduh data toko…").
+
+**Notes:**
+- Selling never waits for sync. Changes go out every 15 seconds while online, and when the app comes back to the screen.
+- If two devices edit the same product, the later edit wins. Paid / voided orders never go back to "open".
+- **Pakai toko perangkat ini** (on the choice screen) replaces the account store with this device's store; it asks for the account password and the old account store is saved as a backup file first.
+- Data on the server: table `sync_records` (one row per record, JSON). Check size in Neon: `select count(*), pg_size_pretty(sum(pg_column_size(data))) from sync_records;`
+- Rollback to v0.18 is safe: the sync tables are simply unused; each device keeps its data.
+
 ## When something is wrong
 
 | What you see | Cause | Fix |
@@ -112,7 +130,9 @@ Vercel → project → **Settings → Domains** → add `pikul.id` (or yours) an
 | App opens without any sign-in page | `VITE_PASS_PUBLIC_JWK` was not set at build time | Set it, redeploy |
 | "Sesi berakhir" on every device after a deploy | `PASS_PRIVATE_JWK` changed | Expected after a key change; everyone signs in once |
 | Sign-up says "relation … does not exist" in Logs | `neon-setup.sql` not run | Run step 1.3 |
+| Pengaturan → Sinkronisasi stays "Sinkronisasi tertunda"; Logs show `relation "sync_records" does not exist` | Migration 005 not run | Run `db/migrations/005_device_sync.sql` |
+| "{n} data ditolak server" in Sinkronisasi | A record was too large (>1.5 MB) or malformed | Usually a huge product photo; re-save the product with a smaller photo |
 
 **Rollback:** Vercel → **Deployments** → pick the last good one → **⋯ → Promote to Production**. Database changes in 004 only add columns, so older code keeps working.
 
-**Selling never depends on any of this:** the cashier works offline from the device; the server is only for sign-up, sign-in, renewals of the access pass and the admin console.
+**Selling never depends on any of this:** the cashier works offline from the device; the server is only for sign-up, sign-in, renewals of the access pass, device sync and the admin console.

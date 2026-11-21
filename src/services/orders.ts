@@ -5,12 +5,11 @@ import { formatReceiptNo, getBusinessDate } from '../lib/businessDate';
 import { nowIso, uuidv7 } from '../lib/id';
 import { calculateTotals } from '../lib/pricing';
 import type { AppliedDiscount, Id, Order, OrderItem, OrderPayment, PaymentMethod, SalesMode, Store } from '../types';
+import { getDeviceId, getReceiptCode } from './device';
 import { saveAndQueue } from './sync';
 import { t } from '../i18n';
 import { MAX_QUANTITY } from '../lib/quantity';
 
-const DEVICE_CODE_KEY = 'deviceCode';
-const DEVICE_CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 
 export interface CartSnapshot {
   openOrderId: Id | null;
@@ -33,21 +32,8 @@ export interface PaymentInput {
   cashReceived?: number;
 }
 
-/**
- * 2-char device code used in receipt numbers so offline devices never collide.
- * TODO(M15): have the server assign it at device registration to make collisions impossible.
- */
-async function getDeviceCode(): Promise<string> {
-  const existing = await localDb.meta.get(DEVICE_CODE_KEY);
-  if (existing) return existing.value;
-  const random = crypto.getRandomValues(new Uint8Array(2));
-  const code = Array.from(random, (b) => DEVICE_CODE_CHARS[b % DEVICE_CODE_CHARS.length]).join('');
-  await localDb.meta.put({ key: DEVICE_CODE_KEY, value: code });
-  return code;
-}
-
 async function nextReceiptNo(businessDate: string): Promise<string> {
-  const deviceCode = await getDeviceCode();
+  const deviceCode = await getReceiptCode();
   const key = `seq:${businessDate}`;
   return localDb.transaction('rw', localDb.meta, async () => {
     const current = Number((await localDb.meta.get(key))?.value ?? '0');
@@ -79,6 +65,7 @@ async function buildOrder(cart: CartSnapshot, ctx: OrderContext): Promise<Order>
     createdAt: existing?.createdAt ?? now,
     updatedAt: now,
     receiptNo: existing?.receiptNo ?? (await nextReceiptNo(businessDate)),
+    deviceId: await getDeviceId(),
     status: 'open',
     salesModeId: ctx.salesMode.id,
     salesModeNameSnapshot: ctx.salesMode.name,

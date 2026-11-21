@@ -189,12 +189,18 @@ export const HELP_EN: HelpContent = {
       keywords: 'employee staff lock password access rights owner',
     },
     offline: {
-      title: 'Working offline and where data is kept',
-      summary: 'Pikul keeps everything on this device, so it still works when the signal drops.',
-      steps: ['Sell as usual. There is nothing to do when the internet is down.', 'The "Local" mark in the corner means the data is saved on this device.'],
+      title: 'Offline, sync and several devices',
+      summary: 'Pikul keeps everything on this device, so it still works when the signal drops. When online, shop data syncs to the Pikul server.',
+      steps: [
+        'Sell as usual. There is nothing to do when the internet is down; changes are sent by themselves once online.',
+        'On a second device, just sign in with the same account. Menu, staff, customers and sales download automatically.',
+        'See the status and the device list in Settings, Sync tab.',
+      ],
       notes: [
-        'Data is not yet copied to other devices automatically. Reports only include sales made on this device.',
-        'Clearing browser data or removing the app can erase the shop\'s data. Make backups regularly.',
+        'Each device has its own cash drawer: open and close the register on each device. The owner sees them all in Cash, "All devices".',
+        'Reports include sales from every device that has synced.',
+        'If two devices change the same product while offline, the latest change is kept.',
+        'Shop data on the server can only be opened with your account. Keep making backups regularly.',
       ],
       keywords: 'signal online sync wifi data lost internet',
     },

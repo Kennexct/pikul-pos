@@ -6,6 +6,7 @@ import type { DateRange } from '../lib/dateRange';
 import { isCountedSale } from '../lib/reports';
 import { registerStatus, type RegisterStatus } from '../lib/register';
 import { getClosing, getOpeningCash, hasOpening, loadDrawerInput } from '../services/dayClosing';
+import { getDeviceId, isThisDevice } from '../services/device';
 import type { BusinessDate, DayClosing, Expense, Id } from '../types';
 
 export interface DrawerDay {
@@ -27,7 +28,8 @@ export function useIsUnclosed(storeId: Id | null, date: BusinessDate): boolean {
   return (
     useLiveQuery(async () => {
       if (!storeId || (await getClosing(storeId, date))) return false;
-      const sale = await localDb.orders.where('[storeId+businessDate]').equals([storeId, date]).filter(isCountedSale).first();
+      const here = await getDeviceId();
+      const sale = await localDb.orders.where('[storeId+businessDate]').equals([storeId, date]).filter((o) => isCountedSale(o) && isThisDevice(o, here)).first();
       return sale !== undefined;
     }, [storeId, date]) ?? false
   );
@@ -43,7 +45,8 @@ export interface RegisterInfo {
 export function useRegister(storeId: Id | null, date: BusinessDate): RegisterInfo | undefined {
   return useLiveQuery(async () => {
     if (!storeId) return undefined;
-    const sale = await localDb.orders.where('[storeId+businessDate]').equals([storeId, date]).filter(isCountedSale).first();
+    const here = await getDeviceId();
+    const sale = await localDb.orders.where('[storeId+businessDate]').equals([storeId, date]).filter((o) => isCountedSale(o) && isThisDevice(o, here)).first();
     const status = registerStatus({
       hasOpening: await hasOpening(storeId, date),
       hasCountedSale: sale !== undefined,
@@ -66,11 +69,12 @@ export function useExpenses(storeId: Id | null, range: DateRange): Expense[] | u
   }, [storeId, range.from, range.to]);
 }
 
-/** Recent closings, newest day first. */
+/** This device's recent closings, newest day first (ADR-025). */
 export function useClosings(storeId: Id | null): DayClosing[] | undefined {
   return useLiveQuery(async () => {
     if (!storeId) return [];
-    const rows = await localDb.dayClosings.where('storeId').equals(storeId).filter((c) => !c.deletedAt).toArray();
+    const here = await getDeviceId();
+    const rows = await localDb.dayClosings.where('storeId').equals(storeId).filter((c) => !c.deletedAt && isThisDevice(c, here)).toArray();
     return rows.sort((a, b) => b.businessDate.localeCompare(a.businessDate)).slice(0, CLOSING_HISTORY_LIMIT);
   }, [storeId]);
 }

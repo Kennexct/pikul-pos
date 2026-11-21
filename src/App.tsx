@@ -18,6 +18,7 @@ import { HelpPage } from './pages/Help/HelpPage';
 import { HistoryPage } from './pages/History/HistoryPage';
 import { MorePage } from './pages/More/MorePage';
 import { OnboardingPage } from './pages/Onboarding/OnboardingPage';
+import { DownloadingScreen, NeedOnlineScreen, OtherAccountScreen, StoreChoiceScreen } from './pages/Onboarding/StoreSyncScreens';
 import { OpenOrdersPage } from './pages/OpenOrders/OpenOrdersPage';
 import { POSPage } from './pages/POS/POSPage';
 import { ProductsPage } from './pages/Products/ProductsPage';
@@ -70,11 +71,28 @@ export default function App() {
     />
   );
 
-  // ADR-009: no store on this device yet → the first-time journey, before anything is created.
+  // ADR-024: the account's store is downloaded, or the merchant chooses which store this device keeps.
+  const syncScreen =
+    boot.status === 'downloading' ? <DownloadingScreen received={boot.received} />
+    : boot.status === 'needOnline' ? <NeedOnlineScreen onRetry={boot.retry} onNewStore={boot.startNewStore} />
+    : boot.status === 'notReady' ? <NeedOnlineScreen message={boot.message} onRetry={boot.retry} onNewStore={boot.startNewStore} />
+    : boot.status === 'choose' ? <StoreChoiceScreen local={boot.local} remote={boot.remote} onAccount={boot.chooseAccountStore} onDevice={boot.chooseDeviceStore} />
+    : boot.status === 'otherAccount' ? <OtherAccountScreen local={boot.local} onContinue={boot.leaveOtherAccountStore} />
+    : null;
+  if (syncScreen) {
+    return (
+      <>
+        {syncScreen}
+        {toaster}
+      </>
+    );
+  }
+
+  // ADR-009: no store on this device or account yet → the first-time journey, store name from sign-up.
   if (boot.status === 'onboarding') {
     return (
       <>
-        <OnboardingPage onComplete={boot.completeOnboarding} />
+        <OnboardingPage onComplete={boot.completeOnboarding} defaultStoreName={boot.storeName} />
         {toaster}
       </>
     );

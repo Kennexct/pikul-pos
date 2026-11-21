@@ -188,12 +188,18 @@ export const HELP_ID: HelpContent = {
       keywords: 'karyawan pegawai kunci password sandi hak akses owner',
     },
     offline: {
-      title: 'Tanpa internet dan penyimpanan data',
-      summary: 'Pikul menyimpan semuanya di perangkat ini, jadi tetap bisa dipakai saat sinyal hilang.',
-      steps: ['Jualan seperti biasa. Tidak ada yang perlu dilakukan saat internet mati.', 'Tanda "Lokal" di pojok berarti data tersimpan di perangkat ini.'],
+      title: 'Tanpa internet, sinkronisasi, dan beberapa perangkat',
+      summary: 'Pikul menyimpan semuanya di perangkat ini, jadi tetap bisa dipakai saat sinyal hilang. Saat online, data toko disinkronkan ke server Pikul.',
+      steps: [
+        'Jualan seperti biasa. Tidak ada yang perlu dilakukan saat internet mati; perubahan terkirim sendiri saat online lagi.',
+        'Di perangkat kedua, cukup masuk dengan akun yang sama. Menu, staf, pelanggan, dan penjualan diunduh otomatis.',
+        'Lihat status dan daftar perangkat di Pengaturan, tab Sinkronisasi.',
+      ],
       notes: [
-        'Data belum otomatis tersalin ke perangkat lain. Laporan hanya memuat penjualan dari perangkat ini.',
-        'Menghapus data browser atau melepas aplikasi dapat menghapus data toko. Buat cadangan secara rutin.',
+        'Setiap perangkat punya laci kas sendiri: buka dan tutup kasir di masing-masing perangkat. Pemilik melihat semuanya di Kas, bagian "Semua perangkat".',
+        'Laporan memuat penjualan dari semua perangkat yang sudah tersinkron.',
+        'Kalau dua perangkat mengubah produk yang sama saat offline, perubahan yang terakhir yang dipakai.',
+        'Data toko di server hanya bisa dibuka dengan akun Anda. Tetap buat cadangan secara rutin.',
       ],
       keywords: 'sinyal online sinkron sync wifi kuota hilang',
     },
