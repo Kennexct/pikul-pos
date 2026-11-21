@@ -2,6 +2,7 @@ import 'fake-indexeddb/auto';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { localDb } from '../db/localDb';
 import { ensureLocalStore } from './bootstrap';
+import { seedSampleMenu } from '../test/sampleMenu';
 import { setProductSoldOut } from './catalog';
 
 beforeEach(async () => {
@@ -12,6 +13,7 @@ beforeEach(async () => {
 describe('setProductSoldOut', () => {
   it('flips only the sold-out flag and queues the change for sync', async () => {
     const { store } = await ensureLocalStore();
+    await seedSampleMenu(store.id);
     const product = await localDb.products.where('storeId').equals(store.id).first();
     if (!product) throw new Error('seed missing');
     const queuedBefore = await localDb.outbox.count();

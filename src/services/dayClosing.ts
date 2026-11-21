@@ -1,3 +1,4 @@
+import { APP_EVENTS, emitAppEvent } from '../lib/appEvents';
 import { CLOSING_NOTE_MAX } from '../constants';
 import { localDb } from '../db/localDb';
 import { buildDrawer, type DrawerInput } from '../lib/cashDrawer';
@@ -30,10 +31,26 @@ export async function getOpeningCash(storeId: Id, date: BusinessDate): Promise<n
   return earlier?.openingCash ?? 0;
 }
 
-export async function setOpeningCash(storeId: Id, date: BusinessDate, amount: number): Promise<void> {
+/** True once an opening cash was typed for the day — the register was opened (ADR-017). */
+export async function hasOpening(storeId: Id, date: BusinessDate): Promise<boolean> {
+  return (await localDb.meta.get(openingKey(storeId, date))) !== undefined;
+}
+
+/** Records the opening cash. The first time it opens the register; later it is a change. Both are audited (ADR-017). */
+export async function setOpeningCash(storeId: Id, date: BusinessDate, amount: number, actorId: Id): Promise<void> {
   if (!Number.isSafeInteger(amount) || amount < 0) throw new Error(t('Modal awal tidak valid.'));
   if (await getClosing(storeId, date)) throw new Error(t('Hari ini sudah ditutup. Buka kembali untuk mengubah modal awal.'));
+  const previous = await localDb.meta.get(openingKey(storeId, date));
   await localDb.meta.put({ key: openingKey(storeId, date), value: String(amount) });
+  await writeAudit({
+    storeId,
+    actorId,
+    entity: 'register',
+    entityId: openingKey(storeId, date),
+    action: previous ? 'opening_cash_changed' : 'register_opened',
+    payload: previous ? { businessDate: date, from: Number(previous.value) || 0, to: amount } : { businessDate: date, openingCash: amount },
+  });
+  if (!previous) emitAppEvent(APP_EVENTS.registerOpened, { businessDate: date }); // register pop-up (ADR-020)
 }
 
 /** Everything the drawer maths needs for one business day. Also used inside live queries. */
@@ -111,6 +128,7 @@ export async function closeDay(input: CloseDayInput): Promise<DayClosing> {
     payload: { businessDate, expectedCash: closing.expectedCash, countedCash, difference: closing.difference },
   });
   if (input.shouldResetSoldOut) await resetSoldOut(storeId);
+  emitAppEvent(APP_EVENTS.dayClosed, { businessDate }); // send daily totals now (ADR-020)
   return closing;
 }
 

@@ -98,20 +98,33 @@ export async function signOut(): Promise<void> {
   if (refreshToken) await api('POST', '/api/auth/signout', { refreshToken }).catch(() => undefined);
 }
 
-export interface PaymentView {
-  orderId: string;
-  plan: 'monthly' | 'yearly';
-  amount: number;
-  status: 'pending' | 'paid' | 'failed' | 'expired';
-  createdAt: number;
-  paidAt: number | null;
-  method: string | null;
-}
 export interface BillingOverview {
   account: { email: string; plan: 'trial' | 'paid'; until: number; trialEndsAt: number; paidUntil: number | null };
-  prices: Record<'monthly' | 'yearly', { amount: number; days: number }>;
-  payments: PaymentView[];
+  plans: PlanOffer[];
+}
+/** A plan as set in the admin console, with today's display price (ADR-014). No payment provider is connected (ADR-015). */
+export interface PlanOffer {
+  id: string;
+  name: string;
+  days: number;
+  amount: number;
+  regularAmount: number;
+  promoEndsAt: number | null;
+  note: string;
+  badge: string;
+  features: string[];
+}
+export interface CampaignPopup {
+  id: string;
+  title: string;
+  body: string;
+  imageUrl: string | null;
+  linkUrl: string | null;
+  ctaLabel: string;
+  endsAt: number;
 }
 export const billingOverview = () => api<BillingOverview>('GET', '/api/billing', undefined, true);
-export const startCheckout = (plan: 'monthly' | 'yearly') => api<{ orderId: string; redirectUrl: string }>('POST', '/api/billing/checkout', { plan }, true);
-export const paymentStatus = (orderId: string) => api<PaymentView>('GET', `/api/billing/status/${encodeURIComponent(orderId)}`, undefined, true);
+/** The live in-app campaigns, if any (public, cached at the edge for a minute): once per account, and on register open (ADR-020). */
+export const appCampaign = () => api<{ popup: CampaignPopup | null; registerPopup?: CampaignPopup | null }>('GET', '/api/public/app');
+/** Daily sales totals for this account (ADR-020). Bearer = refresh token; never rotates it. */
+export const postDailyTotals = (body: { appVersion: string; rows: unknown[] }) => api<{ ok: true; saved: number }>('POST', '/api/merchant/daily', body, true);

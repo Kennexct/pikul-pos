@@ -128,7 +128,7 @@ export default function ReportsPage() {
                   title={t('Penjualan per jam')}
                   subtitle={peak ? t('Paling ramai {0} · {1}', peak.detail, formatRupiah(peak.value)) : t('Penjualan kotor')}
                   data={hours}
-                  summary={t('Penjualan per jam. {0}', hours.filter((h) => h.count > 0).map((h) => `${h.detail}: ${formatRupiah(h.value)}`).join('; '))}
+                  summary={t('Penjualan per jam. {0}', hours.filter((h) => (h.count ?? 0) > 0).map((h) => `${h.detail}: ${formatRupiah(h.value)}`).join('; '))}
                 />
               )}
               {isMultiDay && (

@@ -21,7 +21,7 @@ function slug(value: string): string {
 
 export function exportFileName({ format, dataset, storeName, report }: Pick<ExportRequest, 'format' | 'dataset' | 'storeName' | 'report'>): string {
   const suffix = format === 'csv' ? `-${dataset === 'transactions' ? 'transaksi' : dataset === 'items' ? 'item' : 'refund'}` : '';
-  return `kasirku-${slug(storeName)}-${report.range.from}_${report.range.to}${suffix}.${format}`;
+  return `pikul-${slug(storeName)}-${report.range.from}_${report.range.to}${suffix}.${format}`;
 }
 
 /**

@@ -1,4 +1,4 @@
-# KasirKu Design System — MASTER
+# Pikul Design System — MASTER
 
 Source of truth for every screen. Tokens live in `src/index.css` (`@theme`); shared classes in `src/components/ui/styles.ts`.
 Components must use semantic tokens only — no raw `slate-*`, `orange-*` or hex in JSX.
@@ -31,6 +31,8 @@ Components must use semantic tokens only — no raw `slate-*`, `orange-*` or hex
 | `brand-600` | #0B7A5A | Primary buttons, active states | 5.3:1 (white text on it) |
 | `brand-700` | #08654A | Active nav/tab text, links | 7.1:1 |
 | `brand-50` | #EBF7F2 | Selected backgrounds, success panel | — |
+| `kunyit` | #F2A93B | **Logo only** — the head dot in the Pikul mark | — |
+| `santan` | #F6F1E7 | **Logo only** — the mark on the pandan tile | — |
 | `ink` | #14201B | Primary text | 16.8:1 |
 | `ink-soft` | #36423D | Secondary emphasis | 10.5:1 |
 | `muted` | #5E6A65 | Helper text, labels — smallest allowed text color | 5.6:1 |
@@ -69,8 +71,23 @@ Components must use semantic tokens only — no raw `slate-*`, `orange-*` or hex
 
 ## Motion
 
-- Sheets: 220ms slide-up with ease-out-quart; backdrop: 160ms fade. Press feedback: 1px translate.
-- `prefers-reduced-motion` disables all animation.
+Motion confirms what just happened; nothing loops. Tokens and keyframes live in `src/index.css`.
+
+| Moment | Phone | Tablet |
+| --- | --- | --- |
+| Sheet / pop-up opens | slides up from the bottom edge, 320ms ease-out-quart | rises 10px and scales from 0.97, 220ms |
+| Sheet closes (X, scrim, Escape, swipe) | slides back down, 200ms ease-in-quart, then `onClose` | sinks and fades, 160ms |
+| Scrim | `ink/45` + 3px blur, fades in 160ms / out 200ms — translucent so the sale stays visible | same |
+| Swipe to dismiss | drag the grabber/header down > 96px (or flick) | — |
+| Page change (nav links) | content pane fades out 90ms, new page rises 8px in 220ms (View Transitions; rail and tab bar stay still) | same |
+| Tap registered | qty badge on the tile and the cart-bar count pop once (260ms) | same |
+| Full-screen hand-off (QRIS) | rises 16px in 280ms | same |
+| Horizontal scrollers (`scroll-x`) | the edge hiding more content fades (scroll-driven; no fade when nothing overflows) | same |
+| Press feedback | 1px translate / 0.985 scale | same |
+
+- `Sheet` owns its exit: always close through its X/scrim/Escape or by setting `isOpen` false; it unmounts after the exit.
+- `Sheet` moves focus into the dialog, traps Tab, gives focus back to the opener, and only the top sheet answers Escape.
+- `prefers-reduced-motion` disables all animation, including page transitions; sheets then close instantly.
 
 ## Layout
 
@@ -79,9 +96,24 @@ Components must use semantic tokens only — no raw `slate-*`, `orange-*` or hex
 
 ## Anti-patterns (reject in review)
 
-Pastel random tile colors · gradient buttons · pill-shaped everything · emoji icons · gray text below `muted` · raw palette classes in JSX · shadows on every card · centered-everything layouts · more than one accent color.
+Pastel random tile colors · dot-grid or pattern fills behind monograms · endless pulse/float loops · gradient buttons · pill-shaped everything · emoji icons · gray text below `muted` · raw palette classes in JSX · shadows on every card · centered-everything layouts · more than one accent color.
 
 ## Page width
 
 - List and data pages (Kasir, Riwayat, Laporan, Produk, Pelanggan, Kas) use the full width.
 - Form-like pages (Pengaturan, Bantuan) use one centred column for header, tabs and content: `<PageHeader isNarrow>` + `NARROW_COLUMN` (`max-w-3xl`). Never cap content width while leaving it left-aligned.
+
+## Brand (ADR-016)
+
+- Name **Pikul** (formerly KasirKu). Tagline: *Jualan ringan. Catatan beres.* Brand kit v1 lives in the project folder `brand/pikul-brand-kit/` (SVG, PNG, app icons, logo template).
+- Logo in the app: `components/Brand/Logo.tsx` — `LogoMark` (pandan tile, santan mark, kunyit head dot) and `Logo` (mark + "Pikul" in ExtraBold, tracking −0.03em). Never redraw it inline; never use `kunyit`/`santan` outside the logo.
+- Icons: `public/favicon.svg`, `public/icons/icon-192|512.png`, `icon-maskable-512.png`, `apple-touch-icon-180.png` (full-bleed), `favicon-32.png`. Replace them only from the brand kit.
+
+### Legacy identifiers — do not rename
+These are invisible to sellers and live on devices or inside files. Renaming any of them without a migration loses data or breaks old backups.
+
+| Identifier | Where | Why it stays |
+| --- | --- | --- |
+| IndexedDB `kasirku` | `db/localDb.ts` | Every sale on the device lives here |
+| `kasirku-cart`, `kasirku-lang`, `kasirku-active-member` | localStorage | Open cart, language, signed-in cashier |
+| `app: "kasirku"` (`BACKUP_APP_ID`) | backup files | Old backups must keep restoring |

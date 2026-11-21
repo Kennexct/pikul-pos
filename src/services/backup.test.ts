@@ -32,7 +32,7 @@ describe('backup round trip', () => {
     const store = await seedBusiness();
     const before = await dump();
     const { blob, fileName, counts } = await createBackup(new Date(2026, 10, 19, 21, 30));
-    expect(fileName).toBe(`kasirku-cadangan-${store.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-20261119-2130.json`);
+    expect(fileName).toBe(`pikul-cadangan-${store.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-20261119-2130.json`);
     expect(counts).toMatchObject({ stores: 1, orders: 1, expenses: 1 });
 
     // The device moves on (or is a different device): more sales, then restore the file.
@@ -87,6 +87,6 @@ describe('parseBackup rejects what it must', () => {
   });
 
   it('names files safely', () => {
-    expect(backupFileName('Bakso "Pak Kumis" / Cab. 2', new Date(2026, 0, 5, 7, 3))).toBe('kasirku-cadangan-bakso-pak-kumis-cab-2-20260105-0703.json');
+    expect(backupFileName('Bakso "Pak Kumis" / Cab. 2', new Date(2026, 0, 5, 7, 3))).toBe('pikul-cadangan-bakso-pak-kumis-cab-2-20260105-0703.json');
   });
 });

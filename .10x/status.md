@@ -1,28 +1,60 @@
 # Status
 
-**Phase:** Delivery docs complete — v0.14 (accounts, trial, Midtrans billing). Not deployed.
-**Branch:** `main` contains everything through v0.14 (`df4d12c`). Feature branches `feat/*` are merged history.
+## Admin console revamp (v0.17) — Delivered (2026-11-21)
+Branch `feat/admin-console-revamp` on top of `feat/admin-no-signin`. Spec `specs/2026-11-21-admin-console-revamp-design.md`, ADR-020, review `reviews/2026-11-21-admin-console-revamp-review.md` (QA + security PASS), runbook `docs/runbooks/admin-console.md`. Kenny chose: business console first (merchant back-office after sync), admin password sign-in, email only, daily totals always on. Next ADR: 021.
+- [x] A1 migration 003, repo split · [x] A2 admin password sign-in · [x] A3 ledger + merchant handlers · [x] A4 console Ringkasan/Merchant/Pembayaran
+- [x] B1 app daily totals + notice · [x] B2 daily endpoint · [x] B3 analytics · [x] B4 console Laporan + CSV
+- [x] C1 landing content · [x] C2 Konten landing tab · [x] C3 register pop-up placement
+- [x] QA + security (CSP on /admin added), runbook, e2e `v17.py` phone + tablet, bundle
+- [ ] Kenny: run migration 003 on Neon, set `ADMIN_PASSWORD`, remove `ADMIN_EMAILS`/`ADMIN_OPEN`, deploy
+- [ ] Later: merchant back-office (after device sync)
+
+**Phase:** Delivery complete — admin console without sign-in, temporary (ADR-019) on top of remove mock data (ADR-018) on top of v0.16 register open/close, Kategori tab, variant expand (ADR-017) on top of UI polish → rebrand → v0.15. Not deployed.
+**Branch:** `feat/rebrand-pikul` (on top of `feat/v0.15-admin-console`, on top of `main` `aaac4dc`). Delivered as a git bundle in the project folder; GitHub repo not reachable from the build session.
 **Repo:** GitHub `Kennexct/kasirku` (per deploy runbook). Project folder copy: `kasirku-full/` + `kasirku-history.bundle`.
-**Last refreshed:** 2026-11-20 (context check against the project folder)
+**Last refreshed:** 2026-11-20 (v0.16)
 
 ## Current snapshot (2026-11-20)
-- App version 0.14.0. 160 unit/integration tests (per v0.14 review), 13 Playwright scripts in `e2e/`.
-- Stack: React 19 + Vite 8 PWA, Tailwind v4, Zustand, Dexie · Cloudflare Pages + Functions, Neon, Resend, Midtrans Snap (ADR-013). Supabase/Vercel plan superseded.
-- Every PRD module M1–M14 shipped on device; M15 part 1 (staff PIN) shipped; owner login replaced by v0.14 accounts.
+- App version 0.16.0. 173 unit/integration tests, 15 Playwright scripts in `e2e/` (new: `v16.py`).
+- Stack: React 19 + Vite 8 PWA, Tailwind v4, Zustand, Dexie · Cloudflare Pages + Functions, Neon, Resend (ADR-013). No payment provider (ADR-015). Supabase/Vercel plan superseded.
+- `/admin/` owner console (ADR-014): plans in Neon drive the landing page and the app; campaigns = scheduled pop-up banners (upload, optional link, on/off, landing and/or app once per account, optional promo price). Access: sign-in removed for now (ADR-019): preview mode on a static host, real saves need `ADMIN_OPEN=1` on Pages Functions (anyone with the link can edit). Restore `ADMIN_EMAILS` + 12-hour session before launch; `admin_audit` log.
 
 ### Waiting on Kenny (blocks go-live)
-- [ ] Neon project (Singapore) + run `db/migrations/001_accounts_billing.sql`
+- [ ] Rename GitHub repo to `Kennexct/pikul`, create the Cloudflare Pages project as `pikul` (docs/runbooks/rename-cloudflare-github.md)
+- [ ] Trademark search "Pikul" (PDKI classes 9, 42) and buy the domain
+- [ ] Neon project (Singapore) + run `db/migrations/001_accounts_billing.sql`, `002_admin_console.sql`, `003_admin_revamp.sql`
 - [ ] Resend account + verified sending domain
-- [ ] Midtrans sandbox server key (then production after KYC)
-- [ ] Cloudflare Pages project connected to the GitHub repo + variables from `.env.example`
-- [ ] Final prices (Rp49.000 / Rp490.000 are placeholders) and custom domain
+- [ ] Cloudflare Pages project connected to the GitHub repo + variables from `.env.example` (incl. `ADMIN_PASSWORD`)
+- [ ] Final prices (set them in `/admin/` after deploy) and custom domain
+- [ ] Choose a payment provider (or keep extending accounts by hand in Neon)
+
+## Remove mock data — Delivered (2026-11-21)
+Branch `feat/remove-mock-data` on top of `feat/register-categories`. ADR-018. Kenny: "remove all the mockup data".
+- [x] New store starts empty: no example menu, categories, add-ons or discounts (`services/storeSetup.ts`); template picker removed from the journey; "Lewati" = empty store
+- [x] Empty states: cashier "Menu masih kosong" + "Tambah produk"; Langkah awal item "Tambah menu"
+- [x] One-time cleanup on existing devices (`services/legacySampleMenu.ts`): soft-deletes untouched, unsold seed rows; audit `sample_menu_removed`
+- [x] Example menus kept for tests only (`src/test/sampleMenu.ts`, `e2e/fixtures/sample-menus.json`, `e2e/sample_menu.py`); not in the bundle (checked `dist/`)
+- [x] Checks: typecheck, i18n:check, 170 tests, build; e2e flow, manage, staff, customers, v08–v13, v16, reports pass on phone + tablet. `history.py` fails at the Void step on the base branch too (pre-existing, not from this change). v14/v15 need wrangler, not run.
+- [ ] Manual: update an old device that has the example menu and confirm only untouched items disappear
+
+## v0.16 register open/close, categories, variant expand — Delivered (2026-11-20)
+Branch `feat/register-categories` on top of `feat/ui-polish`. Spec `specs/2026-11-20-register-categories-design.md`, ADR-017, review `reviews/2026-11-20-v16-review.md` (QA + security PASS).
+- [x] Spec, ADR-017, all role decisions
+- [x] T1 lib/register · T2 opening audit · T3 OpenRegisterSheet + Kas · T4 POS gate · T5 categories · T6 variant expand · T7 i18n, help, e2e v16, checks, runbook
+- [x] Revision: count-by-denomination removed (Kenny)
+- [ ] Manual: gate on a low-end Android phone and iPad Safari
+
+## UI polish — Delivered (2026-11-20)
+Branch `feat/ui-polish` on top of `feat/rebrand-pikul`. Pop-up open/close motion + swipe-to-dismiss + focus handling, page transitions, tap feedback, scroll-edge cues, plain monogram tiles, landing fixes. Review `reviews/2026-11-20-ui-polish-review.md`; motion table in `design-system/MASTER.md`.
 
 ### Open engineering items
+- [ ] Re-shoot remaining landing screenshots (`bon.png`, `timbang.png`, `tutup-kasir.png`; `pos.png` and `varian.png` done 2026-11-20)
 - [ ] Cloudflare WAF rate-limit rule on `/api/auth/code` (5 / 10 min / IP)
 - [ ] CSP header in `public/_headers`
-- [ ] Disable "Bayar" when the pass is expired (today it rejects at payment)
+- [ ] Expired banner says "Perpanjang" but there is no online payment (ADR-015)
+- [ ] Optional: "grant days" for an account in the admin console
 - [ ] Decide the fate of the legacy Supabase outbox push (`src/services/supabase.ts`, `sync.ts`) before multi-device sync
-- [ ] Next features: multi-device sync, cloud backup to R2, photo upload, item-level discount, receipt as image, split payment
+- [ ] Next features: multi-device sync, cloud backup to R2 (could also host campaign banners), photo upload, item-level discount, receipt as image, split payment
 
 ---
 ## History (earlier status, kept for reference)
@@ -97,3 +129,9 @@ Spec `specs/2026-11-19-accounts-trial-billing-design.md`, ADR-013. Stack: Cloudf
 
 ## v0.14 accounts-billing — Delivery docs complete (2026-11-19)
 Built and verified (see reviews/2026-11-19-v14-review.md). Waiting on the user for: Neon project, Resend domain, Midtrans sandbox keys, Cloudflare Pages project, final prices, custom domain.
+
+## v0.15 admin console — Delivery docs complete (2026-11-20)
+Spec `specs/2026-11-20-admin-console-design.md`, ADR-014, ADR-015 (Midtrans removed), review `reviews/2026-11-20-v15-review.md`, runbook `docs/runbooks/admin-console.md`.
+
+## Rebrand to Pikul — Delivery docs complete (2026-11-20)
+Spec `specs/2026-11-20-rebrand-pikul-design.md`, ADR-016, review `reviews/2026-11-20-rebrand-review.md`, runbook `docs/runbooks/rename-cloudflare-github.md`. Device identifiers `kasirku` are frozen.

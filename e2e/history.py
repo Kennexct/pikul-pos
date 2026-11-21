@@ -1,10 +1,23 @@
 """Sell two orders, partially refund one, void the other, and check history totals (tablet + phone)."""
 import sys
 from playwright.sync_api import sync_playwright
+import os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from sample_menu import skip_with_sample_menu  # noqa: E402
 
 BASE, OUT = sys.argv[1], sys.argv[2]
 errors = []
 
+
+
+def open_register(page, label='Buka kasir'):
+    """v0.16 (ADR-017): the register must be opened before the first sale; open it with the suggested float."""
+    back = page.url
+    page.goto(BASE + '/kas')
+    page.get_by_role('button', name=label).first.click()
+    page.get_by_role('dialog').get_by_role('button', name=label).click()
+    page.get_by_role('dialog').wait_for(state='detached')
+    page.goto(back)
 
 def sell(page, product, is_mobile):
     page.goto(BASE + '/')
@@ -25,8 +38,10 @@ def run(p, name, viewport, is_mobile):
     browser = p.chromium.launch(executable_path='/usr/bin/google-chrome', args=['--no-sandbox'])
     page = browser.new_context(locale='id-ID', viewport=viewport, is_mobile=is_mobile, has_touch=is_mobile).new_page()
     page.goto(BASE + '/')
-    page.get_by_role('button', name='Lewati, pakai contoh toko').click()  # first-time journey: take the example store
+    skip_with_sample_menu(page)  # first-time journey: empty store + test-only sample menu (ADR-018)
     page.get_by_role('navigation').first.wait_for()  # the store exists once the app shell is up
+    page.get_by_role('navigation').first.wait_for()
+    open_register(page)
     page.on('pageerror', lambda e: errors.append(f'{name}: {e}'))
     page.on('response', lambda r: r.status >= 400 and errors.append(f'{name}: {r.status} {r.url}'))
 

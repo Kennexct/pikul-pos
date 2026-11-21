@@ -51,7 +51,7 @@ export function MorePage() {
         <ul className={`${card} divide-y divide-line`}>
           {items.map(({ to, label, icon: Icon, isOwnerOnly }) => (
             <li key={to}>
-              <Link to={to} className="flex min-h-14 items-center gap-3 px-4 text-[15px] font-medium hover:bg-subtle">
+              <Link to={to} viewTransition className="flex min-h-14 items-center gap-3 px-4 text-[15px] font-medium hover:bg-subtle">
                 <Icon aria-hidden size={20} className="text-muted" />
                 <span className="flex-1">{label}</span>
                 {access.kind === 'locked' && isOwnerOnly && <Lock aria-label={t('terkunci, butuh PIN pemilik')} size={15} className="text-faint" />}

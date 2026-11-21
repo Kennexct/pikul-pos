@@ -1,0 +1,9 @@
+# admin-console-revamp (v0.17) — Senior Engineer
+- **Router:** `route(deps, method, path, auth, rawBody, ctx = {ip: '', query: new URLSearchParams()})`; functions wrapper passes `CF-Connecting-IP` and `url.searchParams`. Daily body limit 64 KB for that path only.
+- **Admin token:** 64 hex chars, `sha256` stored. `requireAdmin` returns `{actor}` or a response; existing handlers switch to it. Console keeps the token in sessionStorage (`pikul.admin`), sends `Authorization: Bearer`.
+- **Ledger:** `extend(account, days, now)` → `{startsAt, endsAt}` with `base = max(now, trialEndsAt, paidUntil ?? 0)`; cancel: latest live payment → `prevPaidUntil`, else `max(trialEndsAt, paidUntil - days*DAY)`. Repo methods take `expectedPaidUntil` and return false on mismatch → 409.
+- **Status of an account** (pure, shared by list filters and counts): expired if `entitledUntil <= now`; paid if `planOf === 'paid'`; ending soon if `entitledUntil - now <= 3 days`; inactive if `lastSeenAt < now - 7d` (or null and created > 7d ago).
+- **Listing in Neon:** filters translate to SQL `where` on the same rules; memory repo uses the pure function. Page size 50, `offset`.
+- **Daily row from app:** `buildReport({range: {from: d, to: d}})` → summary + byPaymentMethod (map method id → type via Dexie `paymentMethods`) + bySalesMode + byHour. Loader reuses the Reports page query helper.
+- **Aggregates (repo):** `dailySeries(from,to,accountId?)` per date sums incl. payment type columns; `modeTotals(from,to,accountId?)` group by lower(name); `hourTotals(...)`; `merchantTotals(from,to)` per account. Analytics computes weekday, averages, top 10, buckets, rates.
+- **Tricky parts:** timezone of "today" for paid_on (use Asia/Jakarta); CSV escaping (reuse `src/lib/export/csv` pattern on server — small local helper); landing content default must equal the static HTML (single JSON source).

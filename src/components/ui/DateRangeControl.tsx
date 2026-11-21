@@ -22,7 +22,7 @@ export function DateRangeControl({ state, today }: DateRangeControlProps) {
   const { preset, setPreset, customRange, setCustomRange, rangeError } = state;
   return (
     <div className="flex flex-col gap-3">
-      <div className="-mx-4 overflow-x-auto px-4 [scrollbar-width:none] md:mx-0 md:px-0">
+      <div className="scroll-x -mx-4 px-4 md:mx-0 md:px-0">
         <SegmentedControl label={t('Periode')} options={PRESET_OPTIONS} value={preset} onChange={setPreset} />
       </div>
       {preset === 'custom' && (

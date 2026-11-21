@@ -1,5 +1,5 @@
 /**
- * KasirKu domain types — single source of truth for client, local DB and sync.
+ * Pikul domain types — single source of truth for client, local DB and sync.
  * Money is ALWAYS integer Rupiah (no decimals). IDs are client-generated UUIDv7.
  */
 

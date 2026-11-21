@@ -1,4 +1,4 @@
-import { ClipboardList, MessageCircle, Pencil, RotateCcw, TriangleAlert } from 'lucide-react';
+import { ClipboardList, LockOpen, MessageCircle, Pencil, RotateCcw, TriangleAlert } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { METHOD_ICON } from '../../components/ui/paymentIcon';
@@ -17,6 +17,8 @@ interface TodayPanelProps {
   drawer: Drawer;
   closing: DayClosing | null;
   closedByName: string;
+  /** False until the opening cash was counted today (ADR-017): the action reads "Buka kasir". */
+  isOpened: boolean;
   onEditOpening: () => void;
   onClose: () => void;
   onReopen: () => void;
@@ -38,7 +40,7 @@ function Line({ label, value, action, isTotal = false }: { label: string; value:
 const minus = (amount: number) => (amount === 0 ? formatRupiah(0) : `− ${formatRupiah(amount)}`);
 
 /** The day at a glance: the drawer statement (what should be in the drawer) and where the money came from. */
-export function TodayPanel({ storeName, timeZone, drawer, closing, closedByName, onEditOpening, onClose, onReopen, onShowExpenses }: TodayPanelProps) {
+export function TodayPanel({ storeName, timeZone, drawer, closing, closedByName, isOpened, onEditOpening, onClose, onReopen, onShowExpenses }: TodayPanelProps) {
   // Once closed, show the figures as recorded; the live ones only decide whether the record is out of date.
   const shown = closing ?? drawer;
   const isStale = closing !== null && isClosingStale(closing, drawer);
@@ -55,7 +57,7 @@ export function TodayPanel({ storeName, timeZone, drawer, closing, closedByName,
             action={
               closing ? undefined : (
                 <button type="button" onClick={onEditOpening} className="ml-2 inline-flex h-8 items-center gap-1 rounded-md px-2 text-[13px] font-semibold text-brand-700 hover:bg-brand-50">
-                  <Pencil aria-hidden size={13} /> {t('Ubah')}
+                  {isOpened ? <Pencil aria-hidden size={13} /> : <LockOpen aria-hidden size={13} />} {isOpened ? t('Ubah') : t('Buka kasir')}
                 </button>
               )
             }

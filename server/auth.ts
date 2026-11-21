@@ -1,5 +1,5 @@
 import { randomCode, randomToken, safeEqual, sha256 } from './crypto';
-import { DAY_MS, TRIAL_DAYS, type Account, type ApiResponse, type Deps } from './types';
+import { DAY_MS, TRIAL_DAYS, type Account, type ApiResponse, type Deps, type RefreshToken } from './types';
 
 export const CODE_TTL_MS = 10 * 60_000;
 export const CODE_RESEND_MS = 60_000;
@@ -21,6 +21,7 @@ export const planOf = (a: Account): 'trial' | 'paid' => (a.paidUntil !== null &&
 
 async function session(deps: Deps, a: Account): Promise<ApiResponse> {
   const now = deps.now();
+  await deps.repo.touchLastSeen(a.id, now).catch(() => undefined); // console "last active" (ADR-020); never blocks sign-in
   const refreshToken = randomToken();
   await deps.repo.putRefreshToken({ tokenHash: await sha256(refreshToken), accountId: a.id, expiresAt: now + REFRESH_TTL_MS });
   const until = entitledUntil(a);
@@ -99,12 +100,17 @@ export async function signOut(deps: Deps, body: unknown): Promise<ApiResponse> {
   return { status: 200, body: { ok: true } };
 }
 
-/** Resolves the account behind a refresh token without rotating it (for billing calls). */
-export async function accountFromBearer(deps: Deps, header: string | null): Promise<Account | null> {
+/** Resolves the account and token row behind a bearer refresh token without rotating it. */
+export async function accountFromBearerRow(deps: Deps, header: string | null): Promise<{ account: Account; token: RefreshToken } | null> {
   const token = header?.startsWith('Bearer ') ? header.slice(7) : '';
   if (!/^[0-9a-f]{64}$/.test(token)) return null;
-  const hash = await sha256(token);
-  const row = await deps.repo.findRefreshToken(hash);
+  const row = await deps.repo.findRefreshToken(await sha256(token));
   if (!row || row.expiresAt < deps.now()) return null;
-  return deps.repo.findAccountById(row.accountId);
+  const account = await deps.repo.findAccountById(row.accountId);
+  return account ? { account, token: row } : null;
+}
+
+/** Resolves the account behind a refresh token without rotating it (for billing calls). */
+export async function accountFromBearer(deps: Deps, header: string | null): Promise<Account | null> {
+  return (await accountFromBearerRow(deps, header))?.account ?? null;
 }

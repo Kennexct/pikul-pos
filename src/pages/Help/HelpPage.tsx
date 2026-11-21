@@ -32,7 +32,7 @@ export function HelpPage() {
       <PageHeader
         title={t('Bantuan')}
         isNarrow
-        description={t('Cara memakai KasirKu. Bisa dibuka tanpa internet.')}
+        description={t('Cara memakai Pikul. Bisa dibuka tanpa internet.')}
         actions={
           <button type="button" onClick={() => setIsIntroOpen(true)} className={`${btnSecondary} h-11 text-[14px]`}>
             <PlayCircle aria-hidden size={18} /> <span className="hidden sm:inline">{t('Lihat lagi pengenalan')}</span>
@@ -73,7 +73,7 @@ export function HelpPage() {
       </div>
 
       {isIntroOpen && (
-        <Sheet title={t('Cara kerja KasirKu')} isOpen onClose={() => setIsIntroOpen(false)} footer={<button type="button" onClick={() => setIsIntroOpen(false)} className={`${btnPrimary} w-full`}>{t('Mengerti')}</button>}>
+        <Sheet title={t('Cara kerja Pikul')} isOpen onClose={() => setIsIntroOpen(false)} footer={<button type="button" onClick={() => setIsIntroOpen(false)} className={`${btnPrimary} w-full`}>{t('Mengerti')}</button>}>
           <IntroCards />
         </Sheet>
       )}

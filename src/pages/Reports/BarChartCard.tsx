@@ -9,12 +9,15 @@ export interface BarDatum {
   /** Long label for the tooltip (e.g. "11.00–11.59", "Senin, 17 Nov"). */
   detail: string;
   value: number;
-  count: number;
+  /** Transactions behind the value; left out when the bar is itself a count. */
+  count?: number;
+  /** The value is a plain count (sign-ups), not Rupiah. */
+  isCount?: boolean;
 }
 
 interface BarChartCardProps {
   title: string;
-  subtitle: string;
+  subtitle?: string;
   data: BarDatum[];
   /** Accessible summary: charts are images to screen readers. */
   summary: string;
@@ -33,8 +36,8 @@ function ChartTooltip({ active, payload }: Pick<TooltipContentProps, 'active' | 
   return (
     <div className="rounded-lg border border-line bg-surface px-3 py-2 text-[13px] shadow-pop">
       <p className="font-semibold text-ink">{datum.detail}</p>
-      <p className="num text-ink-soft">{formatRupiah(datum.value)}</p>
-      <p className="num text-muted">{t('{0} transaksi', datum.count)}</p>
+      <p className="num text-ink-soft">{datum.isCount ? compact.format(datum.value) : formatRupiah(datum.value)}</p>
+      {datum.count !== undefined && <p className="num text-muted">{t('{0} transaksi', datum.count)}</p>}
     </div>
   );
 }
@@ -44,7 +47,7 @@ export function BarChartCard({ title, subtitle, data, summary }: BarChartCardPro
   return (
     <section className={`${card} p-4 md:p-5`}>
       <h2 className="text-[15px] font-bold tracking-[-0.01em]">{title}</h2>
-      <p className="mb-3 text-[13px] text-muted">{subtitle}</p>
+      <p className="mb-3 min-h-[1px] text-[13px] text-muted">{subtitle}</p>
       <div role="img" aria-label={summary} className="h-[220px] w-full">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} margin={{ top: 4, right: 4, bottom: 0, left: 0 }} barCategoryGap={2}>

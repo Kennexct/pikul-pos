@@ -1,7 +1,7 @@
 {
-  "name": "kasirku",
+  "name": "pikul",
   "private": true,
-  "version": "0.14.0",
+  "version": "0.17.0",
   "type": "module",
   "description": "Offline-first web POS for Indonesian UMKM and street food sellers",
   "engines": {

@@ -1,6 +1,6 @@
 import { localDb } from '../db/localDb';
 import { nowIso, uuidv7 } from '../lib/id';
-import type { Category, Id, PaymentMethod, Product, SalesMode, SyncMeta, VariantGroup } from '../types';
+import type { Id, PaymentMethod, Product, SalesMode, SyncMeta, VariantGroup } from '../types';
 import { saveAndQueue } from './sync';
 import { t } from '../i18n';
 import { SALE_UNITS } from '../lib/quantity';
@@ -64,13 +64,6 @@ export async function saveVariantGroup(group: VariantGroup): Promise<void> {
   const min = group.isRequired ? 1 : 0;
   const max = group.selectType === 'single' ? 1 : Math.min(group.max, group.options.length);
   await saveAndQueue('variantGroups', { ...group, name: group.name.trim(), min, max, updatedAt: nowIso() });
-}
-
-export async function createCategory(name: string, storeId: Id, sortOrder: number): Promise<Category> {
-  requireName(name, t('Nama kategori'));
-  const category: Category = { ...newMeta(storeId), name: name.trim(), sortOrder };
-  await saveAndQueue('categories', category);
-  return category;
 }
 
 export async function savePaymentMethod(method: PaymentMethod): Promise<void> {

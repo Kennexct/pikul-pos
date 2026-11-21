@@ -25,7 +25,7 @@ export const ORDER_STATUS_LABEL: Record<OrderStatus, string> = {
   cancelled: t('Dibatalkan'),
 };
 
-export const APP_NAME = 'KasirKu';
+export const APP_NAME = 'Pikul';
 export const LOCALE = 'id-ID';
 export const CURRENCY = 'IDR';
 
@@ -47,6 +47,7 @@ export const PIN_FREE_ATTEMPTS = 5;
 export const PIN_LOCK_STEPS_MS = [30_000, 60_000, 300_000, 900_000] as const;
 /** ADR-004: owner powers re-lock this long after last use; one-time approvals expire after the same time. */
 export const OWNER_UNLOCK_MS = 5 * 60_000;
+/** Legacy identifier, frozen (ADR-016): renaming it signs every device out of its seller. */
 export const ACTIVE_MEMBER_STORAGE_KEY = 'kasirku-active-member';
 export const MEMBER_NAME_MAX = 40;
 export const CONFIG_NAME_MAX = 40;
@@ -112,6 +113,7 @@ export const MAX_EXPENSE_AMOUNT = 1_000_000_000;
 export const CLOSING_NOTE_MAX = 200;
 export const CLOSING_HISTORY_LIMIT = 60;
 
+/** Marker inside backup files. Legacy identifier, frozen (ADR-016): old backups must keep restoring. */
 export const BACKUP_APP_ID = 'kasirku';
 export const BACKUP_FORMAT_VERSION = 1;
 export const BACKUP_MAX_BYTES = 200 * 1024 * 1024;

@@ -6,3 +6,6 @@
 ## Features
 - reports-export — per-task approach → `reports-export.md`
 - staff-pin — per-task approach → `staff-pin.md`
+- rebrand-pikul → `rebrand-pikul.md`
+- register-categories (v0.16) — ADR-017 → `register-categories.md`
+- admin-console-revamp (v0.17) → `admin-console-revamp.md`

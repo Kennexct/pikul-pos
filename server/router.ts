@@ -1,11 +1,22 @@
 import { googleSignIn, refresh, requestCode, signOut, verifyCode } from './auth';
-import { checkout, notification, overview, paymentStatus } from './billing';
-import type { ApiResponse, Deps } from './types';
+import { overview } from './billing';
+import { adminArchiveCampaign, adminCatalog, adminMe, adminSaveCampaign, adminSavePlan, adminToggleCampaign, adminUploadImage, appPopupData, landingData, MAX_IMAGE_BYTES, publicImage } from './admin';
+import { adminLogin, adminLogout } from './adminAuth';
+import { adminMerchantSummary, adminReport } from './analytics';
+import { DAILY_BODY_LIMIT, postDaily } from './daily';
+import { adminContent, adminSaveContent } from './siteContent';
+import { adminCancelPayment, adminGrant, adminMerchant, adminMerchants, adminOverview, adminPayments, adminRecordPayment } from './merchants';
+import type { ApiResponse, Deps, RequestCtx } from './types';
+
+const UUID = '([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})';
 
 const MAX_BODY = 16_384;
 
-export async function route(deps: Deps, method: string, path: string, auth: string | null, rawBody: string): Promise<ApiResponse> {
-  if (rawBody.length > MAX_BODY) return { status: 413, body: { error: 'too_large' } };
+const NO_CTX: RequestCtx = { ip: '', query: new URLSearchParams() };
+
+export async function route(deps: Deps, method: string, path: string, auth: string | null, rawBody: string, ctx: RequestCtx = NO_CTX): Promise<ApiResponse> {
+  const limit = method === 'POST' && path === '/api/admin/images' ? Math.ceil((MAX_IMAGE_BYTES * 4) / 3) + 1_024 : method === 'POST' && path === '/api/merchant/daily' ? DAILY_BODY_LIMIT : MAX_BODY;
+  if (rawBody.length > limit) return { status: 413, body: { error: 'too_large' } };
   let body: unknown = null;
   if (rawBody) {
     try {
@@ -28,12 +39,59 @@ export async function route(deps: Deps, method: string, path: string, auth: stri
       return signOut(deps, body);
     case 'GET /api/billing':
       return overview(deps, auth);
-    case 'POST /api/billing/checkout':
-      return checkout(deps, auth, body);
-    case 'POST /api/billing/midtrans':
-      return notification(deps, body);
+    case 'GET /api/public/landing':
+      return landingData(deps);
+    case 'GET /api/public/app':
+      return appPopupData(deps);
+    case 'POST /api/admin/images':
+      return adminUploadImage(deps, auth, body);
+    case 'POST /api/admin/login':
+      return adminLogin(deps, body, ctx);
+    case 'POST /api/admin/logout':
+      return adminLogout(deps, auth);
+    case 'GET /api/admin/overview':
+      return adminOverview(deps, auth);
+    case 'GET /api/admin/merchants':
+      return adminMerchants(deps, auth, ctx);
+    case 'POST /api/merchant/daily':
+      return postDaily(deps, auth, body);
+    case 'GET /api/admin/report':
+      return adminReport(deps, auth, ctx);
+    case 'GET /api/admin/content':
+      return adminContent(deps, auth);
+    case 'POST /api/admin/content':
+      return adminSaveContent(deps, auth, body);
+    case 'POST /api/admin/content/reset':
+      return adminSaveContent(deps, auth, null, true);
+    case 'GET /api/admin/payments':
+      return adminPayments(deps, auth, ctx);
+    case 'GET /api/admin/me':
+      return adminMe(deps, auth);
+    case 'GET /api/admin/catalog':
+      return adminCatalog(deps, auth);
+    case 'POST /api/admin/plans':
+      return adminSavePlan(deps, auth, body);
+    case 'POST /api/admin/campaigns':
+      return adminSaveCampaign(deps, auth, null, body);
   }
-  const m = /^GET \/api\/billing\/status\/([A-Z0-9-]{6,64})$/.exec(key);
-  if (m) return paymentStatus(deps, auth, m[1]);
+  const img = new RegExp(`^GET /api/public/images/${UUID}$`).exec(key);
+  if (img?.[1]) return publicImage(deps, img[1]);
+  const m = new RegExp(`^(GET|POST) /api/admin/merchants/${UUID}(/payments|/grants|/summary)?$`).exec(key);
+  if (m?.[2]) {
+    const [, verb, id, sub] = m;
+    if (verb === 'GET' && !sub) return adminMerchant(deps, auth, id);
+    if (verb === 'POST' && sub === '/payments') return adminRecordPayment(deps, auth, id, body);
+    if (verb === 'POST' && sub === '/grants') return adminGrant(deps, auth, id, body);
+    if (verb === 'GET' && sub === '/summary') return adminMerchantSummary(deps, auth, id, ctx);
+  }
+  const pc = new RegExp(`^POST /api/admin/payments/${UUID}/cancel$`).exec(key);
+  if (pc?.[1]) return adminCancelPayment(deps, auth, pc[1], body);
+  const c = new RegExp(`^POST /api/admin/campaigns/${UUID}(/toggle|/archive)?$`).exec(key);
+  if (c?.[1]) {
+    const id = c[1];
+    if (c[2] === '/toggle') return adminToggleCampaign(deps, auth, id, body);
+    if (c[2] === '/archive') return adminArchiveCampaign(deps, auth, id);
+    return adminSaveCampaign(deps, auth, id, body);
+  }
   return { status: 404, body: { error: 'not_found' } };
 }

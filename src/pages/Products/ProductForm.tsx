@@ -9,7 +9,8 @@ import { btnGhost, btnPrimary, btnSecondary, helperText, inputBase, labelBase, o
 import { Switch } from '../../components/ui/Switch';
 import type { Catalog } from '../../hooks/useCatalog';
 import { compressProductPhoto } from '../../lib/image';
-import { createCategory, newMeta, saveProduct } from '../../services/catalog';
+import { newMeta, saveProduct } from '../../services/catalog';
+import { createCategory } from '../../services/categories';
 import type { Id, Product } from '../../types';
 import { t } from '../../i18n';
 import { isMeasured, perUnit, SALE_UNITS, UNIT_INFO } from '../../lib/quantity';
@@ -68,7 +69,7 @@ export function ProductForm({ product, catalog, storeId, onClose, isWeightSaleEn
   const handleAddCategory = async () => {
     if (newCategory === null) return;
     try {
-      const category = await createCategory(newCategory, storeId, catalog.categories.length);
+      const category = await createCategory(newCategory, storeId);
       update({ categoryId: category.id });
       setNewCategory(null);
     } catch (error) {

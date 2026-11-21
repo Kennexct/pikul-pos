@@ -3,20 +3,20 @@ import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { PageHeader } from '../../components/Layout/PageHeader';
 import { LoadingScreen } from '../../components/ui/LoadingScreen';
-import { RupiahInput } from '../../components/ui/RupiahInput';
 import { Sheet } from '../../components/ui/Sheet';
-import { btnDangerSolid, btnPrimary, btnSecondary, helperText, labelBase } from '../../components/ui/styles';
+import { OpenRegisterSheet } from '../../components/Register/OpenRegisterSheet';
+import { btnDangerSolid, btnPrimary, btnSecondary } from '../../components/ui/styles';
 import { Tabs } from '../../components/ui/Tabs';
 import { EXPENSE_CATEGORY_LABEL } from '../../constants';
 import { useAppData } from '../../hooks/useAppData';
-import { useClosings, useDrawerDay, useExpenses, useIsUnclosed, useMemberNames } from '../../hooks/useCash';
+import { useClosings, useDrawerDay, useExpenses, useIsUnclosed, useMemberNames, useRegister } from '../../hooks/useCash';
 import { useDateRange } from '../../hooks/useDateRange';
 import { getBusinessDate } from '../../lib/businessDate';
 import { buildDrawer } from '../../lib/cashDrawer';
 import { addDays, formatBusinessDate } from '../../lib/dateRange';
 import { formatRupiah } from '../../lib/money';
 import { approverOf } from '../../lib/permissions';
-import { reopenDay, setOpeningCash } from '../../services/dayClosing';
+import { reopenDay } from '../../services/dayClosing';
 import { deleteExpense } from '../../services/expenses';
 import { requestOwnerApproval } from '../../store/usePinPromptStore';
 import type { Expense, Id } from '../../types';
@@ -42,9 +42,9 @@ export function CashPage() {
   const [view, setView] = useState<View>('day');
   const [date, setDate] = useState(today);
   const [dialog, setDialog] = useState<Dialog>(null);
-  const [openingDraft, setOpeningDraft] = useState<number | null>(null);
 
   const day = useDrawerDay(storeId, date);
+  const register = useRegister(storeId, date);
   const isYesterdayUnclosed = useIsUnclosed(storeId, yesterday);
   const expenseRange = useDateRange(today);
   const expenses = useExpenses(storeId, expenseRange.range);
@@ -60,15 +60,6 @@ export function CashPage() {
   const ownerApproval = async (reason: string): Promise<Id | null | undefined> => {
     if (access.kind !== 'locked') return approverOf(access);
     return (await requestOwnerApproval(reason))?.ownerId;
-  };
-
-  const saveOpening = async () => {
-    try {
-      await setOpeningCash(store.id, date, openingDraft ?? 0);
-      setDialog(null);
-    } catch (error) {
-      toast.error(errorMessage(error));
-    }
   };
 
   const confirmReopen = async () => {
@@ -142,10 +133,8 @@ export function CashPage() {
               drawer={drawer}
               closing={day.closing}
               closedByName={day.closing ? (memberNames.get(day.closing.closedById) ?? t('Kasir::orang')) : ''}
-              onEditOpening={() => {
-                setOpeningDraft(drawer.openingCash || null);
-                setDialog({ kind: 'opening' });
-              }}
+              isOpened={register?.status !== 'not_open'}
+              onEditOpening={() => setDialog({ kind: 'opening' })}
               onClose={() => setDialog({ kind: 'close' })}
               onReopen={() => setDialog({ kind: 'reopen' })}
               onShowExpenses={() => setView('expenses')}
@@ -170,17 +159,16 @@ export function CashPage() {
         <CloseDaySheet storeId={store.id} actorId={cashierId} businessDate={date} drawer={drawer} soldOutCount={isToday ? soldOutCount : 0} onClose={() => setDialog(null)} />
       )}
       {dialog?.kind === 'opening' && (
-        <Sheet
-          title={t('Modal awal')}
-          subtitle={formatBusinessDate(date)}
-          isOpen
+        <OpenRegisterSheet
+          storeId={store.id}
+          actorId={cashierId}
+          businessDate={date}
+          suggested={drawer.openingCash}
+          mode={register?.status === 'not_open' ? 'open' : 'edit'}
+          isYesterdayUnclosed={isToday && isYesterdayUnclosed}
+          onDone={() => setDialog(null)}
           onClose={() => setDialog(null)}
-          footer={<button type="button" onClick={() => void saveOpening()} className={`${btnPrimary} w-full`}>{t('Simpan modal awal')}</button>}
-        >
-          <label htmlFor="opening-cash" className={labelBase}>{t('Uang di laci saat mulai jualan')}</label>
-          <RupiahInput id="opening-cash" value={openingDraft} onChange={setOpeningDraft} autoFocus size="lg" />
-          <p className={helperText}>{t('Uang kembalian yang sudah ada di laci sebelum penjualan pertama.')}</p>
-        </Sheet>
+        />
       )}
       {dialog?.kind === 'reopen' && (
         <Sheet

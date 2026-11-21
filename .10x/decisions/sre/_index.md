@@ -6,3 +6,6 @@
 - reports-export — SLIs, alerts, runbook → `reports-export.md`
 - staff-pin — signals + runbook → `staff-pin.md`
 - accounts-billing (v0.14) → `accounts-billing.md`. Missed Midtrans notification is covered by `GET /api/billing/status/:orderId`.
+- rebrand-pikul → `rebrand-pikul.md`
+- register-categories (v0.16) — ADR-017 → `register-categories.md`
+- admin-console-revamp.md — v0.17 business console (ADR-020)

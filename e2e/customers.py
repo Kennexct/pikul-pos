@@ -4,6 +4,9 @@ import re
 import sys
 
 from playwright.sync_api import sync_playwright
+import os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from sample_menu import skip_with_sample_menu  # noqa: E402
 
 BASE, OUT = sys.argv[1], sys.argv[2]
 errors = []
@@ -21,6 +24,16 @@ READ_DB = """async () => {
   };
 }"""
 
+
+
+def open_register(page, label='Buka kasir'):
+    """v0.16 (ADR-017): the register must be opened before the first sale; open it with the suggested float."""
+    back = page.url
+    page.goto(BASE + '/kas')
+    page.get_by_role('button', name=label).first.click()
+    page.get_by_role('dialog').get_by_role('button', name=label).click()
+    page.get_by_role('dialog').wait_for(state='detached')
+    page.goto(back)
 
 def shot(page, name):
     page.wait_for_timeout(400)
@@ -42,8 +55,10 @@ def run(p, name, viewport, is_mobile):
 
     # 1. Add a customer from the Customers page.
     page.goto(BASE + '/pelanggan')
-    page.get_by_role('button', name='Lewati, pakai contoh toko').click()  # first-time journey: take the example store
+    skip_with_sample_menu(page)  # first-time journey: empty store + test-only sample menu (ADR-018)
     page.get_by_role('navigation').first.wait_for()  # the store exists once the app shell is up
+    page.get_by_role('navigation').first.wait_for()
+    open_register(page)
     page.get_by_text('Belum ada pelanggan').wait_for()
     page.get_by_role('button', name='Tambah pelanggan').click()
     page.locator('#customer-name').fill('Bu Sari')
