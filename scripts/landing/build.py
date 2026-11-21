@@ -2,7 +2,7 @@
   python3 scripts/landing/build.py static  -> index.html (served at / by Cloudflare Pages)
   python3 scripts/landing/build.py dc OUT  -> design-canvas artboard (Main.dc.html) with /_blob images
 """
-import sys
+import html, json, os, sys
 
 MODE = sys.argv[1] if len(sys.argv) > 1 else 'static'
 if MODE == 'dc':
@@ -10,6 +10,9 @@ if MODE == 'dc':
 else:
     IMG = {'pos': '/landing/pos.png', 'varian': '/landing/varian.png', 'tutup': '/landing/tutup-kasir.png', 'timbang': '/landing/timbang.png', 'bon': '/landing/bon.png'}
 APP = '/app/'
+# Editable text (ADR-020): one source for this page and the admin console's built-in defaults.
+CONTENT = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'landing', 'content.json'), encoding='utf-8'))
+E = lambda s: html.escape(s, quote=True)
 G = '#0b7a5a'; INK = '#0f1a16'; SOFT = '#3d4a44'; MUTED = '#5b6862'; LINE = '#e3e8e5'; CANVAS = '#f6f8f7'
 
 def ic(path): return f'<svg aria-hidden="true" style="flex: none" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="{G}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">{path}</svg>'
@@ -57,7 +60,8 @@ for n,(k,alt,eb,title,body,phone) in enumerate(deep):
     img = f'<div style="flex: 1 1 420px; min-width: 0; display: flex; justify-content: center">{shot(k, alt, "min(100%, 380px)" if phone else "100%")}</div>'
     deep_html += f'<div style="display: flex; flex-wrap: wrap; gap: 48px; align-items: center">{text+img if n%2==0 else img+text}</div>'
 
-feats = [('receipt','Kasir &amp; struk','Cetak struk 58/80 mm atau kirim lewat WhatsApp.'),('layers','Varian &amp; add-on','Harga per varian, add-on wajib atau opsional.'),('tag','Mode penjualan','Dine In, Takeaway, ojol; markup otomatis.'),('qr','QRIS statis','Tampilkan QRIS toko bersama total yang harus dibayar.'),('scale','Jual per berat','kg, ons, gram, liter, meter; per nominal.'),('rotate','Void &amp; refund','Dengan alasan, batas hari, dan izin pemilik.'),('chart','Laporan &amp; laba','Jam ramai, menu terlaris, ekspor Excel/PDF/CSV.'),('users','Pelanggan &amp; bon','Riwayat belanja dan pengingat bayar.'),('wallet','Kas &amp; pengeluaran','Belanja bahan, gas, upah; tutup kasir harian.'),('lock','Staf &amp; PIN','PIN per kasir, bagian pemilik terkunci.'),('save','Cadangan data','Simpan semua data ke satu berkas, pulihkan kapan saja.'),('globe','Indonesia &amp; English','Ganti bahasa per perangkat.')]
+feats = [(f['icon'] if f['icon'] in I else 'check', E(f['title']), E(f['text'])) for f in CONTENT['features'] if not f['hidden']]
+I['check'] = '<path d="M20 6 9 17l-5-5"/>'
 feat_html = ''.join(f'<div style="display: flex; gap: 14px; align-items: flex-start; padding: 18px 0; border-bottom: 1px solid {LINE}"><div style="flex: none; margin-top: 2px">{ic(I[i])}</div><div><h3 style="margin: 0; font-size: 16px; font-weight: 700; color: {INK}">{a}</h3><p style="margin: 4px 0 0; font-size: 14px; line-height: 1.55; color: {MUTED}">{b}</p></div></div>' for i,a,b in feats)
 
 who = [('Kedai kopi','Varian minuman, es/gula/ukuran, harga Takeaway dan ojol.'),('Bakso &amp; warung makan','Pesanan per meja, simpan dulu bayar nanti, level pedas.'),('Gorengan &amp; jajanan','Satu ketuk per item, uang pas, antrean cepat.'),('Lapak pasar','Per kilo atau per nominal, harga harian, bon langganan.')]
@@ -90,12 +94,7 @@ pricing = (plan_card('Coba gratis', 'Rp0', '14 hari', 'Semua fitur, tanpa kartu 
 
 soon = ['Cadangan otomatis ke cloud','Data tersinkron antar perangkat','Laporan gabungan semua kasir']
 
-faqs = [('Benar-benar bisa tanpa internet?','Ya. Daftar dan masuk pertama kali butuh internet. Setelah itu Pikul menyimpan semua data di perangkat: penjualan, struk, laporan, dan tutup kasir tetap jalan saat sinyal hilang.'),
-        ('Apa yang terjadi kalau masa coba habis?','Laporan, riwayat, ekspor, dan cadangan data tetap bisa dibuka. Hanya penjualan baru yang berhenti sampai Anda memperpanjang. Data tidak pernah dihapus.'),
-        ('Bagaimana cara membayar?','Pembayaran langganan online sedang kami siapkan. Selama masa coba, semua fitur bisa dipakai gratis tanpa kartu kredit.'),
-        ('Data saya aman di mana?','Di perangkat Anda sendiri. Akun hanya dipakai untuk masuk dan langganan. Simpan cadangan rutin lewat Pengaturan → Cadangan; cadangan otomatis ke cloud sedang disiapkan.'),
-        ('Perangkat apa yang dibutuhkan?','Tablet atau HP Android/iPhone dengan browser modern, atau laptop. Untuk cetak struk, pakai printer yang sudah terpasang di perangkat.'),
-        ('Apakah QRIS-nya otomatis terkonfirmasi?','Belum. Pikul menampilkan QRIS statis toko Anda; kasir menekan "Sudah dibayar" setelah melihat notifikasi dari bank.')]
+faqs = [(E(f['q']), E(f['a'])) for f in CONTENT['faqs'] if not f['hidden']]
 faq_html = ''.join(f'<details style="border-bottom: 1px solid {LINE}; padding: 4px 0"><summary style="cursor: pointer; list-style: none; padding: 18px 0; font-size: 17px; font-weight: 700; color: {INK}">{q}</summary><p style="margin: 0 0 20px; font-size: 16px; line-height: 1.65; color: {SOFT}; max-width: 760px">{a}</p></details>' for q,a in faqs)
 
 # Pikul logo (ADR-016, brand kit v1): mark on a pandan tile + ExtraBold wordmark.
@@ -116,8 +115,8 @@ body = f'''<div style="font-family: 'Plus Jakarta Sans', system-ui, sans-serif; 
 <section style="padding: 72px 0 56px">
 <div style="{wrap}; display: flex; flex-wrap: wrap; gap: 56px; align-items: center">
 <div style="flex: 1 1 440px; min-width: 0">
-<h1 style="margin: 0; font-size: clamp(38px, 5.6vw, 64px); line-height: 1.05; letter-spacing: -0.035em; font-weight: 800; color: {INK}">Kasir yang tetap jalan, walau sinyal hilang.</h1>
-<p style="margin: 22px 0 0; font-size: clamp(17px, 2vw, 20px); line-height: 1.6; color: {SOFT}; max-width: 560px">Untuk warung, kedai kopi, gorengan, sampai lapak pasar. Catat penjualan, bon pelanggan, dan uang laci di tablet atau HP yang sudah Anda punya. Coba gratis 14 hari.</p>
+<h1 data-lp="hero-title" style="margin: 0; font-size: clamp(38px, 5.6vw, 64px); line-height: 1.05; letter-spacing: -0.035em; font-weight: 800; color: {INK}">{E(CONTENT['heroTitle'])}</h1>
+<p data-lp="hero-subtitle" style="margin: 22px 0 0; font-size: clamp(17px, 2vw, 20px); line-height: 1.6; color: {SOFT}; max-width: 560px">{E(CONTENT['heroSubtitle'])}</p>
 <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px">
 <a href="{APP}" style="{btn}; background: {G}; color: #fff">Coba gratis 14 hari</a>
 <a href="#fitur" style="{btn}; background: #fff; color: {INK}; border: 1px solid #c9d2cd">Lihat fitur</a>
@@ -149,7 +148,7 @@ body = f'''<div style="font-family: 'Plus Jakarta Sans', system-ui, sans-serif; 
 <section aria-labelledby="semua-fitur" style="padding: 88px 0">
 <div style="{wrap}">
 <div style="max-width: 720px; margin-bottom: 36px">{eyebrow('Semua fitur')}{h2('Semua yang dibutuhkan satu toko, dalam satu aplikasi.', 'semua-fitur')}</div>
-<div class="lp-feats">{feat_html}</div>
+<div class="lp-feats" data-lp="features">{feat_html}</div>
 </div>
 </section>
 
@@ -182,7 +181,7 @@ body = f'''<div style="font-family: 'Plus Jakarta Sans', system-ui, sans-serif; 
 <section id="faq" style="padding: 80px 0; background: #fff; border-top: 1px solid {LINE}">
 <div style="{wrap}; max-width: 880px">
 {eyebrow('Pertanyaan umum')}{h2('Yang sering ditanyakan')}
-<div style="margin-top: 24px; border-top: 1px solid {LINE}">{faq_html}</div>
+<div data-lp="faqs" style="margin-top: 24px; border-top: 1px solid {LINE}">{faq_html}</div>
 </div>
 </section>
 
@@ -200,7 +199,7 @@ body = f'''<div style="font-family: 'Plus Jakarta Sans', system-ui, sans-serif; 
 <footer style="padding: 32px 0; border-top: 1px solid {LINE}">
 <div style="{wrap}; display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; justify-content: space-between">
 {logo}
-<p style="margin: 0; font-size: 14px; color: {MUTED}"><strong style="color: {INK}">Jualan ringan. Catatan beres.</strong> Aplikasi kasir offline untuk UMKM Indonesia. Tersedia dalam Bahasa Indonesia dan English.</p>
+<p style="margin: 0; font-size: 14px; color: {MUTED}"><strong style="color: {INK}">Jualan ringan. Catatan beres.</strong> <span data-lp="contact">{E(CONTENT['contact'])}</span></p>
 </div>
 </footer>
 </div>'''

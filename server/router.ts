@@ -2,6 +2,9 @@ import { googleSignIn, refresh, requestCode, signOut, verifyCode } from './auth'
 import { overview } from './billing';
 import { adminArchiveCampaign, adminCatalog, adminMe, adminSaveCampaign, adminSavePlan, adminToggleCampaign, adminUploadImage, appPopupData, landingData, MAX_IMAGE_BYTES, publicImage } from './admin';
 import { adminLogin, adminLogout } from './adminAuth';
+import { adminMerchantSummary, adminReport } from './analytics';
+import { DAILY_BODY_LIMIT, postDaily } from './daily';
+import { adminContent, adminSaveContent } from './siteContent';
 import { adminCancelPayment, adminGrant, adminMerchant, adminMerchants, adminOverview, adminPayments, adminRecordPayment } from './merchants';
 import type { ApiResponse, Deps, RequestCtx } from './types';
 
@@ -12,7 +15,7 @@ const MAX_BODY = 16_384;
 const NO_CTX: RequestCtx = { ip: '', query: new URLSearchParams() };
 
 export async function route(deps: Deps, method: string, path: string, auth: string | null, rawBody: string, ctx: RequestCtx = NO_CTX): Promise<ApiResponse> {
-  const limit = method === 'POST' && path === '/api/admin/images' ? Math.ceil((MAX_IMAGE_BYTES * 4) / 3) + 1_024 : MAX_BODY;
+  const limit = method === 'POST' && path === '/api/admin/images' ? Math.ceil((MAX_IMAGE_BYTES * 4) / 3) + 1_024 : method === 'POST' && path === '/api/merchant/daily' ? DAILY_BODY_LIMIT : MAX_BODY;
   if (rawBody.length > limit) return { status: 413, body: { error: 'too_large' } };
   let body: unknown = null;
   if (rawBody) {
@@ -50,6 +53,16 @@ export async function route(deps: Deps, method: string, path: string, auth: stri
       return adminOverview(deps, auth);
     case 'GET /api/admin/merchants':
       return adminMerchants(deps, auth, ctx);
+    case 'POST /api/merchant/daily':
+      return postDaily(deps, auth, body);
+    case 'GET /api/admin/report':
+      return adminReport(deps, auth, ctx);
+    case 'GET /api/admin/content':
+      return adminContent(deps, auth);
+    case 'POST /api/admin/content':
+      return adminSaveContent(deps, auth, body);
+    case 'POST /api/admin/content/reset':
+      return adminSaveContent(deps, auth, null, true);
     case 'GET /api/admin/payments':
       return adminPayments(deps, auth, ctx);
     case 'GET /api/admin/me':
@@ -63,11 +76,12 @@ export async function route(deps: Deps, method: string, path: string, auth: stri
   }
   const img = new RegExp(`^GET /api/public/images/${UUID}$`).exec(key);
   if (img) return publicImage(deps, img[1]);
-  const m = new RegExp(`^(GET|POST) /api/admin/merchants/${UUID}(/payments|/grants)?$`).exec(key);
+  const m = new RegExp(`^(GET|POST) /api/admin/merchants/${UUID}(/payments|/grants|/summary)?$`).exec(key);
   if (m) {
     if (m[1] === 'GET' && !m[3]) return adminMerchant(deps, auth, m[2]);
     if (m[1] === 'POST' && m[3] === '/payments') return adminRecordPayment(deps, auth, m[2], body);
     if (m[1] === 'POST' && m[3] === '/grants') return adminGrant(deps, auth, m[2], body);
+    if (m[1] === 'GET' && m[3] === '/summary') return adminMerchantSummary(deps, auth, m[2], ctx);
   }
   const pc = new RegExp(`^POST /api/admin/payments/${UUID}/cancel$`).exec(key);
   if (pc) return adminCancelPayment(deps, auth, pc[1], body);

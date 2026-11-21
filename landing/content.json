@@ -1,0 +1,111 @@
+{
+  "heroTitle": "Kasir yang tetap jalan, walau sinyal hilang.",
+  "heroSubtitle": "Untuk warung, kedai kopi, gorengan, sampai lapak pasar. Catat penjualan, bon pelanggan, dan uang laci di tablet atau HP yang sudah Anda punya. Coba gratis 14 hari.",
+  "features": [
+    {
+      "icon": "receipt",
+      "title": "Kasir & struk",
+      "text": "Cetak struk 58/80 mm atau kirim lewat WhatsApp.",
+      "hidden": false
+    },
+    {
+      "icon": "layers",
+      "title": "Varian & add-on",
+      "text": "Harga per varian, add-on wajib atau opsional.",
+      "hidden": false
+    },
+    {
+      "icon": "tag",
+      "title": "Mode penjualan",
+      "text": "Dine In, Takeaway, ojol; markup otomatis.",
+      "hidden": false
+    },
+    {
+      "icon": "qr",
+      "title": "QRIS statis",
+      "text": "Tampilkan QRIS toko bersama total yang harus dibayar.",
+      "hidden": false
+    },
+    {
+      "icon": "scale",
+      "title": "Jual per berat",
+      "text": "kg, ons, gram, liter, meter; per nominal.",
+      "hidden": false
+    },
+    {
+      "icon": "rotate",
+      "title": "Void & refund",
+      "text": "Dengan alasan, batas hari, dan izin pemilik.",
+      "hidden": false
+    },
+    {
+      "icon": "chart",
+      "title": "Laporan & laba",
+      "text": "Jam ramai, menu terlaris, ekspor Excel/PDF/CSV.",
+      "hidden": false
+    },
+    {
+      "icon": "users",
+      "title": "Pelanggan & bon",
+      "text": "Riwayat belanja dan pengingat bayar.",
+      "hidden": false
+    },
+    {
+      "icon": "wallet",
+      "title": "Kas & pengeluaran",
+      "text": "Belanja bahan, gas, upah; tutup kasir harian.",
+      "hidden": false
+    },
+    {
+      "icon": "lock",
+      "title": "Staf & PIN",
+      "text": "PIN per kasir, bagian pemilik terkunci.",
+      "hidden": false
+    },
+    {
+      "icon": "save",
+      "title": "Cadangan data",
+      "text": "Simpan semua data ke satu berkas, pulihkan kapan saja.",
+      "hidden": false
+    },
+    {
+      "icon": "globe",
+      "title": "Indonesia & English",
+      "text": "Ganti bahasa per perangkat.",
+      "hidden": false
+    }
+  ],
+  "faqs": [
+    {
+      "q": "Benar-benar bisa tanpa internet?",
+      "a": "Ya. Daftar dan masuk pertama kali butuh internet. Setelah itu Pikul menyimpan semua data di perangkat: penjualan, struk, laporan, dan tutup kasir tetap jalan saat sinyal hilang.",
+      "hidden": false
+    },
+    {
+      "q": "Apa yang terjadi kalau masa coba habis?",
+      "a": "Laporan, riwayat, ekspor, dan cadangan data tetap bisa dibuka. Hanya penjualan baru yang berhenti sampai Anda memperpanjang. Data tidak pernah dihapus.",
+      "hidden": false
+    },
+    {
+      "q": "Bagaimana cara membayar?",
+      "a": "Pembayaran langganan online sedang kami siapkan. Selama masa coba, semua fitur bisa dipakai gratis tanpa kartu kredit.",
+      "hidden": false
+    },
+    {
+      "q": "Data saya aman di mana?",
+      "a": "Di perangkat Anda sendiri. Akun dipakai untuk masuk dan langganan. Pikul juga menerima ringkasan total penjualan harian (jumlah transaksi, nilai penjualan, jenis pembayaran, dan mode penjualan) untuk layanan dan laporan kami. Isi struk, menu, harga, dan data pelanggan tidak pernah dikirim. Simpan cadangan rutin lewat Pengaturan → Cadangan.",
+      "hidden": false
+    },
+    {
+      "q": "Perangkat apa yang dibutuhkan?",
+      "a": "Tablet atau HP Android/iPhone dengan browser modern, atau laptop. Untuk cetak struk, pakai printer yang sudah terpasang di perangkat.",
+      "hidden": false
+    },
+    {
+      "q": "Apakah QRIS-nya otomatis terkonfirmasi?",
+      "a": "Belum. Pikul menampilkan QRIS statis toko Anda; kasir menekan \"Sudah dibayar\" setelah melihat notifikasi dari bank.",
+      "hidden": false
+    }
+  ],
+  "contact": "Aplikasi kasir offline untuk UMKM Indonesia. Tersedia dalam Bahasa Indonesia dan English."
+}

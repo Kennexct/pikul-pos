@@ -103,12 +103,15 @@ export async function publicImage(deps: Deps, id: string): Promise<ApiResponse> 
   return { status: 200, body: null, raw: { contentType: img.mime, bytes: img.data }, cacheSeconds: 86_400 };
 }
 
-/** Public data for the landing page: plans with today's price and the live landing pop-up. Edge-cached. */
+/** Public data for the landing page: plans with today's price, the live landing pop-up and edited text (null = built-in). Edge-cached. */
 export async function landingData(deps: Deps): Promise<ApiResponse> {
   const now = deps.now();
-  const [plans, campaigns] = await Promise.all([deps.repo.listPlans(), deps.repo.listCampaigns()]);
+  const [plans, campaigns, saved] = await Promise.all([deps.repo.listPlans(), deps.repo.listCampaigns(), deps.repo.getContent()]);
   const c = popupNow(campaigns, now, 'landing');
-  return { status: 200, cacheSeconds: 60, body: { trialDays: TRIAL_DAYS, plans: offers(plans, campaigns, now), popup: c ? popupView(c) : null } };
+  const content = saved
+    ? { heroTitle: saved.heroTitle, heroSubtitle: saved.heroSubtitle, contact: saved.contact, features: saved.features.filter((f) => !f.hidden).map(({ icon, title, text }) => ({ icon, title, text })), faqs: saved.faqs.filter((f) => !f.hidden).map(({ q, a }) => ({ q, a })) }
+    : null;
+  return { status: 200, cacheSeconds: 60, body: { trialDays: TRIAL_DAYS, plans: offers(plans, campaigns, now), popup: c ? popupView(c) : null, content } };
 }
 
 /** The live pop-ups for the merchant app: once per account, and on the first register opening of a day (ADR-020). Edge-cached. */

@@ -109,6 +109,7 @@ export interface DateSpan {
 }
 
 export interface ContentFeature {
+  icon: string; // fixed icon from the built-in list; new items use "check"
   title: string;
   text: string;
   hidden: boolean;
