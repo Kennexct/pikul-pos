@@ -41,7 +41,7 @@ const header = (req: IncomingMessage, name: string) => {
 /** Vercel sets x-real-ip to the client address; x-forwarded-for is the fallback. */
 export const clientIp = (req: IncomingMessage) => header(req, 'x-real-ip') ?? header(req, 'x-forwarded-for')?.split(',')[0]?.trim() ?? '';
 
-const MAX_READ = 1_200_000; // above the largest route limit (image upload); the router answers 413 below this
+const MAX_READ = 4_100_000; // above the largest route limit (sync push, ADR-024); the router answers 413 below this
 
 async function readBody(req: IncomingMessage): Promise<string | null> {
   if (req.method === 'GET' || req.method === 'HEAD') return '';

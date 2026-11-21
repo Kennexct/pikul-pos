@@ -1,9 +1,10 @@
 import { DEFAULT_PLANS } from './catalog';
 import { memoryAdminRepo } from './memoryAdminRepo';
+import { memorySyncRepo } from './memorySyncRepo';
 import type { Account, AdminAuditEntry, Campaign, StoredImage, LoginCode, PlanDef, RefreshToken, Repo } from './types';
 
 /** In-memory Repo for tests and local dev (`DEV_MODE=1`) without a database. Starts empty except the default plans. */
-export function memoryRepo(): Repo & { accounts: Map<string, Account>; campaigns: Map<string, Campaign>; audit: AdminAuditEntry[]; admin: ReturnType<typeof memoryAdminRepo> } {
+export function memoryRepo(): Repo & { accounts: Map<string, Account>; campaigns: Map<string, Campaign>; audit: AdminAuditEntry[]; admin: ReturnType<typeof memoryAdminRepo>; sync: ReturnType<typeof memorySyncRepo> } {
   const accounts = new Map<string, Account>();
   const codes = new Map<string, LoginCode>();
   const passwords = new Map<string, string>();
@@ -14,8 +15,11 @@ export function memoryRepo(): Repo & { accounts: Map<string, Account>; campaigns
   const images = new Map<string, StoredImage>();
   const clone = <T>(v: T | undefined): T | null => (v ? structuredClone(v) : null);
   const admin = memoryAdminRepo(accounts);
+  const sync = memorySyncRepo();
   return {
     ...admin.repo,
+    ...sync,
+    sync,
     admin,
     accounts,
     campaigns,
