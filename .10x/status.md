@@ -1,7 +1,7 @@
 # Status
 
 ## Admin sidebar navigation (v0.17.1) — Design, waiting on Kenny (2026-11-21)
-Branch `feat/admin-sidebar-nav` on top of `feat/admin-console-revamp`. Spec `specs/2026-11-21-admin-sidebar-nav-design.md`, ADR-021 (proposed). Kenny: "create the menu show at left navbar". Open question: phone behaviour (drawer recommended). Next ADR: 022.
+Branch `feat/admin-sidebar-nav` on top of `feat/admin-console-revamp`. Spec `specs/2026-11-21-admin-sidebar-nav-design.md`, ADR-021 (proposed). Kenny: "create the menu show at left navbar". Phone: drawer (Kenny chose). Waiting on overall design approval. Next ADR: 022.
 - [x] Spec, ADR-021, PM/architect/staff/EM decisions
 - [ ] Kenny approves design
 - [ ] T1 nav + Sidebar · T2 NavDrawer · T3 AdminApp layout · T4 e2e v17 + checks

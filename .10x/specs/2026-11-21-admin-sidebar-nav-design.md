@@ -17,7 +17,7 @@ Today the seven sections sit in a tab bar under the header (scrolls sideways on 
 - Content area to the right scrolls on its own; the sidebar stays put. Section title (h1) at the top of the content.
 
 **Phone (< 768 px):** sticky top bar = menu button (≡, 44 × 44, "Buka menu") + current section title + Keluar icon. The menu button opens the same sidebar as a drawer from the left (280 px, backdrop, Esc / backdrop tap / choosing an item closes it, focus moves into it and back to the button). Reduced motion = no slide.
-_(Pending Kenny's choice on the decision card; drawer is the recommended option.)_
+_(Kenny chose the drawer on phone, 2026-11-21.)_
 
 ## Behaviour kept
 - Same seven sections and panels, no panel changes.
