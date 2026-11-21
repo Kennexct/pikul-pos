@@ -11,3 +11,5 @@
 - admin-console-revamp (v0.17) → `admin-console-revamp.md`
 
 - vercel-neon-launch (v0.18) — ADR-022, ADR-023 → `vercel-neon-launch.md`
+
+- device-sync (v0.19) — ADR-024, ADR-025 → `device-sync.md`

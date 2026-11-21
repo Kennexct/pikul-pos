@@ -1,3 +1,7 @@
+# Handoff — device sync planning (2026-11-21)
+
+**Now:** Kenny approved the device-sync spec ("build it"). ADR-024 + ADR-025 written; plan in `decisions/engineering-manager/device-sync.md` (S1, S2, C1…C6), approach in `decisions/senior-engineer/device-sync.md`. SDE starts at S1. Next ADR: 026.
+
 # Handoff — Vercel + Neon launch delivered (2026-11-21)
 
 **Latest:** v0.18.0 on `feat/vercel-neon-launch` (ADR-022, ADR-023). Hosting is Vercel: `npm run build:vercel` writes `.vercel/output` (static + one Node 22 function from `server/vercel.ts` + routes). Merchants sign up with owner, store, WhatsApp, city, email, password; sign in with email + password; admin sees the details under Merchant (list, sheet, search, CSV) and can make a one-time temporary password. Email (Resend) optional: only for "Lupa kata sandi". No preview/example data anywhere. DB setup: `db/neon-setup.sql` (regenerate with `node scripts/db-setup.mjs` after a new migration). e2e for accounts: `e2e/v18.py` against `scripts/vercel-local.mjs` (see e2e/README.md). Go-live: `docs/runbooks/deploy-vercel-neon.md`. Next ADR: 024.
