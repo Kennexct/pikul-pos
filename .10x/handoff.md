@@ -1,6 +1,6 @@
-# Handoff — admin sidebar nav (2026-11-21)
+# Handoff — admin sidebar nav delivered (2026-11-21)
 
-**Now:** design for moving the /admin/ menu into a left sidebar (ADR-021, spec `specs/2026-11-21-admin-sidebar-nav-design.md`) waiting on Kenny. Plan in `decisions/engineering-manager/admin-sidebar-nav.md`. Next ADR: 022.
+**Latest:** `feat/admin-sidebar-nav` on top of `feat/admin-console-revamp`. /admin/ menu is a left sidebar (Bisnis: Ringkasan, Merchant, Pembayaran, Laporan; Situs & promosi: Paket harga, Kampanye, Konten landing) on ≥768 px and a left drawer behind "Buka menu" on a phone (ADR-021). e2e helper `tab()` in `v17.py` opens the drawer when needed. Next ADR: 022.
 
 # Handoff — admin console revamp delivered (2026-11-21)
 

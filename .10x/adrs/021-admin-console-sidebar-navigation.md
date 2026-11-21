@@ -1,6 +1,6 @@
 # ADR-021: Admin console navigation in a left sidebar
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-11-21
 **Feature:** admin-sidebar-nav
 **Author:** 10x-Team (Architect + Staff Engineer)

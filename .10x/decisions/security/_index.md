@@ -12,3 +12,4 @@
 - rebrand-pikul → `rebrand-pikul.md` (PASS)
 - register-categories (v0.16) — ADR-017 → `register-categories.md`
 - admin-console-revamp.md — v0.17 business console (ADR-020)
+- `admin-sidebar-nav` — admin console left sidebar (ADR-021)
