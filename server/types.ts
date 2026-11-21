@@ -122,6 +122,8 @@ export interface Deps {
   appOrigin: string;
   /** Lower-cased emails allowed into /admin (ADMIN_EMAILS). Empty = console closed. */
   adminEmails: readonly string[];
+  /** ADMIN_OPEN=1: /admin without sign-in (temporary, ADR-019). Anyone with the link can edit plans and promos. */
+  adminOpen?: boolean;
 }
 
 export interface ApiResponse {

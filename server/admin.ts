@@ -7,8 +7,12 @@ import { TRIAL_DAYS, type Account, type ApiResponse, type Campaign, type Deps } 
 export const ADMIN_FRESH_MS = 12 * 3_600_000;
 const bad = (error: string, status = 400): ApiResponse => ({ status, body: { error } });
 
-/** Allow-listed email + fresh session. 401 = sign in again, 403 = not an admin. */
+/** Audit name for changes made while ADMIN_OPEN=1 (no sign-in). */
+export const OPEN_ADMIN_EMAIL = 'admin-tanpa-login';
+
+/** Allow-listed email + fresh session. 401 = sign in again, 403 = not an admin. ADMIN_OPEN=1 skips this (ADR-019). */
 async function requireAdmin(deps: Deps, auth: string | null): Promise<Account | ApiResponse> {
+  if (deps.adminOpen) return { id: OPEN_ADMIN_EMAIL, email: OPEN_ADMIN_EMAIL, createdAt: 0, trialEndsAt: 0, paidUntil: 0, googleSub: null };
   const found = await accountFromBearerRow(deps, auth);
   if (!found) return bad('signed_out', 401);
   if (!deps.adminEmails.includes(found.account.email)) return bad('forbidden', 403);

@@ -1,6 +1,6 @@
 # Status
 
-**Phase:** Delivery complete — remove mock data (ADR-018) on top of v0.16 register open/close, Kategori tab, variant expand (ADR-017) on top of UI polish → rebrand → v0.15. Not deployed.
+**Phase:** Delivery complete — admin console without sign-in, temporary (ADR-019) on top of remove mock data (ADR-018) on top of v0.16 register open/close, Kategori tab, variant expand (ADR-017) on top of UI polish → rebrand → v0.15. Not deployed.
 **Branch:** `feat/rebrand-pikul` (on top of `feat/v0.15-admin-console`, on top of `main` `aaac4dc`). Delivered as a git bundle in the project folder; GitHub repo not reachable from the build session.
 **Repo:** GitHub `Kennexct/kasirku` (per deploy runbook). Project folder copy: `kasirku-full/` + `kasirku-history.bundle`.
 **Last refreshed:** 2026-11-20 (v0.16)
@@ -8,7 +8,7 @@
 ## Current snapshot (2026-11-20)
 - App version 0.16.0. 173 unit/integration tests, 15 Playwright scripts in `e2e/` (new: `v16.py`).
 - Stack: React 19 + Vite 8 PWA, Tailwind v4, Zustand, Dexie · Cloudflare Pages + Functions, Neon, Resend (ADR-013). No payment provider (ADR-015). Supabase/Vercel plan superseded.
-- `/admin/` owner console (ADR-014): plans in Neon drive the landing page and the app; campaigns = scheduled pop-up banners (upload, optional link, on/off, landing and/or app once per account, optional promo price). Access: `ADMIN_EMAILS` + 12-hour session; `admin_audit` log.
+- `/admin/` owner console (ADR-014): plans in Neon drive the landing page and the app; campaigns = scheduled pop-up banners (upload, optional link, on/off, landing and/or app once per account, optional promo price). Access: sign-in removed for now (ADR-019): preview mode on a static host, real saves need `ADMIN_OPEN=1` on Pages Functions (anyone with the link can edit). Restore `ADMIN_EMAILS` + 12-hour session before launch; `admin_audit` log.
 
 ### Waiting on Kenny (blocks go-live)
 - [ ] Rename GitHub repo to `Kennexct/pikul`, create the Cloudflare Pages project as `pikul` (docs/runbooks/rename-cloudflare-github.md)
