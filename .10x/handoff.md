@@ -1,3 +1,7 @@
+# Handoff — admin sidebar nav (2026-11-21)
+
+**Now:** design for moving the /admin/ menu into a left sidebar (ADR-021, spec `specs/2026-11-21-admin-sidebar-nav-design.md`) waiting on Kenny. Plan in `decisions/engineering-manager/admin-sidebar-nav.md`. Next ADR: 022.
+
 # Handoff — admin console revamp delivered (2026-11-21)
 
 **Latest:** v0.17.0 on `feat/admin-console-revamp` (ADR-020, supersedes ADR-019). `/admin/` = password sign-in (`ADMIN_PASSWORD`), tabs Ringkasan, Merchant (summary only, record/cancel payment, trial days), Pembayaran (CSV), Laporan (executive report, CSV), Paket harga, Kampanye (+ register-opening placement), Konten landing. The app sends daily totals in the background (never on the sell path) with a one-time notice. Migration `db/migrations/003_admin_revamp.sql`. Review PASS; runbook `docs/runbooks/admin-console.md`; e2e `e2e/v17.py` needs wrangler + `ADMIN_PASSWORD` (args: base, out, log, password). Next ADR: 021. Next feature candidate: merchant back-office after device sync.

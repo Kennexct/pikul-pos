@@ -26,3 +26,4 @@
 - The outbox push still targets the legacy Supabase client and is inert without env; multi-device sync must be redesigned on Neon (new ADR).
 - register-categories (v0.16) — ADR-017 → `register-categories.md`
 - admin-console-revamp (v0.17) — ADR-020 → `admin-console-revamp.md`
+- `admin-sidebar-nav` — admin console left sidebar (ADR-021)

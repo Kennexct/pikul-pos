@@ -1,5 +1,11 @@
 # Status
 
+## Admin sidebar navigation (v0.17.1) — Design, waiting on Kenny (2026-11-21)
+Branch `feat/admin-sidebar-nav` on top of `feat/admin-console-revamp`. Spec `specs/2026-11-21-admin-sidebar-nav-design.md`, ADR-021 (proposed). Kenny: "create the menu show at left navbar". Open question: phone behaviour (drawer recommended). Next ADR: 022.
+- [x] Spec, ADR-021, PM/architect/staff/EM decisions
+- [ ] Kenny approves design
+- [ ] T1 nav + Sidebar · T2 NavDrawer · T3 AdminApp layout · T4 e2e v17 + checks
+
 ## Admin console revamp (v0.17) — Delivered (2026-11-21)
 Branch `feat/admin-console-revamp` on top of `feat/admin-no-signin`. Spec `specs/2026-11-21-admin-console-revamp-design.md`, ADR-020, review `reviews/2026-11-21-admin-console-revamp-review.md` (QA + security PASS), runbook `docs/runbooks/admin-console.md`. Kenny chose: business console first (merchant back-office after sync), admin password sign-in, email only, daily totals always on. Next ADR: 021.
 - [x] A1 migration 003, repo split · [x] A2 admin password sign-in · [x] A3 ledger + merchant handlers · [x] A4 console Ringkasan/Merchant/Pembayaran
