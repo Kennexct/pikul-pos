@@ -4,6 +4,7 @@ import { adminArchiveCampaign, adminCatalog, adminMe, adminSaveCampaign, adminSa
 import { adminLogin, adminLogout } from './adminAuth';
 import { adminMerchantSummary, adminReport } from './analytics';
 import { DAILY_BODY_LIMIT, postDaily } from './daily';
+import { adminTempPassword, authOptions, changePassword, passwordLogin, resetPassword, signUp } from './signup';
 import { adminContent, adminSaveContent } from './siteContent';
 import { adminCancelPayment, adminGrant, adminMerchant, adminMerchants, adminOverview, adminPayments, adminRecordPayment } from './merchants';
 import type { ApiResponse, Deps, RequestCtx } from './types';
@@ -27,6 +28,16 @@ export async function route(deps: Deps, method: string, path: string, auth: stri
   }
   const key = `${method} ${path}`;
   switch (key) {
+    case 'GET /api/auth/options':
+      return authOptions(deps);
+    case 'POST /api/auth/signup':
+      return signUp(deps, body, ctx);
+    case 'POST /api/auth/login':
+      return passwordLogin(deps, body, ctx);
+    case 'POST /api/auth/reset':
+      return resetPassword(deps, body);
+    case 'POST /api/auth/password':
+      return changePassword(deps, auth, body);
     case 'POST /api/auth/code':
       return requestCode(deps, body);
     case 'POST /api/auth/verify':
@@ -76,12 +87,13 @@ export async function route(deps: Deps, method: string, path: string, auth: stri
   }
   const img = new RegExp(`^GET /api/public/images/${UUID}$`).exec(key);
   if (img?.[1]) return publicImage(deps, img[1]);
-  const m = new RegExp(`^(GET|POST) /api/admin/merchants/${UUID}(/payments|/grants|/summary)?$`).exec(key);
+  const m = new RegExp(`^(GET|POST) /api/admin/merchants/${UUID}(/payments|/grants|/summary|/temp-password)?$`).exec(key);
   if (m?.[2]) {
     const [, verb, id, sub] = m;
     if (verb === 'GET' && !sub) return adminMerchant(deps, auth, id);
     if (verb === 'POST' && sub === '/payments') return adminRecordPayment(deps, auth, id, body);
     if (verb === 'POST' && sub === '/grants') return adminGrant(deps, auth, id, body);
+    if (verb === 'POST' && sub === '/temp-password') return adminTempPassword(deps, auth, id);
     if (verb === 'GET' && sub === '/summary') return adminMerchantSummary(deps, auth, id, ctx);
   }
   const pc = new RegExp(`^POST /api/admin/payments/${UUID}/cancel$`).exec(key);

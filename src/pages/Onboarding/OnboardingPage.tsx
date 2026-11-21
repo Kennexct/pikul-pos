@@ -7,6 +7,7 @@ import { LanguagePicker } from '../../components/LanguagePicker';
 import { Switch } from '../../components/ui/Switch';
 import { btnGhost, btnPrimary, btnSecondary, helperText, inputBase, labelBase } from '../../components/ui/styles';
 import { compressQrisImage } from '../../lib/image';
+import { signupStoreName } from '../../services/account';
 import { DEFAULT_SETUP, STORE_NAME_MAX, type StoreSetup } from '../../services/storeSetup';
 import { t } from '../../i18n';
 
@@ -23,7 +24,7 @@ interface OnboardingPageProps {
 export function OnboardingPage({ onComplete }: OnboardingPageProps) {
   const fileInput = useRef<HTMLInputElement>(null);
   const [step, setStep] = useState(0);
-  const [setup, setSetup] = useState<StoreSetup>({ ...DEFAULT_SETUP, storeName: '' });
+  const [setup, setSetup] = useState<StoreSetup>(() => ({ ...DEFAULT_SETUP, storeName: signupStoreName().slice(0, STORE_NAME_MAX) }));
   const [isBusy, setIsBusy] = useState(false);
   const update = (patch: Partial<StoreSetup>) => setSetup((current) => ({ ...current, ...patch }));
 

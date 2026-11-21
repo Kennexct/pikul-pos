@@ -22,6 +22,10 @@ function accountView(a: AccountLite, now: number, totals: PaymentTotal | undefin
   return {
     id: a.id,
     email: a.email,
+    ownerName: a.ownerName ?? '',
+    storeName: a.storeName ?? '',
+    phone: a.phone ?? '',
+    city: a.city ?? '',
     createdAt: a.createdAt,
     status,
     planId: status === 'paid' ? (totals?.lastPlanId ?? null) : null,
@@ -47,6 +51,9 @@ async function loadAll(deps: Deps, now: number) {
   const views = accounts.map((a) => accountView(a, now, byTotals.get(a.id), plans, bySales.get(a.id)));
   return { accounts, views, plans };
 }
+
+/** Search matches email, store, owner, WhatsApp (also typed as 08…) and city. */
+const searchText = (v: AccountView) => [v.email, v.storeName, v.ownerName, v.phone, v.phone.replace(/^62/, '0'), v.city].join(' ').toLowerCase();
 
 const matches = (v: AccountView, f: Filter) =>
   f === 'all' || (f === 'ending' ? v.ending : f === 'inactive' ? v.inactive && v.status !== 'expired' : v.status === f);
@@ -80,9 +87,17 @@ export async function adminMerchants(deps: Deps, auth: string | null, ctx: Reque
   const plan = ctx.query.get('plan') ?? '';
   const page = Math.max(0, Math.min(10_000, Number.parseInt(ctx.query.get('page') ?? '0', 10) || 0));
   const hits = views
-    .filter((v) => (!q || v.email.includes(q)) && matches(v, filter))
+    .filter((v) => (!q || searchText(v).includes(q)) && matches(v, filter))
     .filter((v) => !plan || (plan === 'trial' || plan === 'expired' ? v.status === plan : plan === 'paid' ? v.status === 'paid' && !v.planId : v.status === 'paid' && v.planId === plan))
     .sort((x, y) => y.createdAt - x.createdAt);
+  if (ctx.query.get('format') === 'csv') {
+    const date = (v: number | null) => (v === null ? null : jakartaDate(v));
+    const csv = toCsv([
+      ['Daftar', 'Nama toko', 'Pemilik', 'Email', 'WhatsApp', 'Kota', 'Status', 'Paket', 'Aktif sampai', 'Terakhir aktif', 'Total dibayar', 'Transaksi 30 hari', 'Penjualan bersih 30 hari'],
+      ...hits.map((v) => [date(v.createdAt), v.storeName, v.ownerName, v.email, v.phone, v.city, v.status, v.planName, date(v.until), date(v.lastSeenAt), v.totalPaid, v.tx30, v.net30]),
+    ]);
+    return { status: 200, body: null, text: { contentType: 'text/csv; charset=utf-8', content: csv, filename: `merchant-pikul-${jakartaDate(now)}.csv` } };
+  }
   return ok({ now, total: hits.length, page, pageSize: PAGE_SIZE, rows: hits.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE), plans: planCounts(views, plans) });
 }
 

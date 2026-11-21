@@ -1,10 +1,10 @@
-import { LogOut, Menu, TriangleAlert } from 'lucide-react';
+import { LogOut, Menu } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { LoadingScreen } from '../components/ui/LoadingScreen';
 import { btnSecondary } from '../components/ui/styles';
 import { t } from '../i18n';
-import { loadCatalog, logout, openConsole, SIGNED_OUT_EVENT, type Catalog, type Gate, type Mode } from './api';
+import { loadCatalog, logout, openConsole, SIGNED_OUT_EVENT, type Catalog, type Gate } from './api';
 import { CampaignsPanel } from './CampaignsPanel';
 import { ContentPanel } from './ContentPanel';
 import { errorText } from './errors';
@@ -32,7 +32,6 @@ const readTab = (): Tab => {
 
 /** /admin (ADR-014, ADR-020): Kenny's console to run Pikul — merchants, payments, reports, plans, campaigns, landing text. */
 export function AdminApp() {
-  const [mode, setMode] = useState<Mode | null>(null);
   const [gate, setGate] = useState<Gate | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [catalog, setCatalog] = useState<Catalog | null>(null);
@@ -62,7 +61,6 @@ export function AdminApp() {
     setNotice(null);
     try {
       const r = await openConsole();
-      setMode(r.mode);
       setGate(r.gate);
       if (r.gate === 'ready') setCatalog(await loadCatalog());
     } catch (e) {
@@ -81,7 +79,7 @@ export function AdminApp() {
   }, [open]);
 
   const toaster = <Toaster position="top-center" toastOptions={{ className: '!rounded-lg !border !border-line !bg-surface !text-[14px] !text-ink' }} />;
-  if (!mode || !gate)
+  if (!gate)
     return notice ? (
       <main className="flex min-h-dvh flex-col items-center justify-center gap-4 bg-canvas p-4 text-center">
         <p role="alert" className="text-[15px] text-danger-700">
@@ -97,7 +95,7 @@ export function AdminApp() {
   if (gate !== 'ready')
     return (
       <>
-        <LoginScreen disabled={gate === 'disabled'} onSignedIn={() => void open()} />
+        <LoginScreen state={gate} onSignedIn={() => void open()} />
         {toaster}
       </>
     );
@@ -120,8 +118,7 @@ export function AdminApp() {
       value={tab}
       onSelect={pick}
       counts={{ plans: catalog?.plans.length, campaigns: catalog?.campaigns.length }}
-      isPreview={mode === 'preview'}
-      onSignOut={mode === 'server' ? () => void signOut() : undefined}
+      onSignOut={() => void signOut()}
     />
   );
 
@@ -142,25 +139,17 @@ export function AdminApp() {
           <Menu aria-hidden size={22} />
         </button>
         <p className="min-w-0 flex-1 truncate text-[17px] font-bold tracking-[-0.01em] text-ink">{sectionLabel(tab)}</p>
-        {mode === 'server' && (
-          <button
-            type="button"
-            aria-label={t('Keluar')}
-            onClick={() => void signOut()}
-            className="flex h-11 w-11 items-center justify-center rounded-lg text-muted transition-colors hover:bg-subtle"
-          >
-            <LogOut aria-hidden size={20} />
-          </button>
-        )}
+        <button
+          type="button"
+          aria-label={t('Keluar')}
+          onClick={() => void signOut()}
+          className="flex h-11 w-11 items-center justify-center rounded-lg text-muted transition-colors hover:bg-subtle"
+        >
+          <LogOut aria-hidden size={20} />
+        </button>
       </header>
       <main className="mx-auto max-w-6xl px-4 py-5 md:px-8 md:py-6">
         <h1 className="sr-only">{sectionLabel(tab)}</h1>
-        {mode === 'preview' && (
-          <p role="status" className="mb-4 flex gap-2 rounded-lg border border-warn-200 bg-warn-50 px-3 py-2.5 text-[14px] text-warn-700">
-            <TriangleAlert aria-hidden size={18} className="mt-0.5 shrink-0" />
-            <span>{t('Mode pratinjau: server admin belum aktif di situs ini. Data di bawah adalah contoh, perubahan hanya ada di tab ini dan hilang saat ditutup.')}</span>
-          </p>
-        )}
         {notice && (
           <p role="alert" className="mb-4 text-[14px] text-danger-700">
             {notice}

@@ -8,13 +8,12 @@ interface SidebarProps {
   onSelect: (id: Section) => void;
   /** Small number beside an item (plans, campaigns). */
   counts?: Partial<Record<Section, number>>;
-  isPreview: boolean;
   /** Shown only when a real server session exists. */
   onSignOut?: () => void;
 }
 
 /** Left menu of the admin console (ADR-021): fixed on tablet and laptop, inside the drawer on a phone. */
-export function Sidebar({ value, onSelect, counts, isPreview, onSignOut }: SidebarProps) {
+export function Sidebar({ value, onSelect, counts, onSignOut }: SidebarProps) {
   return (
     <div className="flex h-full flex-col bg-surface">
       <div className="flex items-center gap-2.5 px-5 pb-4 pt-5">
@@ -54,9 +53,8 @@ export function Sidebar({ value, onSelect, counts, isPreview, onSignOut }: Sideb
           </div>
         ))}
       </nav>
-      {(isPreview || onSignOut) && (
+      {onSignOut && (
         <div className="border-t border-line px-3 py-3">
-          {isPreview && <p className="mb-2 px-3 text-[12px] font-semibold text-warn-700">{t('Mode pratinjau')}</p>}
           {onSignOut && (
             <button
               type="button"

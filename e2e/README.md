@@ -31,3 +31,15 @@ Since v0.16 (ADR-017) the first sale of the day asks to open the register. Every
 ## v0.17: the store starts empty (ADR-018)
 The first-time journey no longer offers example menus and "Lewati, pakai contoh toko" is now "Lewati" (empty store).
 Flows that need something to sell use `e2e/sample_menu.py`: `skip_with_sample_menu(page)` presses Lewati and writes the bakso sample menu into IndexedDB; `add_sample_menu(page, 'kopi')` does the same after a full journey. The data is `fixtures/sample-menus.json`, a mirror of `src/test/sampleMenu.ts` (a unit test keeps them equal). `v10.py` also checks the empty-menu state.
+
+## v0.18: Vercel output, sign-up with password (ADR-022, ADR-023)
+Merchant accounts are created on the "Daftar" tab (owner, store, WhatsApp, city, email, password) and signed in with email + password; email codes are only for "Lupa kata sandi" when Resend is set. Helpers: `e2e/account.py` (`sign_up`, `sign_in`).
+Account flows run against the Vercel output served locally:
+```bash
+node scripts/gen-pass-key.mjs > /tmp/keys.env && set -a && . /tmp/keys.env && set +a
+npm run build:vercel
+DEV_MODE=1 APP_ORIGIN=http://localhost:4173 ADMIN_PASSWORD=admin-kata-sandi-panjang node scripts/vercel-local.mjs 4173 > /tmp/api.log &
+python3 e2e/v18.py http://localhost:4173 ./shots admin-kata-sandi-panjang              # sign-up, sign-in, forgot, admin merchant details, temporary password
+python3 e2e/v17.py http://localhost:4173 ./shots /tmp/api.log admin-kata-sandi-panjang # admin console revamp (uses sign_up now)
+```
+Set `CHROME=/path/to/chrome` to pick the browser. `v14.py` and `v15.py` used email-code sign-in and the old admin email codes; they are superseded by `v18.py` and `v17.py`.

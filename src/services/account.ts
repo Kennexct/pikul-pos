@@ -1,7 +1,7 @@
 import type { JWK } from 'jose';
 import { accessState, monotonicNow, verifyPass, type AccessState, type PassClaims } from '../lib/accessPass';
 
-const K = { pass: 'kk.pass', refresh: 'kk.refresh', lastSeen: 'kk.lastSeen' } as const;
+const K = { pass: 'kk.pass', refresh: 'kk.refresh', lastSeen: 'kk.lastSeen', signupStore: 'kk.signupStore' } as const;
 
 const publicJwk: JWK | null = (() => {
   const raw = import.meta.env.VITE_PASS_PUBLIC_JWK as string | undefined;
@@ -79,6 +79,28 @@ export async function loadStoredPass(): Promise<PassClaims | null> {
 
 export const hasRefreshToken = () => read(K.refresh) !== null;
 export const stateOf = (c: PassClaims): AccessState => accessState(c, deviceNow());
+
+/** What the sign-up page collects (ADR-023); the admin console shows it under Merchant. */
+export interface SignUpInput {
+  email: string;
+  password: string;
+  ownerName: string;
+  storeName: string;
+  phone: string;
+  city: string;
+}
+export const authOptions = () => api<{ emailReset: boolean; google: boolean }>('GET', '/api/auth/options');
+export async function signUp(input: SignUpInput): Promise<PassClaims> {
+  const claims = await keep(await api<SessionBody>('POST', '/api/auth/signup', input));
+  write(K.signupStore, input.storeName.trim());
+  return claims;
+}
+export const passwordSignIn = async (email: string, password: string) => keep(await api<SessionBody>('POST', '/api/auth/login', { email, password }));
+export const resetPassword = async (email: string, code: string, password: string) => keep(await api<SessionBody>('POST', '/api/auth/reset', { email, code, password }));
+/** Settings: other devices are signed out; this one keeps going with a new session. */
+export const changePassword = async (current: string, password: string) => keep(await api<SessionBody>('POST', '/api/auth/password', { current, password }, true));
+/** The store name typed at sign-up on this device, to prefill the first-time setup. */
+export const signupStoreName = (): string => read(K.signupStore) ?? '';
 
 export const requestCode = (email: string) => api<{ ok: true }>('POST', '/api/auth/code', { email });
 export const verifyCode = async (email: string, code: string) => keep(await api<SessionBody>('POST', '/api/auth/verify', { email, code }));

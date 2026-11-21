@@ -61,6 +61,19 @@ export interface Account {
   createdAt: number;
   trialEndsAt: number;
   paidUntil: number | null; // entitlement beyond the trial; no payment provider sets it yet
+  /** Sign-up profile (ADR-023). Empty on accounts made before v0.18. */
+  ownerName?: string;
+  storeName?: string;
+  phone?: string; // digits, starts with 62
+  city?: string;
+}
+
+/** What the merchant types on the sign-up page (ADR-023). */
+export interface MerchantProfile {
+  ownerName: string;
+  storeName: string;
+  phone: string;
+  city: string;
 }
 
 export interface LoginCode {
@@ -80,7 +93,10 @@ export interface RefreshToken {
 export interface Repo extends AdminRepo {
   findAccountByEmail(email: string): Promise<Account | null>;
   findAccountById(id: string): Promise<Account | null>;
-  createAccount(a: Account): Promise<void>;
+  /** Inserts; returns false when the email is taken. */
+  createAccount(a: Account, passwordHash?: string | null): Promise<boolean>;
+  getPasswordHash(id: string): Promise<string | null>;
+  setPasswordHash(id: string, hash: string, at: number): Promise<void>;
   setGoogleSub(id: string, sub: string): Promise<void>;
   setPaidUntil(id: string, paidUntil: number): Promise<void>;
 
@@ -123,6 +139,8 @@ export interface Deps {
   google: GoogleVerifier | null;
   now: () => number;
   appOrigin: string;
+  /** False when no mail provider is configured: forgot-password by email is hidden (ADR-023). */
+  emailEnabled: boolean;
   /** ADMIN_PASSWORD (ADR-020). Null or shorter than 12 characters = console closed. */
   adminPassword: string | null;
 }

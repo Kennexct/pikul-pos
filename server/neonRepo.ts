@@ -13,6 +13,10 @@ const account = (r: Row): Account => ({
   createdAt: ms(r.created_at)!,
   trialEndsAt: ms(r.trial_ends_at)!,
   paidUntil: ms(r.paid_until),
+  ownerName: (r.owner_name as string | undefined) ?? '',
+  storeName: (r.store_name as string | undefined) ?? '',
+  phone: (r.phone as string | undefined) ?? '',
+  city: (r.city as string | undefined) ?? '',
 });
 const b64 = (bytes: Uint8Array) => {
   let s = '';
@@ -63,10 +67,19 @@ export function neonRepo(databaseUrl: string): Repo {
     ...neonAdminRepo(sql),
     findAccountByEmail: (email) => one(sql`select * from accounts where email = ${email}` as Promise<Row[]>, account),
     findAccountById: (id) => one(sql`select * from accounts where id = ${id}` as Promise<Row[]>, account),
-    async createAccount(a) {
-      await sql`insert into accounts (id, email, google_sub, created_at, trial_ends_at, paid_until)
-        values (${a.id}, ${a.email}, ${a.googleSub}, ${iso(a.createdAt)}, ${iso(a.trialEndsAt)}, ${iso(a.paidUntil)})
-        on conflict (email) do nothing`;
+    async createAccount(a, passwordHash = null) {
+      const r = (await sql`insert into accounts (id, email, google_sub, created_at, trial_ends_at, paid_until, password_hash, password_changed_at, owner_name, store_name, phone, city)
+        values (${a.id}, ${a.email}, ${a.googleSub}, ${iso(a.createdAt)}, ${iso(a.trialEndsAt)}, ${iso(a.paidUntil)}, ${passwordHash}, ${passwordHash ? iso(a.createdAt) : null},
+          ${a.ownerName ?? ''}, ${a.storeName ?? ''}, ${a.phone ?? ''}, ${a.city ?? ''})
+        on conflict (email) do nothing returning id`) as Row[];
+      return r.length > 0;
+    },
+    async getPasswordHash(id) {
+      const [r] = (await sql`select password_hash from accounts where id = ${id}`) as Row[];
+      return (r?.password_hash as string | null | undefined) ?? null;
+    },
+    async setPasswordHash(id, hash, at) {
+      await sql`update accounts set password_hash = ${hash}, password_changed_at = ${iso(at)} where id = ${id}`;
     },
     async setGoogleSub(id, sub) {
       await sql`update accounts set google_sub = ${sub} where id = ${id} and google_sub is null`;

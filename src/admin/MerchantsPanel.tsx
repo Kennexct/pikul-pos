@@ -1,12 +1,15 @@
-import { ChevronLeft, ChevronRight, Users } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Download, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import { EmptyState } from '../components/ui/EmptyState';
 import { LoadingScreen } from '../components/ui/LoadingScreen';
 import { SearchInput } from '../components/ui/SearchInput';
-import { btnIcon, card, option } from '../components/ui/styles';
+import { btnIcon, btnSecondary, card, option } from '../components/ui/styles';
 import { t } from '../i18n';
-import { loadMerchants, type PlanCount } from './api';
+import { downloadCsv, loadMerchants, merchantsCsvPath, type PlanCount } from './api';
+import { errorText } from './errors';
 import { ago, fmtDate, num, rp, until } from './format';
+import { fmtPhone } from './MerchantProfile';
 import { MerchantSheet } from './MerchantSheet';
 import { LoadError, PanelHead, StatusChip } from './ui';
 import { useLoad } from './useLoad';
@@ -28,7 +31,7 @@ interface Props {
   onError: (e: unknown) => Promise<void>;
 }
 
-/** Merchant list (ADR-020): plan counts, status filters, search by email. Opening one shows its executive summary only. */
+/** Merchant list (ADR-020, ADR-023): sign-up details, plan counts, status filters, search, CSV. Opening one shows its summary only. */
 export function MerchantsPanel({ openId, onOpenChange, onError }: Props) {
   const [q, setQ] = useState('');
   const [query, setQuery] = useState('');
@@ -45,9 +48,25 @@ export function MerchantsPanel({ openId, onOpenChange, onError }: Props) {
   const { data, error, reload } = useLoad(() => loadMerchants({ q: query, filter, plan, page }), [query, filter, plan, page], onError);
 
   const pages = data ? Math.max(1, Math.ceil(data.total / data.pageSize)) : 1;
+  const exportCsv = async () => {
+    try {
+      await downloadCsv(merchantsCsvPath({ q: query, filter, plan }), 'merchant-pikul.csv');
+    } catch (e) {
+      toast.error(errorText(e));
+    }
+  };
   return (
     <div className="space-y-4">
-      <PanelHead title={t('Merchant')} hint={t('Hanya ringkasan. Konsol tidak bisa membuka akun, struk, atau menu merchant.')} />
+      <PanelHead
+        title={t('Merchant')}
+        hint={t('Data pendaftaran dan ringkasan. Konsol tidak bisa membuka struk atau menu merchant.')}
+        actions={
+          <button type="button" className={btnSecondary} onClick={() => void exportCsv()} disabled={!data || data.total === 0}>
+            <Download aria-hidden size={18} />
+            {t('Unduh CSV')}
+          </button>
+        }
+      />
       {data && (
         <section aria-label={t('Paket merchant')} className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
           {data.plans.map((p) => {
@@ -71,7 +90,7 @@ export function MerchantsPanel({ openId, onOpenChange, onError }: Props) {
           })}
         </section>
       )}
-      <SearchInput value={q} onChange={setQ} placeholder={t('Cari email merchant')} label={t('Cari merchant')} />
+      <SearchInput value={q} onChange={setQ} placeholder={t('Cari toko, pemilik, email, WhatsApp, kota')} label={t('Cari merchant')} />
       <div className="scroll-x -mx-1 flex gap-2 px-1" role="group" aria-label={t('Saring status')}>
         {FILTERS.map((f) => (
           <button
@@ -103,7 +122,8 @@ export function MerchantsPanel({ openId, onOpenChange, onError }: Props) {
               <li key={m.id}>
                 <button type="button" onClick={() => onOpenChange(m.id)} className="grid w-full grid-cols-[1fr_auto] gap-x-3 gap-y-1 px-4 py-3 text-left hover:bg-subtle md:grid-cols-[minmax(0,2fr)_1fr_1fr_1fr_auto] md:items-center">
                   <span className="min-w-0">
-                    <span className="block truncate text-[15px] font-semibold text-ink">{m.email}</span>
+                    <span className="block truncate text-[15px] font-semibold text-ink">{m.storeName || m.email}</span>
+                    <span className="block truncate text-[13px] text-ink-soft">{[m.ownerName, m.storeName ? m.email : '', m.phone ? fmtPhone(m.phone) : '', m.city].filter(Boolean).join(' · ')}</span>
                     <span className="text-[13px] text-muted">{t('Daftar {0}', fmtDate(m.createdAt))}</span>
                   </span>
                   <span className="justify-self-end md:order-last">

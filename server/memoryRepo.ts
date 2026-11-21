@@ -2,10 +2,11 @@ import { DEFAULT_PLANS } from './catalog';
 import { memoryAdminRepo } from './memoryAdminRepo';
 import type { Account, AdminAuditEntry, Campaign, StoredImage, LoginCode, PlanDef, RefreshToken, Repo } from './types';
 
-/** In-memory Repo for tests and `wrangler pages dev` without a database. */
+/** In-memory Repo for tests and local dev (`DEV_MODE=1`) without a database. Starts empty except the default plans. */
 export function memoryRepo(): Repo & { accounts: Map<string, Account>; campaigns: Map<string, Campaign>; audit: AdminAuditEntry[]; admin: ReturnType<typeof memoryAdminRepo> } {
   const accounts = new Map<string, Account>();
   const codes = new Map<string, LoginCode>();
+  const passwords = new Map<string, string>();
   const tokens = new Map<string, RefreshToken>();
   const plans = new Map<string, PlanDef>(DEFAULT_PLANS.map((p) => [p.id, structuredClone(p)]));
   const campaigns = new Map<string, Campaign>();
@@ -25,8 +26,17 @@ export function memoryRepo(): Repo & { accounts: Map<string, Account>; campaigns
     async findAccountById(id) {
       return clone(accounts.get(id));
     },
-    async createAccount(a) {
+    async createAccount(a, passwordHash = null) {
+      if ([...accounts.values()].some((x) => x.email === a.email)) return false;
       accounts.set(a.id, structuredClone(a));
+      if (passwordHash) passwords.set(a.id, passwordHash);
+      return true;
+    },
+    async getPasswordHash(id) {
+      return passwords.get(id) ?? null;
+    },
+    async setPasswordHash(id, hash) {
+      passwords.set(id, hash);
     },
     async setGoogleSub(id, sub) {
       const a = accounts.get(id);

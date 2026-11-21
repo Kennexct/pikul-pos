@@ -7,6 +7,7 @@ import { jakartaDate } from './ledger';
 import { memoryRepo } from './memoryRepo';
 import { passSigner } from './pass';
 import { route } from './router';
+import { signUpOrIn } from './testSignup';
 import { DEFAULT_CONTENT } from './siteContent';
 import { DAY_MS, type Deps } from './types';
 
@@ -23,8 +24,7 @@ const raw = (method: string, path: string, body?: unknown, auth = '', query = ''
 const asAdmin = (method: string, path: string, body?: unknown, query = '') => raw(method, path, body, admin, query);
 
 async function merchant(email: string) {
-  await raw('POST', '/api/auth/code', { email });
-  const res = await raw('POST', '/api/auth/verify', { email, code: mail.at(-1)!.code });
+  const res = await signUpOrIn(deps, email);
   return { id: [...repo.accounts.values()].find((a) => a.email === email)!.id, token: (res.body as { refreshToken: string }).refreshToken };
 }
 
@@ -51,6 +51,7 @@ beforeEach(async () => {
     now: () => now,
     appOrigin: 'https://pikul.test',
     adminPassword: PASSWORD,
+    emailEnabled: true,
   };
   admin = ((await raw('POST', '/api/admin/login', { password: PASSWORD })).body as { token: string }).token;
 });

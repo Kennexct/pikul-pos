@@ -22,7 +22,7 @@ let signerCache: { jwk: string; signer: PassSigner } | null = null;
 
 async function deps(env: Env): Promise<Deps> {
   const dev = env.DEV_MODE === '1';
-  if (!dev && (!env.DATABASE_URL || !env.RESEND_API_KEY || !env.MAIL_FROM)) throw new Error('missing_config');
+  if (!dev && !env.DATABASE_URL) throw new Error('missing_config');
   if (signerCache?.jwk !== env.PASS_PRIVATE_JWK) signerCache = { jwk: env.PASS_PRIVATE_JWK, signer: await passSigner(JSON.parse(env.PASS_PRIVATE_JWK)) };
   return {
     repo: env.DATABASE_URL ? neonRepo(env.DATABASE_URL) : (devRepo ??= memoryRepo()),
@@ -32,6 +32,7 @@ async function deps(env: Env): Promise<Deps> {
     now: Date.now,
     appOrigin: env.APP_ORIGIN.replace(/\/$/, ''),
     adminPassword: env.ADMIN_PASSWORD ?? null,
+    emailEnabled: Boolean(env.RESEND_API_KEY && env.MAIL_FROM),
   };
 }
 

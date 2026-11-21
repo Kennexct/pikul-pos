@@ -6,9 +6,8 @@ import type { MerchantSummary, ExecutiveReport } from '../../server/analytics';
 import type { PlanOffer } from '../../server/catalog';
 
 /**
- * Admin console API (ADR-020). Server mode: admin password → bearer token in sessionStorage.
- * Preview mode (no admin server, e.g. a static deploy): the same server code runs in this tab with example data
- * (`preview.ts`); nothing reaches the landing page or the app, and it resets when the tab closes.
+ * Admin console API (ADR-020): admin password → bearer token in sessionStorage.
+ * There is no preview or example data (ADR-022): without an API server the console says so and stops.
  */
 export type { PlanDef, Campaign, CampaignState, Checked, Grant, Payment, SiteContent, AccountView, MerchantSummary, ExecutiveReport, PlanOffer };
 export type CampaignRow = Campaign & { state: CampaignState };
@@ -27,14 +26,10 @@ export class AdminError extends Error {
   }
 }
 
-export type Mode = 'server' | 'preview';
-/** ready = signed in; login = needs the password; disabled = server has no ADMIN_PASSWORD. */
-export type Gate = 'ready' | 'login' | 'disabled';
+/** ready = signed in; login = needs the password; disabled = server has no ADMIN_PASSWORD; no_server = no API answered. */
+export type Gate = 'ready' | 'login' | 'disabled' | 'no_server';
 export const SIGNED_OUT_EVENT = 'pikul-admin-signed-out';
 const TOKEN_KEY = 'pikul.admin';
-
-let mode: Mode = 'server';
-export const currentMode = () => mode;
 
 const store = {
   get: () => {
@@ -53,8 +48,7 @@ const store = {
     }
   },
 };
-let memToken: string | null = null;
-const token = () => memToken ?? store.get();
+const token = () => store.get();
 
 interface Raw {
   status: number;
@@ -81,44 +75,33 @@ async function serverFetch(method: 'GET' | 'POST', path: string, body?: unknown)
   return { status: res.status, body: type.includes('json') ? await res.json().catch(() => null) : null };
 }
 
-async function previewFetch(method: 'GET' | 'POST', path: string, body?: unknown): Promise<Raw> {
-  const { previewRoute } = await import('./preview');
-  return previewRoute(method, path, body);
-}
-
 async function call<T>(method: 'GET' | 'POST', path: string, body?: unknown): Promise<T> {
-  const r = await (mode === 'preview' ? previewFetch(method, path, body) : serverFetch(method, path, body));
+  const r = await serverFetch(method, path, body);
   if (r.status >= 200 && r.status < 300) return (r.text ?? r.body) as T;
   const code = (r.body as { error?: string } | null)?.error ?? 'server_error';
-  if (r.status === 401 && mode === 'server' && path !== '/api/admin/login') {
-    memToken = null;
-    store.set(null);
+  if (r.status === 401 && path !== '/api/admin/login') {
+      store.set(null);
     window.dispatchEvent(new Event(SIGNED_OUT_EVENT));
   }
   throw new AdminError(code, r.status);
 }
 
 /** First load: is there an admin server, and is this tab signed in? */
-export async function openConsole(): Promise<{ mode: Mode; gate: Gate }> {
+export async function openConsole(): Promise<{ gate: Gate }> {
   const r = await serverFetch('GET', '/api/admin/me');
   const err = (r.body as { error?: string } | null)?.error;
-  if (r.status === 200 && (r.body as { actor?: unknown } | null)?.actor) return { mode: (mode = 'server'), gate: 'ready' };
-  if (r.status === 401 && err) return { mode: (mode = 'server'), gate: 'login' };
-  if (r.status === 503 && err === 'admin_disabled') return { mode: (mode = 'server'), gate: 'disabled' };
-  mode = 'preview';
-  const { previewSignIn } = await import('./preview');
-  memToken = await previewSignIn();
-  return { mode, gate: 'ready' };
+  if (r.status === 200 && (r.body as { actor?: unknown } | null)?.actor) return { gate: 'ready' };
+  if (r.status === 401 && err) return { gate: 'login' };
+  if (r.status === 503 && err === 'admin_disabled') return { gate: 'disabled' };
+  return { gate: 'no_server' };
 }
 
 export async function login(password: string): Promise<void> {
   const r = await call<{ token: string }>('POST', '/api/admin/login', { password });
-  memToken = null;
   store.set(r.token);
 }
 export async function logout(): Promise<void> {
   await call('POST', '/api/admin/logout', {}).catch(() => undefined);
-  memToken = null;
   store.set(null);
 }
 
@@ -131,7 +114,6 @@ export const toggleCampaign = (id: string, enabled: boolean) => call<{ campaign:
 export const archiveCampaign = (id: string) => call<{ ok: true }>('POST', `/api/admin/campaigns/${id}/archive`, {});
 
 export async function uploadImage(file: File): Promise<string> {
-  if (mode === 'preview') throw new AdminError('preview_upload', 400);
   const buf = new Uint8Array(await file.arrayBuffer());
   let bin = '';
   for (let i = 0; i < buf.length; i += 0x8000) bin += String.fromCharCode(...buf.subarray(i, i + 0x8000));
@@ -192,6 +174,8 @@ export const loadMerchants = (q: { q?: string; filter?: string; plan?: string; p
 export const loadMerchant = (id: string) => call<MerchantDetail>('GET', `/api/admin/merchants/${id}`);
 export const recordPayment = (id: string, p: PaymentInput) => call<{ payment: Payment }>('POST', `/api/admin/merchants/${id}/payments`, p);
 export const cancelPayment = (id: string, reason: string) => call<{ ok: true }>('POST', `/api/admin/payments/${id}/cancel`, { reason });
+export const tempPassword = (id: string) => call<{ password: string }>('POST', `/api/admin/merchants/${id}/temp-password`, {});
+export const merchantsCsvPath = (q: { q?: string; filter?: string; plan?: string }) => `/api/admin/merchants${qs({ ...q, format: 'csv' })}`;
 export const grantTrial = (id: string, days: number, reason: string) => call<{ grant: Grant }>('POST', `/api/admin/merchants/${id}/grants`, { days, reason });
 export const loadPayments = (month: string) => call<PaymentMonth>('GET', `/api/admin/payments${qs({ month })}`);
 export const loadMerchantSummary = (id: string, from: string, to: string) => call<MerchantSummary>('GET', `/api/admin/merchants/${id}/summary${qs({ from, to })}`);

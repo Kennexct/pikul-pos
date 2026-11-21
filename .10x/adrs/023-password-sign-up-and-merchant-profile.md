@@ -1,6 +1,6 @@
 # ADR-023: Email + password sign-up with merchant profile; admin sees the profile
 
-**Status:** Accepted (recommended option; awaiting Kenny's pick on the decision card — revise if he chooses email codes)
+**Status:** Accepted — Kenny chose "Email + password" (2026-11-21)
 **Date:** 2026-11-21
 **Feature:** vercel-neon-launch
 **Author:** 10x-Team (Architect + Security)

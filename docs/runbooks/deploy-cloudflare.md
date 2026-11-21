@@ -1,5 +1,7 @@
 # Deploy Pikul: Cloudflare Pages + Neon + Resend (v0.15, ADR-013, ADR-014, ADR-015)
 
+> **Superseded by [deploy-vercel-neon.md](deploy-vercel-neon.md) (ADR-022, 2026-11-21).** Kept for reference; the Cloudflare adapter in `functions/` still builds but is not the deploy target.
+
 No payment provider is connected (Midtrans was removed, ADR-015). Trials end after 14 days; extend an account by hand (Troubleshooting) until a provider is added.
 
 ## 1. Neon (database)

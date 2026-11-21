@@ -11,3 +11,4 @@ supabase/.temp
 .dev.vars
 .wrangler
 __pycache__/
+.vercel

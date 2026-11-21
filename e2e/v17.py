@@ -1,4 +1,4 @@
-"""v0.17 (ADR-020) against `wrangler pages dev` (DEV_MODE=1, ADMIN_PASSWORD set):
+"""v0.17 (ADR-020) against the Vercel output (scripts/vercel-local.mjs, DEV_MODE=1, ADMIN_PASSWORD set; ADR-022):
 admin password sign-in (wrong password, then right) → landing content edit shows on the landing page →
 campaign on "first register opening" → merchant signs up, opens the register, sees the banner once, sells →
 daily totals reach the console (merchant list, summary) → record a payment → payments month + executive report.
@@ -11,6 +11,7 @@ from playwright.sync_api import sync_playwright
 import os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from sample_menu import skip_with_sample_menu  # noqa: E402
+from account import sign_up  # noqa: E402
 
 BASE, OUT, LOG, PASSWORD = sys.argv[1:5]
 errors = []
@@ -19,15 +20,6 @@ errors = []
 def shot(page, name):
     page.wait_for_timeout(500)
     page.screenshot(path=f'{OUT}/{name}.png', full_page=False)
-
-
-def latest_code(email):
-    for _ in range(40):
-        codes = re.findall(rf'login code for {re.escape(email)}: (\d{{6}})', open(LOG).read())
-        if codes:
-            return codes[-1]
-        time.sleep(0.25)
-    raise AssertionError('no code in log')
 
 
 def watch(page, name, ok_status=()):
@@ -105,14 +97,11 @@ def add_register_campaign(page, name, title):
 
 
 def merchant_day(p, name, viewport, is_mobile, email, title):
-    browser = p.chromium.launch(executable_path='/usr/bin/google-chrome', args=['--no-sandbox'])
+    browser = p.chromium.launch(executable_path=os.environ.get('CHROME', '/usr/bin/google-chrome'), args=['--no-sandbox'])
     page = browser.new_context(locale='id-ID', timezone_id='Asia/Jakarta', viewport=viewport, is_mobile=is_mobile, has_touch=is_mobile).new_page()
     watch(page, f'{name} merchant')
-    page.goto(BASE + '/app/')
-    page.locator('#signin-email').fill(email)
-    page.get_by_role('button', name='Kirim kode masuk').click()
-    page.locator('#signin-code').fill(latest_code(email))
-    page.get_by_role('button', name='Masuk', exact=True).click()
+    page.goto(BASE + '/app/#daftar')
+    sign_up(page, email, store=f'Toko {name}')
     skip_with_sample_menu(page)
     page.get_by_role('button', name='Kerupuk').first.wait_for()
     # One-time notice about daily totals.
@@ -152,7 +141,7 @@ def run(p, name, viewport, is_mobile):
     title = f'Promo pagi {name} {stamp}'
     faq_q = f'Pertanyaan uji {name} {stamp}?'
     faq_a = f'Bisa. <b>Teks</b> {stamp} tampil apa adanya.'
-    browser = p.chromium.launch(executable_path='/usr/bin/google-chrome', args=['--no-sandbox'])
+    browser = p.chromium.launch(executable_path=os.environ.get('CHROME', '/usr/bin/google-chrome'), args=['--no-sandbox'])
     ctx = browser.new_context(locale='id-ID', timezone_id='Asia/Jakarta', viewport=viewport, is_mobile=is_mobile, has_touch=is_mobile)
     page = ctx.new_page()
     watch(page, name)

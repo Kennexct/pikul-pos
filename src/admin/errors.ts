@@ -22,7 +22,6 @@ const ERRORS: Record<string, string> = {
   invalid_faqs: t('Periksa FAQ: pertanyaan maks. 120 karakter, jawaban maks. 600, paling banyak 20.'),
   invalid_contact: t('Kontak maksimal 160 karakter, satu baris.'),
   rate_limited: t('Terlalu banyak permintaan. Coba lagi sebentar.'),
-  preview_upload: t('Unggah gambar butuh server admin. Di mode pratinjau, simpan kampanye tanpa gambar.'),
   not_found: t('Data tidak ditemukan. Muat ulang halaman.'),
   invalid_plan_id: t('Kode paket hanya huruf kecil, angka, dan tanda minus (2–24 karakter).'),
   plan_exists: t('Kode paket ini sudah dipakai.'),

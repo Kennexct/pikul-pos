@@ -21,7 +21,7 @@ This repo implements the infrastructure for the PRD *"KasirKu (now Pikul) — PR
 └───────────────────────────────────────────┬──────────────────────────────────────────┘
                                             │ HTTPS
 ┌───────────────────────────────────────────▼──────────────────────────────────────────┐
-│  Cloudflare Pages: / landing (static) · /app/ PWA · /api/* Pages Functions             │
+│  Vercel: / landing (static) · /app/ PWA · /admin/ · /api/* Vercel Function (ADR-022)  │
 │   functions/api/[[path]].ts wires env → server/ (framework-free handlers, Deps object) │
 │   • Neon Postgres (ap-southeast-1): accounts, login codes, tokens, plans, campaigns     │
 │   • Resend: 6-digit email sign-in code · optional Google ID token                      │
@@ -40,9 +40,9 @@ reference schema for future multi-device sync and is not applied anywhere.
 | Local data | Dexie (IndexedDB) | Offline checkout is a hard requirement; indexed queries for history and reports |
 | State | Zustand | Small, no boilerplate; cart persisted to localStorage to survive reloads |
 | Styling | Tailwind CSS v4 | Fast responsive layouts, tiny CSS output |
-| Backend | Cloudflare Pages Functions + Neon Postgres (ADR-013) | Serverless, free tiers, Singapore region; server code is framework-free and tested with an in-memory repo |
+| Backend | Vercel Function (Build Output API) + Neon Postgres (ADR-022; was Cloudflare, ADR-013) | Serverless, free tiers, Singapore region; server code is framework-free and tested with an in-memory repo |
 | Auth & access | Email code (Resend) + offline ES256 access pass | Selling keeps working offline through trial, paid period and a 3-day grace. No payment provider is connected (ADR-015) |
-| Hosting | Cloudflare Pages | Landing at `/`, app at `/app/`, API at `/api/*` in one project |
+| Hosting | Vercel | Landing at `/`, app at `/app/`, admin at `/admin/`, API at `/api/*` in one project |
 | IDs | Client UUIDv7 | Create records offline without collisions; time-sortable |
 | Money | Integer Rupiah | No floating-point errors; IDR has no minor unit in practice |
 
@@ -93,7 +93,7 @@ npm test                       # pricing, business date, receipt no., UUIDv7
 npm run build                  # typecheck + production build + service worker
 ```
 
-Accounts and the admin console: follow [`docs/runbooks/deploy-cloudflare.md`](docs/runbooks/deploy-cloudflare.md) — Neon (`db/migrations/001_accounts_billing.sql`, `002_admin_console.sql`, `003_admin_revamp.sql`), access-pass key (`node scripts/gen-pass-key.mjs`), Resend, Cloudflare Pages, `ADMIN_PASSWORD`. Using the console: [`docs/runbooks/admin-console.md`](docs/runbooks/admin-console.md). Locally, `npm run build && npm run pages:dev` with `DEV_MODE=1` uses an in-memory DB and prints sign-in codes to the log. `VITE_BILLING=off` builds the app without the account gate.
+Deploy: follow [`docs/runbooks/deploy-vercel-neon.md`](docs/runbooks/deploy-vercel-neon.md) — Neon (`db/neon-setup.sql`, all migrations in one file), access-pass key (`node scripts/gen-pass-key.mjs`), Vercel project + env vars (`ADMIN_PASSWORD`, `DATABASE_URL`, …). Resend is optional. Merchants sign up with email + password plus owner, store, WhatsApp and city (ADR-023); the admin console shows those details under Merchant. Using the console: [`docs/runbooks/admin-console.md`](docs/runbooks/admin-console.md). Locally: `npm run build:vercel` then `DEV_MODE=1 … node scripts/vercel-local.mjs` (memory DB; see `e2e/README.md`). `VITE_BILLING=off` builds the app without the account gate.
 
 ## 4. Offline sync design
 

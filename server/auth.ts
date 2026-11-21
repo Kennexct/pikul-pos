@@ -1,5 +1,5 @@
 import { randomCode, randomToken, safeEqual, sha256 } from './crypto';
-import { DAY_MS, TRIAL_DAYS, type Account, type ApiResponse, type Deps, type RefreshToken } from './types';
+import { DAY_MS, type Account, type ApiResponse, type Deps, type RefreshToken } from './types';
 
 export const CODE_TTL_MS = 10 * 60_000;
 export const CODE_RESEND_MS = 60_000;
@@ -19,7 +19,7 @@ export const entitledUntil = (a: Account) => Math.max(a.trialEndsAt, a.paidUntil
 /** "paid" once a payment has pushed the end date past the trial; a paid extension always lands after the trial end. */
 export const planOf = (a: Account): 'trial' | 'paid' => (a.paidUntil !== null && a.paidUntil >= a.trialEndsAt ? 'paid' : 'trial');
 
-async function session(deps: Deps, a: Account): Promise<ApiResponse> {
+export async function session(deps: Deps, a: Account): Promise<ApiResponse> {
   const now = deps.now();
   await deps.repo.touchLastSeen(a.id, now).catch(() => undefined); // console "last active" (ADR-020); never blocks sign-in
   const refreshToken = randomToken();
@@ -30,32 +30,24 @@ async function session(deps: Deps, a: Account): Promise<ApiResponse> {
   return { status: 200, body: { pass, refreshToken, account: { email: a.email, plan, until, trialEndsAt: a.trialEndsAt, paidUntil: a.paidUntil } } };
 }
 
-async function findOrCreate(deps: Deps, email: string): Promise<Account> {
-  const found = await deps.repo.findAccountByEmail(email);
-  if (found) return found;
-  const now = deps.now();
-  const a: Account = { id: crypto.randomUUID(), email, googleSub: null, createdAt: now, trialEndsAt: now + TRIAL_DAYS * DAY_MS, paidUntil: null };
-  await deps.repo.createAccount(a);
-  return a;
-}
-
+/** Sends a 6-digit code for "forgot password" (ADR-023). Same reply whether or not the account exists. */
 export async function requestCode(deps: Deps, body: unknown): Promise<ApiResponse> {
+  if (!deps.emailEnabled) return bad('email_disabled', 404);
   const email = normalizeEmail((body as { email?: unknown })?.email);
   if (!email) return bad('invalid_email');
   const now = deps.now();
   const prev = await deps.repo.getLoginCode(email);
   if (prev && now - prev.sentAt < CODE_RESEND_MS) return bad('too_soon', 429);
+  if (!(await deps.repo.findAccountByEmail(email))) return { status: 200, body: { ok: true } };
   const code = randomCode();
   await deps.repo.putLoginCode({ email, codeHash: await sha256(`${email}:${code}`), expiresAt: now + CODE_TTL_MS, attempts: 0, sentAt: now });
   await deps.mailer.sendLoginCode(email, code);
   return { status: 200, body: { ok: true } };
 }
 
-export async function verifyCode(deps: Deps, body: unknown): Promise<ApiResponse> {
-  const b = body as { email?: unknown; code?: unknown };
-  const email = normalizeEmail(b?.email);
-  const code = typeof b?.code === 'string' ? b.code.trim() : '';
-  if (!email || !/^\d{6}$/.test(code)) return bad('invalid_code');
+/** Checks a 6-digit code and uses it up. Null = valid. */
+export async function checkCode(deps: Deps, email: string, code: string): Promise<ApiResponse | null> {
+  if (!/^\d{6}$/.test(code)) return bad('invalid_code');
   const row = await deps.repo.getLoginCode(email);
   if (!row || row.expiresAt < deps.now()) return bad('code_expired');
   if (row.attempts >= CODE_MAX_ATTEMPTS) {
@@ -67,7 +59,19 @@ export async function verifyCode(deps: Deps, body: unknown): Promise<ApiResponse
     return bad('invalid_code');
   }
   await deps.repo.deleteLoginCode(email);
-  return session(deps, await findOrCreate(deps, email));
+  return null;
+}
+
+/** Email-code sign-in for an existing account. Accounts are created only by sign-up (ADR-023). */
+export async function verifyCode(deps: Deps, body: unknown): Promise<ApiResponse> {
+  const b = body as { email?: unknown; code?: unknown };
+  const email = normalizeEmail(b?.email);
+  const code = typeof b?.code === 'string' ? b.code.trim() : '';
+  if (!email) return bad('invalid_code');
+  const failed = await checkCode(deps, email, code);
+  if (failed) return failed;
+  const a = await deps.repo.findAccountByEmail(email);
+  return a ? session(deps, a) : bad('no_account', 404);
 }
 
 export async function googleSignIn(deps: Deps, body: unknown): Promise<ApiResponse> {
@@ -78,7 +82,8 @@ export async function googleSignIn(deps: Deps, body: unknown): Promise<ApiRespon
   if (!who) return bad('invalid_token', 401);
   const email = normalizeEmail(who.email);
   if (!email) return bad('invalid_token', 401);
-  const a = await findOrCreate(deps, email);
+  const a = await deps.repo.findAccountByEmail(email);
+  if (!a) return bad('no_account', 404); // sign up first: the profile is needed (ADR-023)
   if (!a.googleSub) await deps.repo.setGoogleSub(a.id, who.sub);
   return session(deps, a);
 }

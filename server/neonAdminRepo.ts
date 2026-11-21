@@ -52,6 +52,10 @@ export function neonAdminRepo(sql: Sql): AdminRepo {
         createdAt: ms(r.created_at)!,
         trialEndsAt: ms(r.trial_ends_at)!,
         paidUntil: ms(r.paid_until),
+        ownerName: (r.owner_name as string | undefined) ?? '',
+        storeName: (r.store_name as string | undefined) ?? '',
+        phone: (r.phone as string | undefined) ?? '',
+        city: (r.city as string | undefined) ?? '',
         lastSeenAt: ms(r.last_seen_at),
       }));
     },

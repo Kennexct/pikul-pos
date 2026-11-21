@@ -1,26 +1,34 @@
-import { ArrowLeft, Mail } from 'lucide-react';
+import { LogIn } from 'lucide-react';
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { Logo } from '../../components/Brand/Logo';
 import { LanguagePicker } from '../../components/LanguagePicker';
-import { btnGhost, btnPrimary, helperText, inputBase, labelBase } from '../../components/ui/styles';
-import { ApiError, GOOGLE_CLIENT_ID, googleSignIn, requestCode, verifyCode } from '../../services/account';
+import { SegmentedControl } from '../../components/ui/SegmentedControl';
+import { btnPrimary, inputBase, labelBase } from '../../components/ui/styles';
+import { authOptions, GOOGLE_CLIENT_ID, googleSignIn, passwordSignIn } from '../../services/account';
 import { useAccessStore } from '../../store/useAccessStore';
 import { t } from '../../i18n';
-
-const ERRORS: Record<string, string> = {
-  invalid_email: t('Alamat email tidak valid.'),
-  too_soon: t('Tunggu 1 menit sebelum meminta kode baru.'),
-  invalid_code: t('Kode salah. Periksa lagi email Anda.'),
-  code_expired: t('Kode sudah kedaluwarsa. Minta kode baru.'),
-  too_many_attempts: t('Terlalu banyak percobaan. Minta kode baru.'),
-  invalid_token: t('Masuk dengan Google gagal. Coba lagi.'),
-  offline: t('Tidak ada internet. Masuk pertama kali butuh koneksi; setelah itu kasir bisa dipakai offline.'),
-};
-const message = (e: unknown) => (e instanceof ApiError ? (ERRORS[e.code] ?? t('Terjadi kesalahan di server. Coba lagi sebentar.')) : t('Terjadi kesalahan di server. Coba lagi sebentar.'));
+import { authMessage } from './authErrors';
+import { ForgotPassword } from './ForgotPassword';
+import { PasswordInput } from './PasswordInput';
+import { SignUpForm } from './SignUpForm';
 
 declare global {
   interface Window {
     google?: { accounts: { id: { initialize: (o: object) => void; renderButton: (el: HTMLElement, o: object) => void } } };
+  }
+}
+
+type View = 'signin' | 'signup' | 'forgot';
+
+/** #daftar / #masuk pick the tab (landing page links); otherwise a device that was used before opens on "Masuk". */
+function firstView(): View {
+  const hash = typeof location === 'undefined' ? '' : location.hash;
+  if (hash === '#daftar') return 'signup';
+  if (hash === '#masuk') return 'signin';
+  try {
+    return localStorage.getItem('kk.lastSeen') ? 'signin' : 'signup';
+  } catch {
+    return 'signup';
   }
 }
 
@@ -40,11 +48,11 @@ function GoogleButton({ onError }: { onError: (m: string) => void }) {
           try {
             setClaims(await googleSignIn(credential));
           } catch (e) {
-            onError(message(e));
+            onError(authMessage(e));
           }
         },
       });
-      window.google.accounts.id.renderButton(el.current, { theme: 'outline', size: 'large', width: 320, text: 'continue_with' });
+      window.google.accounts.id.renderButton(el.current, { theme: 'outline', size: 'large', width: 320, text: 'signin_with' });
     };
     document.head.appendChild(script);
     return () => script.remove();
@@ -62,100 +70,93 @@ function GoogleButton({ onError }: { onError: (m: string) => void }) {
   );
 }
 
-/** ADR-013: sign in (or sign up — same flow) before the POS. The first sign-in starts the 14-day trial. */
-export function SignInPage() {
+function SignInForm({ email, setEmail, onForgot }: { email: string; setEmail: (v: string) => void; onForgot: () => void }) {
   const setClaims = useAccessStore((s) => s.setClaims);
-  const [step, setStep] = useState<'email' | 'code'>('email');
-  const [email, setEmail] = useState('');
-  const [code, setCode] = useState('');
+  const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const send = async (e?: FormEvent) => {
-    e?.preventDefault();
-    setBusy(true);
-    setError(null);
-    try {
-      await requestCode(email);
-      setStep('code');
-      setCode('');
-    } catch (err) {
-      setError(message(err));
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const verify = async (e: FormEvent) => {
+  const submit = async (e: FormEvent) => {
     e.preventDefault();
+    if (busy) return;
     setBusy(true);
     setError(null);
     try {
-      setClaims(await verifyCode(email, code));
+      setClaims(await passwordSignIn(email.trim(), password));
     } catch (err) {
-      setError(message(err));
+      setError(authMessage(err));
       setBusy(false);
     }
   };
+  return (
+    <>
+      <GoogleButton onError={setError} />
+      <form onSubmit={(e) => void submit(e)} noValidate className="space-y-4">
+        <div>
+          <label htmlFor="signin-email" className={labelBase}>
+            {t('Email')}
+          </label>
+          <input id="signin-email" type="email" inputMode="email" autoComplete="email" className={inputBase} value={email} onChange={(e) => setEmail(e.target.value)} placeholder="nama@email.com" />
+        </div>
+        <div>
+          <div className="flex items-end justify-between">
+            <label htmlFor="signin-password" className={labelBase}>
+              {t('Kata sandi')}
+            </label>
+            <button type="button" onClick={onForgot} className="mb-1 min-h-11 px-1 text-[13px] font-semibold text-brand-700 hover:underline">
+              {t('Lupa kata sandi?')}
+            </button>
+          </div>
+          <PasswordInput id="signin-password" value={password} onChange={setPassword} autoComplete="current-password" />
+        </div>
+        {error && (
+          <p role="alert" className="rounded-lg bg-danger-50 px-3 py-2.5 text-[14px] text-danger-700">
+            {error}
+          </p>
+        )}
+        <button type="submit" className={`${btnPrimary} w-full`} disabled={busy || !email.includes('@') || !password}>
+          <LogIn aria-hidden size={18} />
+          {busy ? t('Memeriksa…') : t('Masuk')}
+        </button>
+      </form>
+    </>
+  );
+}
+
+/** ADR-013 + ADR-023: an account comes before the POS. "Daftar" creates it (14-day trial), "Masuk" signs in with a password. */
+export function SignInPage() {
+  const [view, setView] = useState<View>(firstView);
+  const [email, setEmail] = useState('');
+  const [emailReset, setEmailReset] = useState(false);
+  useEffect(() => {
+    authOptions()
+      .then((o) => setEmailReset(o.emailReset))
+      .catch(() => undefined);
+  }, []);
 
   return (
     <main className="flex min-h-dvh flex-col items-center bg-canvas px-4 py-8 text-ink md:justify-center">
       <a href="/" className="mb-6" aria-label={t('Pikul, ke halaman utama')}>
         <Logo size={34} />
       </a>
-      <div className="w-full max-w-[420px] rounded-xl border border-line bg-surface p-6 shadow-xs">
-        {step === 'email' ? (
-          <>
-            <h1 className="text-[22px] font-bold tracking-[-0.02em]">{t('Masuk atau daftar')}</h1>
-            <p className="mt-1.5 text-[15px] text-ink-soft">{t('Akun baru langsung dapat 14 hari gratis. Tanpa kartu kredit.')}</p>
-            <div className="mt-6">
-              <GoogleButton onError={setError} />
-              <form onSubmit={send} noValidate>
-                <label htmlFor="signin-email" className={labelBase}>
-                  {t('Email')}
-                </label>
-                <input id="signin-email" type="email" inputMode="email" autoComplete="email" required className={inputBase} value={email} onChange={(e) => setEmail(e.target.value)} placeholder="nama@email.com" />
-                <button type="submit" className={`${btnPrimary} mt-4 w-full`} disabled={busy || !email.includes('@')}>
-                  <Mail aria-hidden size={18} />
-                  {busy ? t('Mengirim…') : t('Kirim kode masuk')}
-                </button>
-              </form>
-            </div>
-          </>
+      <div className="w-full max-w-[440px] rounded-xl border border-line bg-surface p-6 shadow-xs">
+        {view === 'forgot' ? (
+          <ForgotPassword emailReset={emailReset} initialEmail={email} onBack={() => setView('signin')} />
         ) : (
-          <form onSubmit={verify} noValidate>
-            <button type="button" onClick={() => setStep('email')} className={`${btnGhost} -ml-3 mb-2`}>
-              <ArrowLeft aria-hidden size={18} />
-              {t('Ganti email')}
-            </button>
-            <h1 className="text-[22px] font-bold tracking-[-0.02em]">{t('Cek email Anda')}</h1>
-            <p className="mt-1.5 text-[15px] text-ink-soft">{t('Kami mengirim kode 6 angka ke {0}.', email)}</p>
-            <label htmlFor="signin-code" className={`${labelBase} mt-6`}>
-              {t('Kode masuk')}
-            </label>
-            <input
-              id="signin-code"
-              inputMode="numeric"
-              autoComplete="one-time-code"
-              maxLength={6}
-              className={`${inputBase} text-center text-[24px] font-bold tracking-[0.4em]`}
-              value={code}
-              onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-              autoFocus
+          <>
+            <SegmentedControl
+              label={t('Masuk atau daftar')}
+              isFullWidth
+              value={view}
+              onChange={setView}
+              options={[
+                { value: 'signin', label: t('Masuk') },
+                { value: 'signup', label: t('Daftar') },
+              ]}
             />
-            <p className={helperText}>{t('Tidak ada di kotak masuk? Periksa folder spam.')}</p>
-            <button type="submit" className={`${btnPrimary} mt-4 w-full`} disabled={busy || code.length !== 6}>
-              {busy ? t('Memeriksa…') : t('Masuk')}
-            </button>
-            <button type="button" className={`${btnGhost} mt-2 w-full`} onClick={() => void send()} disabled={busy}>
-              {t('Kirim ulang kode')}
-            </button>
-          </form>
-        )}
-        {error && (
-          <p role="alert" className="mt-4 rounded-lg bg-danger-50 px-3 py-2.5 text-[14px] text-danger-700">
-            {error}
-          </p>
+            <h1 className="mt-5 text-[22px] font-bold tracking-[-0.02em]">{view === 'signup' ? t('Daftar akun Pikul') : t('Masuk ke Pikul')}</h1>
+            <p className="mb-5 mt-1.5 text-[15px] text-ink-soft">{view === 'signup' ? t('Akun baru langsung dapat 14 hari gratis. Tanpa kartu kredit.') : t('Masuk dengan email dan kata sandi akun toko Anda.')}</p>
+            {view === 'signup' ? <SignUpForm /> : <SignInForm email={email} setEmail={setEmail} onForgot={() => setView('forgot')} />}
+          </>
         )}
       </div>
       <div className="mt-6">

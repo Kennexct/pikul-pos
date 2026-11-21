@@ -6,6 +6,7 @@ import { formatRupiah } from '../../lib/money';
 import { ApiError, billingOverview, type BillingOverview, type PlanOffer } from '../../services/account';
 import { useAccessStore } from '../../store/useAccessStore';
 import { DATE_LOCALE, t } from '../../i18n';
+import { ChangePassword } from './ChangePassword';
 import { SettingsSection } from './SettingsSection';
 
 const fmtDate = (ms: number) => new Date(ms).toLocaleDateString(DATE_LOCALE, { day: 'numeric', month: 'long', year: 'numeric' });
@@ -65,10 +66,13 @@ export function SubscriptionSettings() {
       </SettingsSection>
 
       <SettingsSection title={t('Akun')} description={t('Keluar tidak menghapus data toko di perangkat ini.')}>
-        <button type="button" className={btnSecondary} onClick={() => void signOut()}>
-          <LogOut aria-hidden size={18} />
-          {t('Keluar dari akun')}
-        </button>
+        <div className="flex flex-col items-start gap-3">
+          <ChangePassword />
+          <button type="button" className={btnSecondary} onClick={() => void signOut()}>
+            <LogOut aria-hidden size={18} />
+            {t('Keluar dari akun')}
+          </button>
+        </div>
       </SettingsSection>
     </>
   );

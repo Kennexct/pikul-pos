@@ -4,6 +4,7 @@ import { isDate, jakartaDate, paidUntilAfterCancel } from './ledger';
 import { memoryRepo } from './memoryRepo';
 import { passSigner } from './pass';
 import { route } from './router';
+import { signUpOrIn } from './testSignup';
 import { DAY_MS, type Deps } from './types';
 
 const T0 = Date.UTC(2026, 10, 21, 3); // 21 Nov 2026, 10:00 WIB
@@ -27,8 +28,7 @@ async function call(method: string, path: string, body?: unknown, auth: string |
 }
 
 async function merchant(email: string) {
-  await call('POST', '/api/auth/code', { email }, '');
-  const res = await call('POST', '/api/auth/verify', { email, code: mail.at(-1)!.code }, '');
+  const res = await signUpOrIn(deps, email);
   const refreshToken = (res.body as { refreshToken: string }).refreshToken;
   const id = [...repo.accounts.values()].find((a) => a.email === email)!.id;
   return { id, refreshToken };
@@ -49,6 +49,7 @@ beforeEach(async () => {
     now: () => now,
     appOrigin: 'https://pikul.test',
     adminPassword: PASSWORD,
+    emailEnabled: true,
   };
   admin = '';
   loginAt = -Infinity;

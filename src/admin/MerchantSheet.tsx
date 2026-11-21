@@ -9,6 +9,7 @@ import { cancelPayment, loadMerchant, type MerchantDetail, type Payment } from '
 import { errorText, isAuthError } from './errors';
 import { ago, fmtDate, fmtDateTime, METHOD_LABEL, rp, until } from './format';
 import { GrantForm, PaymentForm } from './MerchantActions';
+import { MerchantProfile } from './MerchantProfile';
 import { MerchantSummary } from './MerchantSummary';
 import { LoadError, StatusChip } from './ui';
 import { useLoad } from './useLoad';
@@ -34,7 +35,7 @@ export function MerchantSheet({ id, onClose, onChanged, onError }: Props) {
   const title = view === 'pay' ? t('Catat pembayaran') : view === 'grant' ? t('Tambah hari coba') : t('Detail merchant');
 
   return (
-    <Sheet isOpen title={title} subtitle={data?.merchant.email} onClose={view === 'detail' ? onClose : () => setView('detail')} isWide>
+    <Sheet isOpen title={title} subtitle={data ? data.merchant.storeName || data.merchant.email : undefined} onClose={view === 'detail' ? onClose : () => setView('detail')} isWide>
       {error && !data ? (
         <LoadError error={error} onRetry={() => void reload()} />
       ) : !data ? (
@@ -83,6 +84,7 @@ function Detail({ data, onPay, onGrant, onChanged, onError }: { data: MerchantDe
           {t('Tambah hari coba')}
         </button>
       </div>
+      <MerchantProfile m={m} onError={onError} />
       <MerchantSummary id={m.id} onError={onError} />
       <section aria-label={t('Riwayat pembayaran')}>
         <h3 className="mb-2 text-[15px] font-bold text-ink">{t('Riwayat pembayaran')}</h3>

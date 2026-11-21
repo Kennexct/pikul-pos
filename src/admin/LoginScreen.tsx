@@ -2,11 +2,17 @@ import { Eye, EyeOff, ShieldCheck } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 import { btnPrimary, helperText, inputBase, labelBase } from '../components/ui/styles';
 import { t } from '../i18n';
-import { login } from './api';
+import { login, type Gate } from './api';
 import { errorText } from './errors';
 
+const CLOSED: Partial<Record<Gate, string>> = {
+  disabled: t('Konsol belum aktif. Isi ADMIN_PASSWORD (minimal 12 karakter) di Vercel → Settings → Environment Variables, deploy ulang, lalu muat ulang halaman ini.'),
+  no_server: t('Server API belum tersambung di situs ini, jadi belum ada data. Ikuti panduan docs/runbooks/deploy-vercel-neon.md (DATABASE_URL dan ADMIN_PASSWORD di Vercel), lalu muat ulang.'),
+};
+
 /** Admin password sign-in (ADR-020). The password lives only in the server's ADMIN_PASSWORD secret. */
-export function LoginScreen({ disabled, onSignedIn }: { disabled: boolean; onSignedIn: () => void }) {
+export function LoginScreen({ state, onSignedIn }: { state: Exclude<Gate, 'ready'>; onSignedIn: () => void }) {
+  const closed = CLOSED[state];
   const [password, setPassword] = useState('');
   const [show, setShow] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -33,9 +39,9 @@ export function LoginScreen({ disabled, onSignedIn }: { disabled: boolean; onSig
       <div className="w-full max-w-sm rounded-xl border border-line bg-surface p-6 shadow-xs">
         <ShieldCheck aria-hidden size={28} className="text-brand-600" />
         <h1 className="mt-3 text-[22px] font-bold tracking-[-0.02em] text-ink">{t('Konsol admin Pikul')}</h1>
-        {disabled ? (
+        {closed ? (
           <p role="alert" className="mt-3 text-[15px] leading-relaxed text-ink-soft">
-            {t('Konsol belum aktif. Isi ADMIN_PASSWORD (minimal 12 karakter) di pengaturan Cloudflare Pages, lalu muat ulang halaman ini.')}
+            {closed}
           </p>
         ) : (
           <form onSubmit={(e) => void submit(e)} className="mt-5" noValidate>

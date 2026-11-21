@@ -4,6 +4,7 @@ import { ADMIN_SESSION_MS, MAX_FAILS_ALL, MAX_FAILS_PER_IP } from './adminAuth';
 import { memoryRepo } from './memoryRepo';
 import { passSigner } from './pass';
 import { route } from './router';
+import { signUpOrIn } from './testSignup';
 import { DAY_MS, type Deps } from './types';
 
 const T0 = Date.UTC(2026, 10, 20, 3);
@@ -26,6 +27,7 @@ beforeEach(async () => {
     now: () => now,
     appOrigin: 'https://pikul.test',
     adminPassword: PASSWORD,
+    emailEnabled: true,
   };
 });
 
@@ -36,8 +38,7 @@ async function adminLogin(ip = '10.0.0.1') {
   return (res.body as { token: string }).token;
 }
 async function signIn(email: string) {
-  await call('POST', '/api/auth/code', { email });
-  const res = await call('POST', '/api/auth/verify', { email, code: mail.at(-1)!.code });
+  const res = await signUpOrIn(deps, email);
   return (res.body as { refreshToken: string }).refreshToken;
 }
 const plan = (over: Record<string, unknown> = {}) => ({ id: 'monthly', name: 'Bulanan', amount: 59_000, days: 30, note: 'n', badge: '', features: ['A', ' ', 'B'], active: true, sort: 10, ...over });

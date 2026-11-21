@@ -4,6 +4,7 @@ import { CODE_MAX_ATTEMPTS } from './auth';
 import { memoryRepo } from './memoryRepo';
 import { passSigner } from './pass';
 import { route } from './router';
+import { signUpOrIn } from './testSignup';
 import { DAY_MS, type Deps } from './types';
 
 const T0 = Date.UTC(2026, 10, 19, 3);
@@ -28,6 +29,7 @@ beforeEach(async () => {
     now: () => now,
     appOrigin: 'https://pikul.test',
     adminPassword: null,
+    emailEnabled: true,
   };
 });
 
@@ -35,16 +37,13 @@ const call = (method: string, path: string, body?: unknown, auth?: string) =>
   route(deps, method, path, auth ? `Bearer ${auth}` : null, body === undefined ? '' : JSON.stringify(body));
 
 async function signIn(email = 'budi@warung.id') {
-  await call('POST', '/api/auth/code', { email });
-  const code = mail.at(-1)!.code;
-  const res = await call('POST', '/api/auth/verify', { email, code });
+  const res = await signUpOrIn(deps, email);
   return res.body as { pass: string; refreshToken: string; account: { plan: string; until: number } };
 }
 
-describe('sign in with email code', () => {
-  it('creates the account with a 14-day trial and a pass the device can verify', async () => {
+describe('sign up and sign in (ADR-023)', () => {
+  it('sign-up creates the account with a 14-day trial and a pass the device can verify', async () => {
     const s = await signIn('  Budi@Warung.ID ');
-    expect(mail[0].email).toBe('budi@warung.id');
     expect(s.account.plan).toBe('trial');
     expect(s.account.until).toBe(T0 + 14 * DAY_MS);
     const { payload } = await jwtVerify(s.pass, publicKey, { issuer: 'pikul' });
@@ -58,8 +57,11 @@ describe('sign in with email code', () => {
     expect(repo.accounts.size).toBe(1);
   });
 
-  it('rejects bad emails, resend within 60 s, wrong and expired codes, and locks after 5 wrong tries', async () => {
+  it('email codes: only for existing accounts, resend limit, wrong and expired codes, lock after 5 wrong tries', async () => {
     expect((await call('POST', '/api/auth/code', { email: 'nope' })).status).toBe(400);
+    expect((await call('POST', '/api/auth/code', { email: 'ghost@b.co' })).status).toBe(200);
+    expect(mail).toHaveLength(0);
+    await signIn('a@b.co');
     await call('POST', '/api/auth/code', { email: 'a@b.co' });
     expect((await call('POST', '/api/auth/code', { email: 'a@b.co' })).status).toBe(429);
     const code = mail[0].code;
@@ -73,16 +75,17 @@ describe('sign in with email code', () => {
   });
 
   it('code is single use', async () => {
+    await signIn('a@b.co');
     await call('POST', '/api/auth/code', { email: 'a@b.co' });
     const code = mail[0].code;
     expect((await call('POST', '/api/auth/verify', { email: 'a@b.co', code })).status).toBe(200);
     expect((await call('POST', '/api/auth/verify', { email: 'a@b.co', code })).status).toBe(400);
   });
 
-  it('Google sign-in links to the same email account', async () => {
+  it('Google signs in an existing account only', async () => {
+    expect((await call('POST', '/api/auth/google', { idToken: 'good' })).body).toEqual({ error: 'no_account' });
     await signIn('ani@gmail.com');
-    const res = await call('POST', '/api/auth/google', { idToken: 'good' });
-    expect(res.status).toBe(200);
+    expect((await call('POST', '/api/auth/google', { idToken: 'good' })).status).toBe(200);
     expect(repo.accounts.size).toBe(1);
     expect((await call('POST', '/api/auth/google', { idToken: 'bad' })).status).toBe(401);
   });

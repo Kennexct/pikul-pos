@@ -1,7 +1,10 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "lib": ["ES2022", "WebWorker"],
+    "lib": [
+      "ES2022",
+      "WebWorker"
+    ],
     "module": "ESNext",
     "moduleResolution": "bundler",
     "strict": true,
@@ -9,8 +12,16 @@
     "skipLibCheck": true,
     "noEmit": true,
     "resolveJsonModule": true,
-    "types": ["@cloudflare/workers-types"]
+    "types": [
+      "@cloudflare/workers-types"
+    ]
   },
-  "include": ["server", "functions"],
-  "exclude": ["server/**/*.test.ts"]
+  "include": [
+    "server",
+    "functions"
+  ],
+  "exclude": [
+    "server/**/*.test.ts",
+    "server/vercel.ts"
+  ]
 }
