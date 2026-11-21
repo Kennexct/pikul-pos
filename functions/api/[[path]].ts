@@ -13,8 +13,7 @@ interface Env {
   PASS_PRIVATE_JWK: string;
   GOOGLE_CLIENT_ID?: string;
   APP_ORIGIN: string;
-  ADMIN_EMAILS?: string; // comma-separated; only these accounts may use /admin (ADR-014)
-  ADMIN_OPEN?: string; // "1" = /admin without sign-in (temporary, ADR-019). Anyone with the link can edit.
+  ADMIN_PASSWORD?: string; // /admin sign-in (ADR-020); at least 12 characters, else the console is closed
   DEV_MODE?: string; // "1" only in `wrangler pages dev`: memory DB + console mail
 }
 
@@ -32,11 +31,7 @@ async function deps(env: Env): Promise<Deps> {
     google: env.GOOGLE_CLIENT_ID ? googleVerifier(env.GOOGLE_CLIENT_ID) : null,
     now: Date.now,
     appOrigin: env.APP_ORIGIN.replace(/\/$/, ''),
-    adminEmails: (env.ADMIN_EMAILS ?? '')
-      .split(',')
-      .map((e) => e.trim().toLowerCase())
-      .filter(Boolean),
-    adminOpen: env.ADMIN_OPEN === '1',
+    adminPassword: env.ADMIN_PASSWORD ?? null,
   };
 }
 
@@ -54,9 +49,15 @@ export const onRequest: PagesFunction<Env> = async ({ request, env, waitUntil })
       if (hit) return hit;
     }
     const raw = request.method === 'GET' ? '' : await request.text();
-    const res = await route(await deps(env), request.method, url.pathname, request.headers.get('Authorization'), raw);
+    const ctx = { ip: request.headers.get('CF-Connecting-IP') ?? '', query: url.searchParams };
+    const res = await route(await deps(env), request.method, url.pathname, request.headers.get('Authorization'), raw, ctx);
     if (res.purgePublic) waitUntil(Promise.all(LANDING_CACHE_KEYS.map((k) => cache.delete(new Request(url.origin + k)))));
     if (res.cacheSeconds && res.status === 200) headers['Cache-Control'] = `public, max-age=${res.cacheSeconds}`;
+    if (res.text) {
+      const h: Record<string, string> = { ...headers, 'Content-Type': res.text.contentType };
+      if (res.text.filename) h['Content-Disposition'] = `attachment; filename="${res.text.filename}"`;
+      return new Response(res.text.content, { status: res.status, headers: h });
+    }
     const out = res.raw
       ? new Response(res.raw.bytes.slice().buffer as ArrayBuffer, { status: res.status, headers: { ...headers, 'Content-Type': res.raw.contentType, 'X-Content-Type-Options': 'nosniff' } })
       : new Response(JSON.stringify(res.body), { status: res.status, headers });

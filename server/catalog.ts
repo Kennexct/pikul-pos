@@ -108,7 +108,9 @@ export function checkCampaign(input: unknown, plans: readonly PlanDef[], prev: C
   const ctaLabel = text(f.ctaLabel ?? '', 30, true);
   if (ctaLabel === null) return fail('invalid_cta');
   if (typeof f.showOnLanding !== 'boolean' || typeof f.showInApp !== 'boolean') return fail('invalid_placement');
-  if (!f.showOnLanding && !f.showInApp) return fail('no_placement');
+  const showOnRegister = f.showOnRegister === undefined ? false : f.showOnRegister;
+  if (typeof showOnRegister !== 'boolean') return fail('invalid_placement');
+  if (!f.showOnLanding && !f.showInApp && !showOnRegister) return fail('no_placement');
   const startsAt = int(f.startsAt, 0, 8_640_000_000_000);
   const endsAt = int(f.endsAt, 0, 8_640_000_000_000);
   if (startsAt === null || endsAt === null || endsAt <= startsAt) return fail('invalid_dates');
@@ -134,6 +136,7 @@ export function checkCampaign(input: unknown, plans: readonly PlanDef[], prev: C
       ctaLabel: link.url ? ctaLabel : '',
       showOnLanding: f.showOnLanding,
       showInApp: f.showInApp,
+      showOnRegister,
       startsAt,
       endsAt,
       enabled: f.enabled,
@@ -163,8 +166,10 @@ export function priceNow(plan: PlanDef, campaigns: readonly Campaign[], now: num
 }
 
 /** The pop-up to show in one place: the live campaign for it that started last. */
-export function popupNow(campaigns: readonly Campaign[], now: number, where: 'landing' | 'app'): Campaign | null {
-  return campaigns.filter((c) => isLive(c, now) && (where === 'landing' ? c.showOnLanding : c.showInApp)).sort((a, b) => b.startsAt - a.startsAt || b.updatedAt - a.updatedAt)[0] ?? null;
+export type PopupPlace = 'landing' | 'app' | 'register';
+const placed = (c: Campaign, where: PopupPlace) => (where === 'landing' ? c.showOnLanding : where === 'app' ? c.showInApp : c.showOnRegister);
+export function popupNow(campaigns: readonly Campaign[], now: number, where: PopupPlace): Campaign | null {
+  return campaigns.filter((c) => isLive(c, now) && placed(c, where)).sort((a, b) => b.startsAt - a.startsAt || b.updatedAt - a.updatedAt)[0] ?? null;
 }
 
 export interface PlanOffer {

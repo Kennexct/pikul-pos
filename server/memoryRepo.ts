@@ -1,8 +1,9 @@
 import { DEFAULT_PLANS } from './catalog';
+import { memoryAdminRepo } from './memoryAdminRepo';
 import type { Account, AdminAuditEntry, Campaign, StoredImage, LoginCode, PlanDef, RefreshToken, Repo } from './types';
 
 /** In-memory Repo for tests and `wrangler pages dev` without a database. */
-export function memoryRepo(): Repo & { accounts: Map<string, Account>; campaigns: Map<string, Campaign>; audit: AdminAuditEntry[] } {
+export function memoryRepo(): Repo & { accounts: Map<string, Account>; campaigns: Map<string, Campaign>; audit: AdminAuditEntry[]; admin: ReturnType<typeof memoryAdminRepo> } {
   const accounts = new Map<string, Account>();
   const codes = new Map<string, LoginCode>();
   const tokens = new Map<string, RefreshToken>();
@@ -11,7 +12,10 @@ export function memoryRepo(): Repo & { accounts: Map<string, Account>; campaigns
   const audit: AdminAuditEntry[] = [];
   const images = new Map<string, StoredImage>();
   const clone = <T>(v: T | undefined): T | null => (v ? structuredClone(v) : null);
+  const admin = memoryAdminRepo(accounts);
   return {
+    ...admin.repo,
+    admin,
     accounts,
     campaigns,
     audit,

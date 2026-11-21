@@ -1,33 +1,16 @@
-import { accountFromBearerRow, REFRESH_TTL_MS } from './auth';
+import { isResponse, requireAdmin } from './adminAuth';
 import { campaignState, checkCampaign, checkPlan, offers, popupNow, popupView } from './catalog';
 import { sniffImage } from './images';
-import { TRIAL_DAYS, type Account, type ApiResponse, type Campaign, type Deps } from './types';
+import { TRIAL_DAYS, type ApiResponse, type Campaign, type Deps } from './types';
 
-/** An admin call must use a session issued within this window (ADR-014). */
-export const ADMIN_FRESH_MS = 12 * 3_600_000;
 const bad = (error: string, status = 400): ApiResponse => ({ status, body: { error } });
-
-/** Audit name for changes made while ADMIN_OPEN=1 (no sign-in). */
-export const OPEN_ADMIN_EMAIL = 'admin-tanpa-login';
-
-/** Allow-listed email + fresh session. 401 = sign in again, 403 = not an admin. ADMIN_OPEN=1 skips this (ADR-019). */
-async function requireAdmin(deps: Deps, auth: string | null): Promise<Account | ApiResponse> {
-  if (deps.adminOpen) return { id: OPEN_ADMIN_EMAIL, email: OPEN_ADMIN_EMAIL, createdAt: 0, trialEndsAt: 0, paidUntil: 0, googleSub: null };
-  const found = await accountFromBearerRow(deps, auth);
-  if (!found) return bad('signed_out', 401);
-  if (!deps.adminEmails.includes(found.account.email)) return bad('forbidden', 403);
-  const issuedAt = found.token.expiresAt - REFRESH_TTL_MS;
-  if (deps.now() - issuedAt > ADMIN_FRESH_MS) return bad('session_too_old', 401);
-  return found.account;
-}
-const isResponse = (v: Account | ApiResponse): v is ApiResponse => 'status' in v;
 
 const campaignView = (c: Campaign, now: number) => ({ ...c, state: campaignState(c, now) });
 
 export async function adminMe(deps: Deps, auth: string | null): Promise<ApiResponse> {
   const a = await requireAdmin(deps, auth);
   if (isResponse(a)) return a;
-  return { status: 200, body: { email: a.email } };
+  return { status: 200, body: { actor: a.actor } };
 }
 
 export async function adminCatalog(deps: Deps, auth: string | null): Promise<ApiResponse> {
@@ -52,7 +35,7 @@ export async function adminSavePlan(deps: Deps, auth: string | null, body: unkno
   const checked = checkPlan(body, await deps.repo.listPlans(), now);
   if (!checked.ok) return bad(checked.error, checked.error === 'not_found' ? 404 : 400);
   await deps.repo.putPlan(checked.value);
-  await deps.repo.addAudit({ at: now, email: a.email, action: 'plan.save', target: checked.value.id, detail: checked.value });
+  await deps.repo.addAudit({ at: now, email: a.actor, action: 'plan.save', target: checked.value.id, detail: checked.value });
   return { status: 200, body: { plan: checked.value }, purgePublic: true };
 }
 
@@ -65,7 +48,7 @@ export async function adminSaveCampaign(deps: Deps, auth: string | null, id: str
   const checked = checkCampaign(body, await deps.repo.listPlans(), prev, crypto.randomUUID(), now);
   if (!checked.ok) return bad(checked.error);
   await deps.repo.putCampaign(checked.value);
-  await deps.repo.addAudit({ at: now, email: a.email, action: prev ? 'campaign.update' : 'campaign.create', target: checked.value.id, detail: checked.value });
+  await deps.repo.addAudit({ at: now, email: a.actor, action: prev ? 'campaign.update' : 'campaign.create', target: checked.value.id, detail: checked.value });
   return { status: 200, body: { campaign: campaignView(checked.value, now) }, purgePublic: true };
 }
 
@@ -80,7 +63,7 @@ export async function adminToggleCampaign(deps: Deps, auth: string | null, id: s
   const now = deps.now();
   const next = { ...prev, enabled, updatedAt: now };
   await deps.repo.putCampaign(next);
-  await deps.repo.addAudit({ at: now, email: a.email, action: enabled ? 'campaign.on' : 'campaign.off', target: id, detail: null });
+  await deps.repo.addAudit({ at: now, email: a.actor, action: enabled ? 'campaign.on' : 'campaign.off', target: id, detail: null });
   return { status: 200, body: { campaign: campaignView(next, now) }, purgePublic: true };
 }
 
@@ -92,7 +75,7 @@ export async function adminArchiveCampaign(deps: Deps, auth: string | null, id: 
   if (!prev || prev.archived) return bad('not_found', 404);
   const now = deps.now();
   await deps.repo.putCampaign({ ...prev, archived: true, enabled: false, updatedAt: now });
-  await deps.repo.addAudit({ at: now, email: a.email, action: 'campaign.archive', target: id, detail: null });
+  await deps.repo.addAudit({ at: now, email: a.actor, action: 'campaign.archive', target: id, detail: null });
   return { status: 200, body: { ok: true }, purgePublic: true };
 }
 
@@ -109,7 +92,7 @@ export async function adminUploadImage(deps: Deps, auth: string | null, body: un
   const now = deps.now();
   const id = crypto.randomUUID();
   await deps.repo.putImage({ id, mime, data: bytes, createdAt: now });
-  await deps.repo.addAudit({ at: now, email: a.email, action: 'image.upload', target: id, detail: { mime, bytes: bytes.length } });
+  await deps.repo.addAudit({ at: now, email: a.actor, action: 'image.upload', target: id, detail: { mime, bytes: bytes.length } });
   return { status: 200, body: { url: `/api/public/images/${id}` } };
 }
 export const MAX_IMAGE_BYTES = 500_000;
@@ -128,9 +111,11 @@ export async function landingData(deps: Deps): Promise<ApiResponse> {
   return { status: 200, cacheSeconds: 60, body: { trialDays: TRIAL_DAYS, plans: offers(plans, campaigns, now), popup: c ? popupView(c) : null } };
 }
 
-/** The live pop-up for the merchant app (shown once per account on the device). Edge-cached. */
+/** The live pop-ups for the merchant app: once per account, and on the first register opening of a day (ADR-020). Edge-cached. */
 export async function appPopupData(deps: Deps): Promise<ApiResponse> {
   const now = deps.now();
-  const c = popupNow(await deps.repo.listCampaigns(), now, 'app');
-  return { status: 200, cacheSeconds: 60, body: { popup: c ? popupView(c) : null } };
+  const campaigns = await deps.repo.listCampaigns();
+  const c = popupNow(campaigns, now, 'app');
+  const r = popupNow(campaigns, now, 'register');
+  return { status: 200, cacheSeconds: 60, body: { popup: c ? popupView(c) : null, registerPopup: r ? popupView(r) : null } };
 }

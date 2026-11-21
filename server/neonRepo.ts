@@ -1,4 +1,5 @@
 import { neon } from '@neondatabase/serverless';
+import { neonAdminRepo } from './neonAdminRepo';
 import type { Account, Campaign, StoredImage, LoginCode, PlanDef, RefreshToken, Repo } from './types';
 
 type Row = Record<string, unknown>;
@@ -41,6 +42,7 @@ const campaign = (r: Row): Campaign => ({
   ctaLabel: r.cta_label as string,
   showOnLanding: r.show_on_landing as boolean,
   showInApp: r.show_in_app as boolean,
+  showOnRegister: (r.show_on_register as boolean | undefined) ?? false,
   startsAt: ms(r.starts_at)!,
   endsAt: ms(r.ends_at)!,
   enabled: r.enabled as boolean,
@@ -58,6 +60,7 @@ export function neonRepo(databaseUrl: string): Repo {
     return r ? map(r) : null;
   };
   return {
+    ...neonAdminRepo(sql),
     findAccountByEmail: (email) => one(sql`select * from accounts where email = ${email}` as Promise<Row[]>, account),
     findAccountById: (id) => one(sql`select * from accounts where id = ${id}` as Promise<Row[]>, account),
     async createAccount(a) {
@@ -114,11 +117,11 @@ export function neonRepo(databaseUrl: string): Repo {
     },
     findCampaign: (id) => one(sql`select * from campaigns where id = ${id}` as Promise<Row[]>, campaign),
     async putCampaign(c) {
-      await sql`insert into campaigns (id, name, title, body, image_url, link_url, cta_label, show_on_landing, show_in_app, starts_at, ends_at, enabled, archived, plan_id, promo_amount, created_at, updated_at)
-        values (${c.id}, ${c.name}, ${c.title}, ${c.body}, ${c.imageUrl}, ${c.linkUrl}, ${c.ctaLabel}, ${c.showOnLanding}, ${c.showInApp}, ${iso(c.startsAt)}, ${iso(c.endsAt)}, ${c.enabled}, ${c.archived},
+      await sql`insert into campaigns (id, name, title, body, image_url, link_url, cta_label, show_on_landing, show_in_app, show_on_register, starts_at, ends_at, enabled, archived, plan_id, promo_amount, created_at, updated_at)
+        values (${c.id}, ${c.name}, ${c.title}, ${c.body}, ${c.imageUrl}, ${c.linkUrl}, ${c.ctaLabel}, ${c.showOnLanding}, ${c.showInApp}, ${c.showOnRegister}, ${iso(c.startsAt)}, ${iso(c.endsAt)}, ${c.enabled}, ${c.archived},
           ${c.planId}, ${c.promoAmount}, ${iso(c.createdAt)}, ${iso(c.updatedAt)})
         on conflict (id) do update set name = excluded.name, title = excluded.title, body = excluded.body, image_url = excluded.image_url,
-          link_url = excluded.link_url, cta_label = excluded.cta_label, show_on_landing = excluded.show_on_landing, show_in_app = excluded.show_in_app, starts_at = excluded.starts_at, ends_at = excluded.ends_at, enabled = excluded.enabled,
+          link_url = excluded.link_url, cta_label = excluded.cta_label, show_on_landing = excluded.show_on_landing, show_in_app = excluded.show_in_app, show_on_register = excluded.show_on_register, starts_at = excluded.starts_at, ends_at = excluded.ends_at, enabled = excluded.enabled,
           archived = excluded.archived, plan_id = excluded.plan_id, promo_amount = excluded.promo_amount, updated_at = excluded.updated_at`;
     },
     async putImage(i) {

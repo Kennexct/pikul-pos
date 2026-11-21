@@ -1,3 +1,5 @@
+import type { AdminRepo } from './adminTypes';
+
 /** A plan Kenny sets in the admin console (ADR-014). `id` is a fixed slug; payments point at it. */
 export interface PlanDef {
   id: string;
@@ -23,6 +25,7 @@ export interface Campaign {
   ctaLabel: string; // button under the banner; shown only with a link
   showOnLanding: boolean;
   showInApp: boolean; // once per merchant account, after sign-in / next app open
+  showOnRegister: boolean; // first register opening of each business day (ADR-020)
   startsAt: number;
   endsAt: number;
   enabled: boolean;
@@ -74,7 +77,7 @@ export interface RefreshToken {
   expiresAt: number;
 }
 
-export interface Repo {
+export interface Repo extends AdminRepo {
   findAccountByEmail(email: string): Promise<Account | null>;
   findAccountById(id: string): Promise<Account | null>;
   createAccount(a: Account): Promise<void>;
@@ -120,10 +123,14 @@ export interface Deps {
   google: GoogleVerifier | null;
   now: () => number;
   appOrigin: string;
-  /** Lower-cased emails allowed into /admin (ADMIN_EMAILS). Empty = console closed. */
-  adminEmails: readonly string[];
-  /** ADMIN_OPEN=1: /admin without sign-in (temporary, ADR-019). Anyone with the link can edit plans and promos. */
-  adminOpen?: boolean;
+  /** ADMIN_PASSWORD (ADR-020). Null or shorter than 12 characters = console closed. */
+  adminPassword: string | null;
+}
+
+/** Per-request facts the router needs besides the body. */
+export interface RequestCtx {
+  ip: string;
+  query: URLSearchParams;
 }
 
 export interface ApiResponse {
@@ -133,6 +140,8 @@ export interface ApiResponse {
   cacheSeconds?: number;
   /** Set on admin writes so the wrapper can drop the cached public landing data. */
   purgePublic?: boolean;
+  /** Text body such as CSV; `body` is ignored when set. */
+  text?: { contentType: string; content: string; filename?: string };
   /** Binary body (images); `body` is ignored when set. */
   raw?: { contentType: string; bytes: Uint8Array };
 }

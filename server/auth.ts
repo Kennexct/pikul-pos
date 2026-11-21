@@ -21,6 +21,7 @@ export const planOf = (a: Account): 'trial' | 'paid' => (a.paidUntil !== null &&
 
 async function session(deps: Deps, a: Account): Promise<ApiResponse> {
   const now = deps.now();
+  await deps.repo.touchLastSeen(a.id, now).catch(() => undefined); // console "last active" (ADR-020); never blocks sign-in
   const refreshToken = randomToken();
   await deps.repo.putRefreshToken({ tokenHash: await sha256(refreshToken), accountId: a.id, expiresAt: now + REFRESH_TTL_MS });
   const until = entitledUntil(a);
