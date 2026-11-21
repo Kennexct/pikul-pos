@@ -4,6 +4,7 @@ import { nowIso } from '../lib/id';
 import type { BusinessDate, Expense, ExpenseCategory, Id } from '../types';
 import { writeAudit } from './audit';
 import { newMeta } from './catalog';
+import { getDeviceId } from './device';
 import { saveAndQueue } from './sync';
 import { t } from '../i18n';
 
@@ -28,6 +29,7 @@ export async function addExpense(storeId: Id, input: ExpenseInput): Promise<Expe
 
   const expense: Expense = {
     ...newMeta(storeId),
+    deviceId: await getDeviceId(),
     businessDate: input.businessDate,
     category: input.category,
     amount,

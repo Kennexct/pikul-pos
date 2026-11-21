@@ -6,6 +6,7 @@ import { nowIso, uuidv7 } from '../lib/id';
 import { APPROVAL_EXPIRED, approverOf, OWNER_PIN_REQUIRED, requiresOwnerPin, type OwnerAccess } from '../lib/permissions';
 import { buildRefundItems, isFullyRefunded, type RefundSelection } from '../lib/refunds';
 import type { Id, Order, PermissionLevel, Refund, RefundKind, RefundReason, Store } from '../types';
+import { getDeviceId } from './device';
 import { saveAndQueue } from './sync';
 import { t } from '../i18n';
 
@@ -79,6 +80,7 @@ async function commit(order: Order, kind: RefundKind, built: ReturnType<typeof b
     storeId: order.storeId,
     createdAt: now,
     updatedAt: now,
+    deviceId: await getDeviceId(),
     orderId: order.id,
     businessDate: getBusinessDate(ctx.now ?? new Date(), ctx.store),
     kind,

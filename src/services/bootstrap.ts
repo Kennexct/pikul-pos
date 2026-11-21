@@ -59,11 +59,12 @@ async function createOnce(setup: StoreSetup): Promise<BootstrapResult> {
     }
     await localDb.meta.put({ key: ONBOARDED_AT_KEY, value: nowIso() });
     await localDb.meta.put({ key: LEGACY_SAMPLE_REMOVED_KEY, value: nowIso() }); // nothing to clean up on a new store
-    await localDb.stores.put(seed.store);
+    await saveAndQueue('stores', { ...seed.store, updatedAt: nowIso() });
   });
   return { store: seed.store, owner: seed.owner };
 }
 
+/** Saves store settings; queued so every device gets them (ADR-024). */
 export async function updateStore(store: Store): Promise<void> {
-  await localDb.stores.put(store);
+  await saveAndQueue('stores', { ...store, updatedAt: nowIso() });
 }
