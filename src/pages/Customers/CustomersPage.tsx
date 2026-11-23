@@ -23,7 +23,7 @@ import { DebtList } from './DebtList';
 import { t } from '../../i18n';
 
 const MAX_ROWS = 100;
-const COLUMNS = 'lg:grid-cols-[1fr_170px_90px_140px_130px_20px]';
+const COLUMNS = '@4xl/page:grid-cols-[1fr_170px_90px_140px_130px_20px]';
 type View = 'all' | 'debt';
 type Dialog = { kind: 'form'; customer: Customer | null } | { kind: 'detail' | 'delete'; customerId: Id } | null;
 
@@ -102,7 +102,7 @@ export function CustomersPage() {
             {view === 'all' && (
             <>
             <div className={`${card} overflow-hidden`}>
-              <div className={`hidden items-center gap-4 border-b border-line bg-subtle px-4 py-2.5 text-[12px] font-semibold uppercase tracking-[0.05em] text-muted lg:grid ${COLUMNS}`}>
+              <div className={`hidden items-center gap-4 border-b border-line bg-subtle px-4 py-2.5 text-[12px] font-semibold uppercase tracking-[0.05em] text-muted @4xl/page:grid ${COLUMNS}`}>
                 <span>{t('Nama')}</span>
                 <span>{t('No. HP')}</span>
                 <span className="text-right">{t('Kunjungan')}</span>
@@ -115,22 +115,22 @@ export function CustomersPage() {
                   const s = statsOf(customer.id);
                   return (
                     <li key={customer.id}>
-                      <button type="button" onClick={() => setDialog({ kind: 'detail', customerId: customer.id })} className={`grid w-full grid-cols-[1fr_auto] items-center gap-x-3 px-4 py-3 text-left hover:bg-subtle lg:gap-4 ${COLUMNS}`}>
+                      <button type="button" onClick={() => setDialog({ kind: 'detail', customerId: customer.id })} className={`grid w-full grid-cols-[1fr_auto] items-center gap-x-3 px-4 py-3 text-left hover:bg-subtle @4xl/page:gap-4 ${COLUMNS}`}>
                         <span className="min-w-0">
                           <span className="flex items-center gap-2">
                             <span className="truncate text-[15px] font-semibold">{customer.name}</span>
                             {s.openOrders > 0 && <span className={`${badgeWarn} shrink-0`}>{t('Belum bayar')}</span>}
                           </span>
-                          <span className="num block truncate text-[13px] text-muted lg:hidden">
+                          <span className="num block truncate text-[13px] text-muted @4xl/page:hidden">
                             {customer.phone ? formatPhone(customer.phone) : t('Tanpa nomor HP')} · {t('{0} kunjungan', s.visits)}
                           </span>
-                          {customer.note && <span className="hidden truncate text-[13px] text-muted lg:block">{customer.note}</span>}
+                          {customer.note && <span className="hidden truncate text-[13px] text-muted @4xl/page:block">{customer.note}</span>}
                         </span>
-                        <span className="num hidden text-[14px] text-ink-soft lg:block">{customer.phone ? formatPhone(customer.phone) : '—'}</span>
-                        <span className="num hidden text-right text-[14px] text-ink-soft lg:block">{s.visits}</span>
+                        <span className="num hidden text-[14px] text-ink-soft @4xl/page:block">{customer.phone ? formatPhone(customer.phone) : '—'}</span>
+                        <span className="num hidden text-right text-[14px] text-ink-soft @4xl/page:block">{s.visits}</span>
                         <span className="num text-right text-[15px] font-semibold">{formatRupiah(s.totalSpend)}</span>
-                        <span className="hidden text-[14px] text-ink-soft lg:block">{formatVisit(s.lastVisitAt)}</span>
-                        <ChevronRight aria-hidden size={18} className="hidden text-faint lg:block" />
+                        <span className="hidden text-[14px] text-ink-soft @4xl/page:block">{formatVisit(s.lastVisitAt)}</span>
+                        <ChevronRight aria-hidden size={18} className="hidden text-faint @4xl/page:block" />
                       </button>
                     </li>
                   );

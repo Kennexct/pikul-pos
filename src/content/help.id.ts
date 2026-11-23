@@ -25,7 +25,7 @@ export const HELP_ID: HelpContent = {
       title: 'Varian, add-on, dan mode penjualan',
       summary: 'Varian adalah jenis dari satu menu dengan harga sendiri (Kopi: Latte, Americano, Espresso). Add-on adalah pilihan tambahan untuk menu itu (es, gula, ukuran, topping). Mode penjualan membedakan harga makan di tempat, bungkus, atau ojek online.',
       steps: [
-        'Di Produk, buka menu lalu nyalakan "Punya varian". Isi nama dan harga setiap varian, juga harga Takeaway kalau berbeda.',
+        'Di Produk, buka menu lalu pilih "Ada varian" di bagian Harga. Isi nama dan harga setiap varian; harga Takeaway dan modal ada di Detail varian.',
         'Buat grup add-on di Produk, tab Add-on (misalnya Es: es normal, sedikit es, tanpa es). Beri tambahan harga kalau perlu, misalnya Grande +Rp4.000.',
         'Pasang grup add-on di menu, di bagian Add-on pada formulir produk.',
         'Di Kasir, ketuk menunya: pilih varian dulu, lalu add-on, lalu "Tambah ke pesanan".',
@@ -147,7 +147,7 @@ export const HELP_ID: HelpContent = {
       steps: [
         'Buka Pengaturan, tab Toko & Struk, nyalakan "Aktifkan satuan berat dan ukuran", lalu simpan.',
         'Di Produk, pilih "Dijual per" (misalnya kg) dan isi harga per satuan itu.',
-        'Untuk barang yang harganya naik-turun, nyalakan "Harga bisa diubah saat jual".',
+        'Untuk barang yang harganya naik-turun, buka "Pengaturan lain" lalu nyalakan "Harga bisa diubah saat jual".',
         'Di Kasir, ketuk barangnya, lalu ketik beratnya (misalnya 0,75), atau pilih Nominal dan ketik uang pembeli (misalnya Rp10.000).',
         'Kalau harga hari ini berbeda, ganti harganya di kotak yang sama, lalu "Tambah ke pesanan".',
       ],
@@ -177,7 +177,7 @@ export const HELP_ID: HelpContent = {
       steps: [
         'Buka Pengaturan, tab Staf & PIN, lalu buat PIN pemilik. Catat kode pemulihan yang muncul dan simpan di tempat aman.',
         'Tambah kasir dan beri masing-masing PIN.',
-        'Ganti penjual lewat tombol inisial di pojok kiri bawah (di HP: menu Lainnya).',
+        'Ganti penjual lewat tombol inisial di pojok kiri bawah (di HP: tab Akun).',
         'Atur siapa yang boleh void, refund, dan memberi diskon besar.',
       ],
       notes: [

@@ -1,7 +1,7 @@
-import { Lock, LockOpen, MoreHorizontal } from 'lucide-react';
+import { CircleUserRound, LockOpen } from 'lucide-react';
 import { SubscriptionBanner } from '../Access/SubscriptionBanner';
-import { useState } from 'react';
-import { NavLink, Outlet } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { ROUTES } from '../../constants';
 import { useOpenOrderCount } from '../../hooks/useOpenOrderCount';
 import { useOwnerAccess, useOwnerAutoLock } from '../../hooks/useOwnerAccess';
@@ -9,80 +9,15 @@ import { useSessionStore } from '../../store/useSessionStore';
 import { LogoMark } from '../Brand/Logo';
 import { AccountSheet } from '../Pin/AccountSheet';
 import { initialsOf } from '../Pin/SellerSwitcher';
-import { NAV_ITEMS, type NavItem } from './navItems';
+import { RailGroupLink, SubNavList, SubNavTabs, TabBarLink } from './GroupNav';
+import { groupOf, NAV_GROUPS, NAV_ITEMS, PHONE_GROUP_IDS, type NavGroup, type NavItem } from './navItems';
 import { SyncBadge } from './SyncBadge';
 import { t } from '../../i18n';
 
-function CountBadge({ count }: { count: number }) {
-  if (count <= 0) return null;
-  return (
-    <span
-      aria-label={t('{0} pesanan belum dibayar', count)}
-      className="num absolute right-2 top-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-danger-600 px-1 text-[11px] font-bold text-white ring-2 ring-surface"
-    >
-      {count}
-    </span>
-  );
-}
-
-function LockMark({ isShown }: { isShown: boolean }) {
-  if (!isShown) return null;
-  return (
-    <span aria-label={t('terkunci, butuh PIN pemilik')} className="absolute right-2 top-1.5 text-faint">
-      <Lock aria-hidden size={12} strokeWidth={2.5} />
-    </span>
-  );
-}
-
-/** Tablet rail item: icon over label, 3px indicator bar on the active item. */
-function RailLink({ item, badge, isLocked }: { item: NavItem; badge: number; isLocked: boolean }) {
-  const { to, label, icon: Icon } = item;
-  return (
-    <NavLink
-      to={to}
-      end={to === ROUTES.pos}
-      viewTransition
-      className={({ isActive }) =>
-        `group relative flex h-[60px] flex-col items-center justify-center gap-1 rounded-lg text-[11px] font-semibold transition-colors ${
-          isActive ? 'bg-brand-50 text-brand-700' : 'text-muted hover:bg-subtle hover:text-ink'
-        }`
-      }
-    >
-      {({ isActive }) => (
-        <>
-          <span aria-hidden className={`absolute -left-3 top-3 bottom-3 w-[3px] rounded-r-full ${isActive ? 'bg-brand-600' : 'bg-transparent'}`} />
-          <Icon aria-hidden size={22} />
-          {label}
-          <CountBadge count={badge} />
-          <LockMark isShown={isLocked} />
-        </>
-      )}
-    </NavLink>
-  );
-}
-
-/** Phone tab item: no pill background — color + weight carry the active state. */
-function TabLink({ to, label, icon: Icon, badge, isLocked }: { to: string; label: string; icon: NavItem['icon']; badge: number; isLocked: boolean }) {
-  return (
-    <NavLink
-      to={to}
-      end={to === ROUTES.pos}
-      viewTransition
-      className={({ isActive }) =>
-        `relative flex flex-col items-center justify-center gap-0.5 text-[11px] font-semibold ${isActive ? 'text-brand-700' : 'text-muted'}`
-      }
-    >
-      <Icon aria-hidden size={22} />
-      {label}
-      <CountBadge count={badge} />
-      <LockMark isShown={isLocked} />
-    </NavLink>
-  );
-}
-
 /**
- * Phone (< md): content + bottom tab bar (primary items + "Lainnya").
- * Tablet/desktop (>= md): 84px side rail with logomark, nav, sync status, owner-mode lock and the seller.
+ * Main menu = Kasir, Transaksi, Kelola, Laporan, Pengaturan; a group with several pages shows them as a sub-menu (list on tablet, tabs on phone).
+ * Phone (< md): content + bottom tab bar (Kasir, Transaksi, Kelola, Laporan + Akun, which holds Pengaturan and Bantuan).
+ * Tablet/desktop (>= md): 84px side rail with logomark, groups, Bantuan, sync status, owner-mode lock and the seller.
  */
 export function AppShell() {
   const cashier = useSessionStore((s) => s.cashier);
@@ -90,10 +25,28 @@ export function AppShell() {
   const access = useOwnerAccess();
   const openOrders = useOpenOrderCount();
   const [isAccountOpen, setIsAccountOpen] = useState(false);
+  const { pathname } = useLocation();
+  const current = groupOf(pathname);
+  /** Last page opened in each group, so tapping the group returns there. */
+  const hasSubNav = current !== undefined && current.items.length > 1;
+  const lastVisited = useRef<Partial<Record<NavGroup['id'], string>>>({});
+  const [, rerender] = useState(0);
   useOwnerAutoLock();
+
+  useEffect(() => {
+    if (!current || lastVisited.current[current.id] === pathname) return;
+    lastVisited.current[current.id] = pathname;
+    rerender((n) => n + 1);
+  }, [current, pathname]);
 
   const badgeFor = (item: NavItem) => (item.to === ROUTES.openOrders ? openOrders : 0);
   const isLocked = (item: NavItem) => access.kind === 'locked' && item.isOwnerOnly === true;
+  const groupProps = (group: NavGroup) => ({
+    to: lastVisited.current[group.id] ?? group.items[0]?.to ?? ROUTES.pos,
+    isActive: current?.id === group.id,
+    badge: group.items.reduce((sum, item) => sum + badgeFor(item), 0),
+    isLocked: group.items.every(isLocked),
+  });
 
   return (
     <div className="flex h-dvh overflow-hidden bg-canvas text-ink">
@@ -102,11 +55,20 @@ export function AppShell() {
           <LogoMark size={36} />
         </div>
         <div className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto [scrollbar-width:none]">
-          {NAV_ITEMS.map((item) => (
-            <RailLink key={item.to} item={item} badge={badgeFor(item)} isLocked={isLocked(item)} />
+          {NAV_GROUPS.map((group) => (
+            <RailGroupLink key={group.id} group={group} {...groupProps(group)} />
           ))}
         </div>
         <div className="mt-2 flex shrink-0 flex-col items-center gap-3 border-t border-line pt-3">
+          <NavLink
+            to={NAV_ITEMS.help.to}
+            viewTransition
+            aria-label={NAV_ITEMS.help.label}
+            title={NAV_ITEMS.help.label}
+            className={({ isActive }) => `flex h-10 w-10 items-center justify-center rounded-lg transition-colors ${isActive ? 'bg-brand-50 text-brand-700' : 'text-muted hover:bg-subtle hover:text-ink'}`}
+          >
+            <NAV_ITEMS.help.icon aria-hidden size={20} />
+          </NavLink>
           <SyncBadge />
           {access.kind === 'unlocked' && (
             <button type="button" onClick={lockOwner} title={t('Kunci mode pemilik')} className="flex h-11 w-full flex-col items-center justify-center rounded-lg text-[11px] font-semibold text-brand-700 hover:bg-brand-50">
@@ -128,17 +90,24 @@ export function AppShell() {
 
       <main className="page-pane relative flex min-w-0 flex-1 flex-col pb-[calc(64px+env(safe-area-inset-bottom))] md:pb-0">
         <SubscriptionBanner />
-        <Outlet />
+        {hasSubNav && <SubNavTabs group={current} badgeFor={badgeFor} isLocked={isLocked} />}
+        <div className="flex min-h-0 flex-1">
+          {hasSubNav && <SubNavList group={current} badgeFor={badgeFor} isLocked={isLocked} />}
+          {/* Named container: list/table pages switch to their table layout by the space left, not the screen width. */}
+          <div className="@container/page flex min-w-0 flex-1 flex-col">
+            <Outlet />
+          </div>
+        </div>
       </main>
 
       <nav
         aria-label={t('Navigasi bawah')}
         className="fixed inset-x-0 bottom-0 z-30 grid h-[calc(64px+env(safe-area-inset-bottom))] auto-cols-fr grid-flow-col border-t border-line bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden"
       >
-        {NAV_ITEMS.filter((item) => item.isPrimary).map((item) => (
-          <TabLink key={item.to} to={item.to} label={item.label} icon={item.icon} badge={badgeFor(item)} isLocked={isLocked(item)} />
+        {NAV_GROUPS.filter((group) => PHONE_GROUP_IDS.includes(group.id)).map((group) => (
+          <TabBarLink key={group.id} label={group.label} icon={group.icon} {...groupProps(group)} />
         ))}
-        <TabLink to={ROUTES.more} label={t('Lainnya::menu')} icon={MoreHorizontal} badge={0} isLocked={false} />
+        <TabBarLink to={ROUTES.more} label={t('Akun')} icon={CircleUserRound} isActive={pathname === ROUTES.more || pathname === ROUTES.help || pathname === ROUTES.settings} />
       </nav>
 
       {isAccountOpen && <AccountSheet onClose={() => setIsAccountOpen(false)} />}

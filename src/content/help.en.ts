@@ -26,7 +26,7 @@ export const HELP_EN: HelpContent = {
       title: 'Variants, add-ons and sales modes',
       summary: 'A variant is a kind of one item with its own price (Coffee: Latte, Americano, Espresso). Add-ons are extra choices for that item (ice, sugar, size, toppings). Sales modes set different prices for dine-in, takeaway or delivery apps.',
       steps: [
-        'In Products, open the item and turn on "Has variants". Enter each variant\'s name and price, and its Takeaway price if different.',
+        'In Products, open the item and pick "Has variants" under Price. Enter each variant\'s name and price; its Takeaway and cost prices are under the variant\'s Details.',
         'Create add-on groups in Products, Add-ons tab (for example Ice: normal ice, less ice, no ice). Add an extra price if needed, for example Grande +Rp4.000.',
         'Attach the add-on groups to the item, in the Add-ons section of the product form.',
         'In the Register, tap the item: choose the variant first, then the add-ons, then "Add to order".',
@@ -148,7 +148,7 @@ export const HELP_EN: HelpContent = {
       steps: [
         'Open Settings, Shop & Receipt tab, turn on "Turn on weight and measure units", then save.',
         'In Products, choose "Sold per" (for example kg) and enter the price per that unit.',
-        'For goods whose price moves, turn on "Price can be changed when selling".',
+        'For goods whose price moves, open "More settings" and turn on "Price can be changed when selling".',
         'In the Register, tap the item, then type the weight (for example 0.75), or choose Amount and type the buyer\'s money (for example Rp10.000).',
         'If today\'s price is different, change the price in the same box, then "Add to order".',
       ],
@@ -178,7 +178,7 @@ export const HELP_EN: HelpContent = {
       steps: [
         'Open Settings, Staff & PIN tab, and create the owner PIN. Write down the recovery code shown and keep it somewhere safe.',
         'Add cashiers and give each a PIN.',
-        'Switch seller with the initials button at the bottom left (on a phone: the More menu).',
+        'Switch seller with the initials button at the bottom left (on a phone: the Account tab).',
         'Set who may void, refund and give large discounts.',
       ],
       notes: [

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { NARROW_COLUMN, PageHeader } from '../../components/Layout/PageHeader';
+import { PageHeader } from '../../components/Layout/PageHeader';
 import { LoadingScreen } from '../../components/ui/LoadingScreen';
 import { Tabs } from '../../components/ui/Tabs';
 import { useAppData } from '../../hooks/useAppData';
@@ -38,12 +38,34 @@ export function SettingsPage() {
   if (!store || !catalog) return <LoadingScreen />;
 
   return (
-    <section className="flex min-h-0 flex-1 flex-col">
-      <PageHeader title={t('Pengaturan')} description={t('Profil toko, struk, pembayaran, mode penjualan, staf, sinkronisasi, dan cadangan.')} helpTopic={TABS.find((t) => t.value === tab)?.help} isNarrow>
-        <Tabs label={t('Bagian pengaturan')} items={TABS} value={tab} onChange={setTab} />
+    <section className="flex min-h-0 flex-1">
+      <div role="tablist" aria-label={t('Bagian pengaturan')} aria-orientation="vertical" className="hidden w-52 shrink-0 flex-col gap-1 overflow-y-auto border-r border-line bg-surface px-3 py-5 md:flex">
+        <p aria-hidden className="mb-2 px-3 text-[12px] font-semibold uppercase tracking-[0.06em] text-muted">{t('Pengaturan')}</p>
+          {TABS.map((item) => {
+            const isActive = item.value === tab;
+            return (
+              <button
+                key={item.value}
+                type="button"
+                role="tab"
+                aria-selected={isActive}
+                onClick={() => setTab(item.value)}
+                className={`flex h-11 items-center rounded-lg px-3 text-left text-[14px] font-semibold transition-colors ${isActive ? 'bg-brand-50 text-brand-700' : 'text-ink-soft hover:bg-subtle hover:text-ink'}`}
+              >
+                {item.label}
+              </button>
+            );
+          })}
+        </div>
+      <div className="flex min-w-0 flex-1 flex-col">
+      <PageHeader title={t('Pengaturan')} description={t('Profil toko, struk, pembayaran, mode penjualan, staf, sinkronisasi, dan cadangan.')} helpTopic={TABS.find((t) => t.value === tab)?.help}>
+        {/* Phone: tabs under the title. Tablet: the sections are a list on the left, like the other sub-menus. */}
+        <div className="md:hidden">
+          <Tabs label={t('Bagian pengaturan')} items={TABS} value={tab} onChange={setTab} />
+        </div>
       </PageHeader>
       <div className="min-h-0 flex-1 overflow-y-auto p-4 md:px-8 md:py-6">
-        <div className={NARROW_COLUMN}>
+        <div className="w-full max-w-3xl">
           {tab === 'subscription' && <SubscriptionSettings />}
           {tab === 'store' && (
             <>
@@ -59,6 +81,7 @@ export function SettingsPage() {
           {tab === 'sync' && <SyncSettings />}
           {tab === 'backup' && <BackupSettings />}
         </div>
+      </div>
       </div>
     </section>
   );

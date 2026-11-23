@@ -1,4 +1,4 @@
-import { BarChart3, CircleHelp, ClipboardList, Package, ReceiptText, Settings, Store, Users, Wallet } from 'lucide-react';
+import { BarChart3, CircleHelp, ClipboardList, LayoutGrid, Package, ReceiptText, Settings, Store, Users, Wallet } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { ROUTES } from '../../constants';
 import { t } from '../../i18n';
@@ -9,18 +9,41 @@ export interface NavItem {
   icon: LucideIcon;
   /** Route is wrapped in <OwnerGate>; nav shows a lock while owner mode is locked. */
   isOwnerOnly?: boolean;
-  /** Shown in the phone bottom bar; the rest go under "Lainnya". */
-  isPrimary?: boolean;
 }
 
-export const NAV_ITEMS: readonly NavItem[] = [
-  { to: ROUTES.pos, label: t('Kasir'), icon: Store, isPrimary: true },
-  { to: ROUTES.openOrders, label: t('Pesanan'), icon: ClipboardList, isPrimary: true },
-  { to: ROUTES.history, label: t('Riwayat'), icon: ReceiptText, isPrimary: true },
-  { to: ROUTES.cash, label: t('Kas'), icon: Wallet },
-  { to: ROUTES.reports, label: t('Laporan'), icon: BarChart3, isOwnerOnly: true, isPrimary: true },
-  { to: ROUTES.products, label: t('Produk'), icon: Package, isOwnerOnly: true },
-  { to: ROUTES.customers, label: t('Pelanggan'), icon: Users },
-  { to: ROUTES.settings, label: t('Pengaturan'), icon: Settings, isOwnerOnly: true },
-  { to: ROUTES.help, label: t('Bantuan'), icon: CircleHelp },
+/** One entry of the main menu (rail + phone bar). A group with several pages shows them as sub-menu tabs. */
+export interface NavGroup {
+  id: 'pos' | 'sales' | 'manage' | 'reports' | 'settings';
+  label: string;
+  icon: LucideIcon;
+  items: readonly NavItem[];
+}
+
+/** Every page reachable from the menu, in menu order. */
+export const NAV_ITEMS = {
+  pos: { to: ROUTES.pos, label: t('Kasir'), icon: Store },
+  openOrders: { to: ROUTES.openOrders, label: t('Pesanan'), icon: ClipboardList },
+  history: { to: ROUTES.history, label: t('Riwayat'), icon: ReceiptText },
+  cash: { to: ROUTES.cash, label: t('Kas'), icon: Wallet },
+  reports: { to: ROUTES.reports, label: t('Laporan'), icon: BarChart3, isOwnerOnly: true },
+  products: { to: ROUTES.products, label: t('Produk'), icon: Package, isOwnerOnly: true },
+  customers: { to: ROUTES.customers, label: t('Pelanggan'), icon: Users },
+  settings: { to: ROUTES.settings, label: t('Pengaturan'), icon: Settings, isOwnerOnly: true },
+  help: { to: ROUTES.help, label: t('Bantuan'), icon: CircleHelp },
+} as const satisfies Record<string, NavItem>;
+
+/** Main menu (Kenny, v0.19.1): Kasir · Transaksi · Kelola · Laporan · Pengaturan. Bantuan sits apart (rail foot / Akun on a phone). */
+export const NAV_GROUPS: readonly NavGroup[] = [
+  { id: 'pos', label: t('Kasir'), icon: Store, items: [NAV_ITEMS.pos] },
+  { id: 'sales', label: t('Transaksi::menu'), icon: ReceiptText, items: [NAV_ITEMS.openOrders, NAV_ITEMS.history, NAV_ITEMS.cash] },
+  { id: 'manage', label: t('Kelola'), icon: LayoutGrid, items: [NAV_ITEMS.products, NAV_ITEMS.customers] },
+  { id: 'reports', label: t('Laporan'), icon: BarChart3, items: [NAV_ITEMS.reports] },
+  { id: 'settings', label: t('Pengaturan'), icon: Settings, items: [NAV_ITEMS.settings] },
 ];
+
+/** Phone bottom bar: the first four groups; Pengaturan and Bantuan sit in the Akun tab. */
+export const PHONE_GROUP_IDS: readonly NavGroup['id'][] = ['pos', 'sales', 'manage', 'reports'];
+
+/** The group whose pages include this path (exact match; "/" only matches the cashier). */
+export const groupOf = (pathname: string): NavGroup | undefined =>
+  NAV_GROUPS.find((g) => g.items.some((item) => (item.to === ROUTES.pos ? pathname === item.to : pathname === item.to || pathname.startsWith(`${item.to}/`))));

@@ -1,5 +1,15 @@
 # Status
 
+## Product form: category + price fixes, quicker redesign (v0.19.1) — In review (2026-11-23)
+Branch `claude/project-thread-5a5zxj` on `main` `b73980a`. Kenny: new category typed in "Produk baru" was lost on save; base price "0" turned 10.000 into 100.000; make adding products and variants feel quick. No ADR (UI only, no data change). Next ADR: 027.
+- [x] Fix: a category typed but not added is created (or matched by name) on save; Enter adds it
+- [x] Fix: RupiahInput selects its amount on focus; base and variant price show empty instead of 0
+- [x] Redesign: tablet tile preview, phone photo beside the name, "Satu harga / Ada varian", variant rows with quick fill + Enter-to-next, per-variant extras under Detail, "Pengaturan lain" fold, "Simpan & tambah lagi"
+- [x] Checks: typecheck, i18n, 259 tests, build; e2e v20 (new), v12, v13, manage, v09 phone/tablet
+- [ ] Kenny: try on the Vercel preview, merge
+- [x] Main menu (Kenny, round 2): Kasir · Transaksi (Pesanan, Riwayat, Kas) · Kelola (Produk, Pelanggan) · Laporan · Pengaturan; sub-menu = left list on tablet, tabs on phone; phone bar 4 + Akun (Pengaturan, Bantuan); 20px icons; tables use @container/page. e2e staff, v11, v16, v09, flow, customers pass. history.py fails on main too (Void button, pre-existing)
+- [x] Settings (Kenny): sections as a left list on tablet; save bar only when something changed (with Batal); fixed save bar staying "dirty" after saving (updatedAt)
+
 ## Device sync (v0.19) — Delivered, merged to main (2026-11-23)
 Branch `claude/project-thread-zzc5ov` on top of `main` `f376b98`. Spec `specs/2026-11-21-device-sync-design.md`, ADR-025 (sync protocol, store binding), ADR-026 (register per device). Kenny chose: everything both ways, ask which store to keep, register per device; "build it". Next ADR: 027.
 - [x] Spec, ADRs, strategy/design/plan decisions

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { SegmentedControl } from '../../components/ui/SegmentedControl';
-import { btnPrimary, inputBase, labelBase } from '../../components/ui/styles';
+import { btnGhost, btnPrimary, inputBase, labelBase } from '../../components/ui/styles';
 import { Switch } from '../../components/ui/Switch';
 import { PERCENT_MAX } from '../../constants';
 import { updateStore } from '../../services/bootstrap';
@@ -38,7 +38,9 @@ export function StoreSettings({ store }: { store: Store }) {
       return;
     }
     try {
-      await updateStore({ ...draft, name: draft.name.trim() });
+      const saved = { ...draft, name: draft.name.trim() };
+      await updateStore(saved);
+      setDraft(saved);
       toast.success(t('Pengaturan toko disimpan'));
     } catch (error) {
       toast.error(error instanceof Error ? error.message : t('Gagal menyimpan.'));
@@ -52,7 +54,9 @@ export function StoreSettings({ store }: { store: Store }) {
     </div>
   );
 
-  const isDirty = JSON.stringify(draft) !== JSON.stringify(store);
+  /** updatedAt changes on every save (and on sync), so it never counts as an unsaved change. */
+  const comparable = ({ updatedAt: _updatedAt, ...rest }: Store) => JSON.stringify(rest);
+  const isDirty = comparable(draft) !== comparable(store);
 
   return (
     <>
@@ -106,12 +110,18 @@ export function StoreSettings({ store }: { store: Store }) {
         </div>
       </SettingsSection>
 
-      <div className="sticky bottom-0 -mx-4 flex items-center justify-end gap-3 border-t border-line bg-canvas/95 px-4 py-3 backdrop-blur md:mx-0 md:rounded-lg md:border">
-        {isDirty && <span className="text-[13px] text-muted">{t('Ada perubahan yang belum disimpan')}</span>}
-        <button type="button" disabled={!isDirty} onClick={() => void handleSave()} className={`${btnPrimary} h-11`}>
-          {t('Simpan perubahan')}
-        </button>
-      </div>
+      {/* The save bar shows only once something changed (Kenny): nothing to save, nothing on screen. */}
+      {isDirty && (
+        <div className="sticky bottom-0 -mx-4 flex animate-fade items-center justify-end gap-3 border-t border-line bg-canvas/95 px-4 py-3 backdrop-blur md:mx-0 md:rounded-lg md:border">
+          <span className="mr-auto hidden text-[13px] text-muted sm:inline">{t('Ada perubahan yang belum disimpan')}</span>
+          <button type="button" onClick={() => setDraft(store)} className={`${btnGhost} h-11`}>
+            {t('Batal')}
+          </button>
+          <button type="button" onClick={() => void handleSave()} className={`${btnPrimary} h-11`}>
+            {t('Simpan perubahan')}
+          </button>
+        </div>
+      )}
     </>
   );
 }

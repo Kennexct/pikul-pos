@@ -47,7 +47,7 @@ export function TodayPanel({ storeName, timeZone, drawer, closing, closedByName,
   const closedAt = closing ? new Intl.DateTimeFormat(DATE_LOCALE, { hour: '2-digit', minute: '2-digit', timeZone }).format(new Date(closing.closedAt)) : '';
 
   return (
-    <div className="grid gap-4 lg:grid-cols-2 lg:items-start">
+    <div className="grid gap-4 @4xl/page:grid-cols-2 @4xl/page:items-start">
       <section aria-label={t('Kas laci')} className={`${card} p-4 md:p-5`}>
         <h2 className={`${sectionTitle} mb-3`}>{t('Kas laci')}</h2>
         <dl className="flex flex-col gap-2.5">

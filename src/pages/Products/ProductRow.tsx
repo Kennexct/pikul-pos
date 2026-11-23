@@ -8,7 +8,7 @@ import type { Id, Product } from '../../types';
 import { t } from '../../i18n';
 
 /** Desktop columns shared by the header, product rows and variant lines. */
-export const PRODUCT_COLUMNS = 'lg:grid-cols-[1fr_160px_120px_120px_96px_24px]';
+export const PRODUCT_COLUMNS = '@4xl/page:grid-cols-[1fr_160px_120px_120px_96px_24px]';
 
 interface ProductRowProps {
   product: Product;
@@ -57,7 +57,7 @@ export function ProductRow({ product: p, categoryName, summary, addOnCount, take
         <button
           type="button"
           onClick={onOpen}
-          className={`grid min-w-0 flex-1 grid-cols-[1fr_auto_20px] items-center gap-3 py-3 pr-4 text-left hover:bg-subtle ${PRODUCT_COLUMNS} lg:gap-4 ${hasToggleColumn ? 'pl-1' : 'pl-4'}`}
+          className={`grid min-w-0 flex-1 grid-cols-[1fr_auto_20px] items-center gap-3 py-3 pr-4 text-left hover:bg-subtle ${PRODUCT_COLUMNS} @4xl/page:gap-4 ${hasToggleColumn ? 'pl-1' : 'pl-4'}`}
         >
           <span className="flex min-w-0 items-center gap-3">
             <ProductThumb name={p.name} photoUrl={p.photoUrl} className="h-11 w-11 shrink-0 rounded-md border border-line" />
@@ -65,7 +65,7 @@ export function ProductRow({ product: p, categoryName, summary, addOnCount, take
               <span className={`block truncate text-[15px] font-semibold ${p.isActive ? '' : 'text-muted'}`}>{p.name}</span>
               <span className="block truncate text-[13px] text-muted">
                 {categoryName}
-                <span className="lg:hidden">
+                <span className="@4xl/page:hidden">
                   {variants.length > 0 && t(' · {0} varian', variants.length)}
                   {addOnCount > 0 && t(' · {0} add-on', addOnCount)}
                   {p.isActive && p.isSoldOut && t(' · Habis')}
@@ -73,10 +73,10 @@ export function ProductRow({ product: p, categoryName, summary, addOnCount, take
               </span>
             </span>
           </span>
-          <span className="hidden truncate text-[13px] text-ink-soft lg:block">{summary || '—'}</span>
+          <span className="hidden truncate text-[13px] text-ink-soft @4xl/page:block">{summary || '—'}</span>
           <span className="num text-right text-[15px] font-semibold">{formatRupiah(p.basePrice)}{perUnit(p.unit)}</span>
-          <span className="num hidden text-right text-[14px] text-ink-soft lg:block">{takeaway(p.modePrices)}</span>
-          <span className="hidden lg:block">{statusBadge(p.isActive, p.isSoldOut === true)}</span>
+          <span className="num hidden text-right text-[14px] text-ink-soft @4xl/page:block">{takeaway(p.modePrices)}</span>
+          <span className="hidden @4xl/page:block">{statusBadge(p.isActive, p.isSoldOut === true)}</span>
           <ChevronRight aria-hidden size={18} className="text-faint" />
         </button>
       </div>
@@ -88,19 +88,19 @@ export function ProductRow({ product: p, categoryName, summary, addOnCount, take
               <button
                 type="button"
                 onClick={onOpen}
-                className={`grid w-full grid-cols-[1fr_auto_20px] items-center gap-3 py-2 pl-[108px] pr-4 text-left hover:bg-subtle ${PRODUCT_COLUMNS} lg:gap-4`}
+                className={`grid w-full grid-cols-[1fr_auto_20px] items-center gap-3 py-2 pl-[108px] pr-4 text-left hover:bg-subtle ${PRODUCT_COLUMNS} @4xl/page:gap-4`}
               >
                 <span className="min-w-0">
                   <span className="block truncate text-[14px] font-medium">{v.name}</span>
-                  <span className="block truncate text-[12px] text-muted lg:hidden">
+                  <span className="block truncate text-[12px] text-muted @4xl/page:hidden">
                     {takeawayModeId && v.modePrices?.[takeawayModeId] !== undefined && `${takeawayModeName} ${takeaway(v.modePrices)}`}
                     {p.isActive && v.isSoldOut && t(' · Habis')}
                   </span>
                 </span>
-                <span className="hidden lg:block" />
+                <span className="hidden @4xl/page:block" />
                 <span className="num text-right text-[14px] font-semibold">{formatRupiah(v.price)}</span>
-                <span className="num hidden text-right text-[13px] text-ink-soft lg:block">{takeaway(v.modePrices)}</span>
-                <span className="hidden lg:block">{statusBadge(p.isActive, v.isSoldOut === true)}</span>
+                <span className="num hidden text-right text-[13px] text-ink-soft @4xl/page:block">{takeaway(v.modePrices)}</span>
+                <span className="hidden @4xl/page:block">{statusBadge(p.isActive, v.isSoldOut === true)}</span>
                 <span aria-hidden />
               </button>
             </li>

@@ -44,3 +44,9 @@ python3 e2e/v19.py http://localhost:4173 ./shots                                
 python3 e2e/v17.py http://localhost:4173 ./shots /tmp/api.log admin-kata-sandi-panjang # admin console revamp (uses sign_up now)
 ```
 Set `CHROME=/path/to/chrome` to pick the browser. `v14.py` and `v15.py` used email-code sign-in and the old admin email codes; they are superseded by `v18.py` and `v17.py`.
+
+## v0.19.1: quicker product form
+"Punya varian" is now the "Satu harga / Ada varian" control; per-variant Takeaway/cost sit under "Detail"; the three switches sit under "Pengaturan lain".
+```bash
+python3 e2e/v20.py http://localhost:4173/app ./shots   # pending category created on save, price replaces 0, save & add another, variants quick fill
+```

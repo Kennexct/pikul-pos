@@ -1,5 +1,7 @@
 # Handoff — device sync delivered (2026-11-21)
 
+**Latest:** v0.19.1 on `claude/project-thread-5a5zxj`: product form fixes (pending category created on save, price input replaces its 0) and a quicker form (ProductBasics / ProductPricing / ProductVariantsEditor / ProductMoreOptions; "Simpan & tambah lagi"). e2e `e2e/v20.py`; v12/v13 updated for the folded settings and "Ada varian". Next ADR: 027.
+
 **Latest:** v0.19.0 on `claude/project-thread-zzc5ov` (ADR-025 sync protocol + one store per account, ADR-026 cash register per device). Same account on several devices = one store, synced both ways (outbox push, cursor pull every 15 s online, last write wins, final order status never reverts). New device signs in → downloads the store → cashier. Device with a different store → "Toko mana yang dipakai di perangkat ini?" (backup file first). Settings → Sinkronisasi; Kas → Semua perangkat. Migration `db/migrations/005_device_sync.sql` (also in `neon-setup.sql`). e2e `e2e/v19.py` against `scripts/vercel-local.mjs`. Offline-only e2e scripts take base `http://host/app`. Review PASS. Next ADR: 027. Next feature candidate: merchant back-office (web view of the synced store).
 
 # Handoff — device sync planning (2026-11-21)

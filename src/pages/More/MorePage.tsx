@@ -12,18 +12,18 @@ import { useOwnerAccess } from '../../hooks/useOwnerAccess';
 import { useSessionStore } from '../../store/useSessionStore';
 import { t } from '../../i18n';
 
-/** Phone-only overflow menu: account, owner-mode lock, and nav items not in the bottom bar. */
+/** Phone-only "Akun" tab: the seller, sync, owner-mode lock, Pengaturan and Bantuan. */
 export function MorePage() {
   const cashier = useSessionStore((s) => s.cashier);
   const hasOwnerPin = useSessionStore((s) => s.hasOwnerPin);
   const lockOwner = useSessionStore((s) => s.lockOwner);
   const access = useOwnerAccess();
   const [isAccountOpen, setIsAccountOpen] = useState(false);
-  const items = NAV_ITEMS.filter((item) => !item.isPrimary);
+  const items = [NAV_ITEMS.settings, NAV_ITEMS.help];
 
   return (
     <section className="flex min-h-0 flex-1 flex-col overflow-y-auto">
-      <PageHeader title={t('Lainnya::menu')} />
+      <PageHeader title={t('Akun')} />
       <div className="flex flex-col gap-4 p-4">
         <div className={`${card} p-4`}>
           <div className="flex items-center gap-3">
@@ -49,16 +49,19 @@ export function MorePage() {
         </div>
 
         <ul className={`${card} divide-y divide-line`}>
-          {items.map(({ to, label, icon: Icon, isOwnerOnly }) => (
+          {items.map((item) => {
+            const { to, label, icon: Icon } = item;
+            return (
             <li key={to}>
               <Link to={to} viewTransition className="flex min-h-14 items-center gap-3 px-4 text-[15px] font-medium hover:bg-subtle">
                 <Icon aria-hidden size={20} className="text-muted" />
                 <span className="flex-1">{label}</span>
-                {access.kind === 'locked' && isOwnerOnly && <Lock aria-label={t('terkunci, butuh PIN pemilik')} size={15} className="text-faint" />}
+                {access.kind === 'locked' && 'isOwnerOnly' in item && <Lock aria-label={t('terkunci, butuh PIN pemilik')} size={15} className="text-faint" />}
                 <ChevronRight aria-hidden size={18} className="text-faint" />
               </Link>
             </li>
-          ))}
+            );
+          })}
         </ul>
 
         <div className="mt-4 flex justify-center opacity-70">

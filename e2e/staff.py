@@ -82,7 +82,7 @@ def run(p, name, viewport, is_mobile):
 
     # 3. Switch seller to Dika — owner mode locks, so Settings shows the gate.
     if is_mobile:
-        page.get_by_role('link', name='Lainnya').click()
+        page.get_by_role('link', name='Akun', exact=True).click()  # v0.19.1: phone tab Akun replaces Lainnya
         page.get_by_role('button', name='Ganti kasir').click()
     else:
         page.get_by_role('button', name=re.compile('^Akun')).click()
@@ -130,7 +130,7 @@ def run(p, name, viewport, is_mobile):
 
     # 7. Kunci locks owner mode again.
     if is_mobile:
-        page.get_by_role('link', name='Lainnya').click()
+        page.get_by_role('link', name='Akun', exact=True).click()  # v0.19.1: phone tab Akun replaces Lainnya
     page.get_by_role('button', name='Kunci').click()
     page.get_by_role('link', name=re.compile('^Laporan')).first.click()
     page.get_by_text('Khusus pemilik').wait_for()

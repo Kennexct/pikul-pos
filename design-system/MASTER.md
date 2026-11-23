@@ -65,7 +65,7 @@ Components must use semantic tokens only — no raw `slate-*`, `orange-*` or hex
 ## Icons
 
 - lucide-react only, one stroke weight (1.75, set globally on `.lucide`).
-- Sizes: 22 nav, 18–20 buttons, 15–16 inline with text.
+- Sizes: 20 nav, 18–20 buttons, 15–16 inline with text.
 - Decorative icons get `aria-hidden`; icon-only buttons need `aria-label`.
 - No emoji anywhere in the UI.
 
@@ -91,8 +91,10 @@ Motion confirms what just happened; nothing loops. Tokens and keyframes live in 
 
 ## Layout
 
-- **Phone (< 768px):** bottom tab bar (4 primary + Lainnya), floating dark "Lihat pesanan" bar above it, 3-column product grid.
-- **Tablet (≥ 768px):** 84px side rail (logomark, nav with 3px active indicator, sync status, cashier avatar); POS = product grid + 340–420px cart column.
+- **Main menu** (`navItems.ts`): Kasir · Transaksi (Pesanan, Riwayat, Kas) · Kelola (Produk, Pelanggan) · Laporan · Pengaturan. A group with several pages shows its sub-menu as a list column (`SubNavList`, 208px) left of the page on tablet and as underline tabs (`SubNavTabs`) on a phone; tapping a group reopens its last visited page. Nav icons are 20px.
+- List pages switch to their table layout by the space they get, not the screen: the page pane is `@container/page` and tables use `@4xl/page:` (not `lg:`).
+- **Phone (< 768px):** bottom tab bar (Kasir, Transaksi, Kelola, Laporan + Akun: seller, sync, lock, Pengaturan, Bantuan), floating dark "Lihat pesanan" bar above it, 3-column product grid.
+- **Tablet (≥ 768px):** 84px side rail (logomark, groups with 3px active indicator, Bantuan "?" at the foot, sync status, cashier avatar); POS = product grid + 340–420px cart column.
 
 ## Anti-patterns (reject in review)
 
@@ -101,7 +103,8 @@ Pastel random tile colors · dot-grid or pattern fills behind monograms · endle
 ## Page width
 
 - List and data pages (Kasir, Riwayat, Laporan, Produk, Pelanggan, Kas) use the full width.
-- Form-like pages (Pengaturan, Bantuan) use one centred column for header, tabs and content: `<PageHeader isNarrow>` + `NARROW_COLUMN` (`max-w-3xl`). Never cap content width while leaving it left-aligned.
+- Pengaturan (tablet) lists its sections in a left column like the other sub-menus; header and content sit in one left-aligned `max-w-3xl` column beside it. Its save bar appears only when something changed.
+- Form-like pages (Bantuan; Pengaturan on a phone) use one centred column for header, tabs and content: `<PageHeader isNarrow>` + `NARROW_COLUMN` (`max-w-3xl`). Never cap content width while leaving it left-aligned.
 
 ## Brand (ADR-016)
 

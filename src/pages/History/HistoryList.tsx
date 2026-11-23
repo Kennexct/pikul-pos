@@ -9,7 +9,7 @@ import { DATE_LOCALE, t } from '../../i18n';
 import { formatLineQty } from '../../lib/quantity';
 
 const timeFormat = new Intl.DateTimeFormat(DATE_LOCALE, { hour: '2-digit', minute: '2-digit' });
-const COLUMNS = 'lg:grid-cols-[64px_minmax(150px,190px)_1fr_120px_130px_120px_20px]';
+const COLUMNS = '@4xl/page:grid-cols-[64px_minmax(150px,190px)_1fr_120px_130px_120px_20px]';
 
 interface HistoryListProps {
   orders: Order[];
@@ -31,7 +31,7 @@ export function HistoryList({ orders, onSelect }: HistoryListProps) {
 
   return (
     <div className={`${card} overflow-hidden`}>
-      <div className={`hidden items-center gap-4 border-b border-line bg-subtle px-4 py-2.5 text-[12px] font-semibold uppercase tracking-[0.05em] text-muted lg:grid ${COLUMNS}`}>
+      <div className={`hidden items-center gap-4 border-b border-line bg-subtle px-4 py-2.5 text-[12px] font-semibold uppercase tracking-[0.05em] text-muted @4xl/page:grid ${COLUMNS}`}>
         <span>{t('Jam')}</span>
         <span>{t('No. struk')}</span>
         <span>{t('Pesanan::label')}</span>
@@ -52,29 +52,29 @@ export function HistoryList({ orders, onSelect }: HistoryListProps) {
                 <button
                   type="button"
                   onClick={() => onSelect(order.id)}
-                  className={`grid w-full grid-cols-[1fr_auto] items-center gap-x-3 gap-y-1 px-4 py-3 text-left hover:bg-subtle lg:gap-4 ${COLUMNS}`}
+                  className={`grid w-full grid-cols-[1fr_auto] items-center gap-x-3 gap-y-1 px-4 py-3 text-left hover:bg-subtle @4xl/page:gap-4 ${COLUMNS}`}
                 >
-                  <span className="num hidden text-[14px] text-ink-soft lg:block">{timeFormat.format(new Date(order.paidAt ?? order.updatedAt))}</span>
+                  <span className="num hidden text-[14px] text-ink-soft @4xl/page:block">{timeFormat.format(new Date(order.paidAt ?? order.updatedAt))}</span>
                   <span className="min-w-0">
                     <span className="num block truncate text-[14px] font-semibold">{order.receiptNo}</span>
-                    <span className="num block truncate text-[13px] text-muted lg:hidden">
+                    <span className="num block truncate text-[13px] text-muted @4xl/page:hidden">
                       {timeFormat.format(new Date(order.paidAt ?? order.updatedAt))} · {order.payments[0]?.methodNameSnapshot ?? '—'} · {order.salesModeNameSnapshot}
                       {order.customerNameSnapshot ? ` · ${order.customerNameSnapshot}` : ''}
                     </span>
                   </span>
-                  <span className="hidden min-w-0 truncate text-[14px] text-ink-soft lg:block">
+                  <span className="hidden min-w-0 truncate text-[14px] text-ink-soft @4xl/page:block">
                     {[order.customerNameSnapshot, order.label].filter(Boolean).map((part) => `${part} · `).join('')}
                     {order.items.map((i) => `${formatLineQty(i)} ${i.nameSnapshot}`).join(', ')}
                   </span>
-                  <span className="hidden text-[14px] text-ink-soft lg:block">{order.payments[0]?.methodNameSnapshot ?? '—'}</span>
-                  <span className="hidden lg:block"><StatusBadge status={order.status} /></span>
-                  <span className="flex flex-col items-end gap-1 lg:block lg:text-right">
+                  <span className="hidden text-[14px] text-ink-soft @4xl/page:block">{order.payments[0]?.methodNameSnapshot ?? '—'}</span>
+                  <span className="hidden @4xl/page:block"><StatusBadge status={order.status} /></span>
+                  <span className="flex flex-col items-end gap-1 @4xl/page:block @4xl/page:text-right">
                     <span className={`num text-[15px] font-semibold ${isStruckThrough(order) ? 'text-muted line-through' : ''}`}>
                       {formatRupiah(order.totals.grandTotal)}
                     </span>
-                    {order.status !== 'paid' && <span className="lg:hidden"><StatusBadge status={order.status} /></span>}
+                    {order.status !== 'paid' && <span className="@4xl/page:hidden"><StatusBadge status={order.status} /></span>}
                   </span>
-                  <ChevronRight aria-hidden size={18} className="hidden text-faint lg:block" />
+                  <ChevronRight aria-hidden size={18} className="hidden text-faint @4xl/page:block" />
                 </button>
               </li>
             ))}
