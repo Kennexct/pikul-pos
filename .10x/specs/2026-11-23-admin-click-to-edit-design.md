@@ -1,6 +1,6 @@
 # Admin console: click-to-edit for Konten landing and Paket harga — design
 
-**Date:** 2026-11-23 · **Feature slug:** `admin-click-to-edit` · **Status:** proposed, waiting on Kenny's approval
+**Date:** 2026-11-23 · **Feature slug:** `admin-click-to-edit` · **Status:** approved by Kenny 2026-11-23 ("Build it, one Simpan for all")
 **Ask (Kenny):** "for landing page and price plan, make sure the form is not open, looks not good because user can misstype at every field. For landing page, create sub section to show the specific field when during click, then also give example preview at the right side."
 
 ## Problem
@@ -12,12 +12,11 @@ Admin UI only (`src/admin/*`). Same data, same API (`GET/PUT /api/admin/content`
 ## Konten landing
 - **Sub-sections:** `Tabs` with Bagian atas · Keunggulan (n) · Tanya jawab (n) · Kontak. Only the selected one renders.
 - **Read-only by default:** each item is a row of plain text (title + first line of text, "Disembunyikan" badge when hidden). Row actions: naik, turun, sembunyikan/tampilkan, hapus (inline "Yakin hapus?" confirm).
-- **Click to edit:** clicking a row (or "Ubah") opens only that row's fields in place, with Simpan / Batal. One open row at a time; opening another while the current one has changes asks to discard first. Esc = Batal.
+- **Click to edit:** clicking a row (or "Ubah") opens only that row's fields in place, with Selesai / Batal. One open row at a time; opening another while the current one has changes asks to discard first. Esc = Batal.
 - **Add:** "Tambah …" appends a blank row already open; Batal on a never-saved row removes it.
 - **Preview:** a `LandingPreview` component styled like the real landing section (hero block, feature card grid, FAQ list with the edited item expanded, footer contact). It renders the draft as typed, highlights the item being edited, and leaves hidden items out (as the real page does). Rendered with React text nodes only (no HTML).
 - **Layout:** two columns (editor | sticky preview) at ≥1280 px viewport (sidebar takes 240 px); below that the preview sits under the editor with a "Contoh tampilan" heading.
-- **Save model (recommended):** Simpan on a row writes the whole content document to the server right away (PUT is whole-document already). Hide, reorder and delete also save immediately. The sticky bottom bar is removed. "Pulihkan bawaan" stays at the bottom of the tab.
-  - *Alternative if Kenny picks it:* rows only change a local draft; the existing sticky Simpan bar publishes.
+- **Save model (Kenny chose "one Simpan for all"):** Selesai on a row only puts the row into the page draft (and the preview). Hide, reorder, delete and add also change the draft. The existing sticky bottom bar (status text, Batalkan, Simpan) publishes the whole document with one PUT. Selesai is disabled while a required field in the row is empty, so the draft never holds a row the server would refuse. Leaving the tab with an open row keeps the draft in memory only (no browser storage). "Pulihkan bawaan" stays at the bottom of the tab.
 
 ## Paket harga
 - **Read-only cards** shaped like the landing price card: name, label badge, price, "/ N hari", note, features with check marks, status chip (Dijual / Disembunyikan). Card actions: Ubah, naik, turun.

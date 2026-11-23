@@ -1,3 +1,7 @@
+# Handoff — admin click-to-edit planned (2026-11-23)
+
+**Now:** SDE builds T1→T5 from `decisions/engineering-manager/admin-click-to-edit.md`, approach in `decisions/senior-engineer/admin-click-to-edit.md`, ADR-024. UI only, no API/DB change. Landing: Tabs sub-sections, read-only rows, one open row, Selesai changes draft, sticky Simpan publishes. Plans: read-only cards, Sheet editor with preview, constrained fields. Next ADR: 025.
+
 # Handoff — Vercel + Neon launch delivered (2026-11-21)
 
 **Latest:** v0.18.0 on `feat/vercel-neon-launch` (ADR-022, ADR-023). Hosting is Vercel: `npm run build:vercel` writes `.vercel/output` (static + one Node 22 function from `server/vercel.ts` + routes). Merchants sign up with owner, store, WhatsApp, city, email, password; sign in with email + password; admin sees the details under Merchant (list, sheet, search, CSV) and can make a one-time temporary password. Email (Resend) optional: only for "Lupa kata sandi". No preview/example data anywhere. DB setup: `db/neon-setup.sql` (regenerate with `node scripts/db-setup.mjs` after a new migration). e2e for accounts: `e2e/v18.py` against `scripts/vercel-local.mjs` (see e2e/README.md). Go-live: `docs/runbooks/deploy-vercel-neon.md`. Next ADR: 024.
