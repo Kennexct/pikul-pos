@@ -9,6 +9,7 @@ import { updateStore } from '../../services/bootstrap';
 import type { Store } from '../../types';
 import { SettingsSection } from './SettingsSection';
 import { t } from '../../i18n';
+import { NumberInput } from '../../components/ui/NumberInput';
 
 type TextField = 'name' | 'address' | 'phone' | 'receiptHeader' | 'receiptFooter';
 
@@ -26,7 +27,6 @@ const PAPER_OPTIONS = [
   { value: '80', label: t('80 mm') },
 ] as const;
 
-const clampPercent = (value: string): number => Math.min(PERCENT_MAX, Math.max(0, Number(value) || 0));
 
 /** M14 store profile, receipt text, tax & service. */
 export function StoreSettings({ store }: { store: Store }) {
@@ -106,11 +106,11 @@ export function StoreSettings({ store }: { store: Store }) {
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <label htmlFor="tax-pct" className={labelBase}>{t('Pajak PB1/PPN (%)')}</label>
-            <input id="tax-pct" type="number" inputMode="decimal" min={0} max={100} value={draft.taxPct} onChange={(e) => update({ taxPct: clampPercent(e.target.value) })} className={`${inputBase} num`} />
+            <NumberInput id="tax-pct" max={PERCENT_MAX} value={draft.taxPct} onChange={(taxPct) => update({ taxPct })} />
           </div>
           <div>
             <label htmlFor="service-pct" className={labelBase}>{t('Service (%)')}</label>
-            <input id="service-pct" type="number" inputMode="decimal" min={0} max={100} value={draft.servicePct} onChange={(e) => update({ servicePct: clampPercent(e.target.value) })} className={`${inputBase} num`} />
+            <NumberInput id="service-pct" max={PERCENT_MAX} value={draft.servicePct} onChange={(servicePct) => update({ servicePct })} />
           </div>
           <div className="sm:col-span-2">
             <Switch checked={draft.isTaxInclusive} onChange={(isTaxInclusive) => update({ isTaxInclusive })} label={t('Harga sudah termasuk pajak')} />
@@ -120,7 +120,7 @@ export function StoreSettings({ store }: { store: Store }) {
 
       {/* The save bar shows only once something changed (Kenny): nothing to save, nothing on screen. */}
       {isDirty && (
-        <div className="sticky bottom-0 -mx-4 flex animate-fade items-center justify-end gap-3 border-t border-line bg-canvas/95 px-4 py-3 backdrop-blur md:mx-0 md:rounded-lg md:border">
+        <div className="sticky bottom-0 col-span-full -mx-4 flex animate-fade items-center justify-end gap-3 border-t border-line bg-canvas/95 px-4 py-3 backdrop-blur md:mx-0 md:rounded-lg md:border">
           <span className="mr-auto hidden text-[13px] text-muted sm:inline">{t('Ada perubahan yang belum disimpan')}</span>
           <button type="button" onClick={() => setDraft(store)} className={`${btnGhost} h-11`}>
             {t('Batal')}

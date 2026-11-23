@@ -2,7 +2,7 @@ import { MoreHorizontal, Plus, Star } from 'lucide-react';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { SegmentedControl } from '../../components/ui/SegmentedControl';
-import { badgeBrand, btnGhost, btnIcon, btnSecondary, card, helperText, inputBase, labelBase } from '../../components/ui/styles';
+import { badgeBrand, btnGhost, btnIcon, btnSecondary, card, helperText, labelBase } from '../../components/ui/styles';
 import { Switch } from '../../components/ui/Switch';
 import { saveSalesMode } from '../../services/catalog';
 import { MAX_SALES_MODES } from '../../constants';
@@ -11,6 +11,7 @@ import { AddModeSheet } from './AddModeSheet';
 import { ConfigItemSheet } from './ConfigItemSheet';
 import { PRICE_RULE_HELP, PRICE_RULE_OPTIONS } from './priceRules';
 import { t } from '../../i18n';
+import { NumberInput } from '../../components/ui/NumberInput';
 
 async function persist(mode: SalesMode): Promise<void> {
   try {
@@ -36,8 +37,8 @@ export function SalesModeSettings({ storeId, modes }: { storeId: Id; modes: Sale
   };
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center gap-3">
+    <div className="grid items-start gap-4 @4xl/settings:grid-cols-2">
+      <div className="col-span-full flex items-center gap-3">
         <p className="min-w-0 flex-1 text-[14px] text-muted">
           {isFull ? t('Sudah {0} mode (batas maksimal).', MAX_SALES_MODES) : t('Urutan di sini sama dengan urutan di kasir.')}
         </p>
@@ -76,15 +77,14 @@ export function SalesModeSettings({ storeId, modes }: { storeId: Id; modes: Sale
               {mode.priceRule === 'markup' && (
                 <div className="mt-3 max-w-[180px]">
                   <label htmlFor={`markup-${mode.id}`} className={labelBase}>{t('Markup (%)')}</label>
-                  <input
+                  <NumberInput
                     id={`markup-${mode.id}`}
-                    type="number"
-                    inputMode="decimal"
-                    min={0}
                     max={100}
-                    defaultValue={mode.markupPct}
-                    onBlur={(e) => void persist({ ...mode, markupPct: Number(e.target.value) || 0 })}
-                    className={`${inputBase} num`}
+                    value={mode.markupPct}
+                    onChange={() => undefined}
+                    onCommit={(markupPct) => {
+                      if (markupPct !== mode.markupPct) void persist({ ...mode, markupPct });
+                    }}
                   />
                 </div>
               )}

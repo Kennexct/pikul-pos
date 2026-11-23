@@ -37,8 +37,8 @@ export function PaymentMethodSettings({ storeId, methods }: { storeId: Id; metho
   const activeCount = methods.filter((m) => m.isActive).length;
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center gap-3">
+    <div className="grid items-start gap-4 @4xl/settings:grid-cols-2">
+      <div className="col-span-full flex items-center gap-3">
         <p className="min-w-0 flex-1 text-[14px] text-muted">
           {isFull ? t('Sudah {0} metode (batas maksimal).', MAX_PAYMENT_METHODS) : t('Urutan di sini sama dengan urutan di layar pembayaran.')}
         </p>

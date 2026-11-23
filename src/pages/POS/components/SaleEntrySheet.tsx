@@ -1,3 +1,4 @@
+import { Scale } from 'lucide-react';
 import { useState } from 'react';
 import { RupiahInput } from '../../../components/ui/RupiahInput';
 import { SegmentedControl } from '../../../components/ui/SegmentedControl';
@@ -121,9 +122,21 @@ export function SaleEntrySheet({ name, unit, isPriceEditable, normalPrice, initi
                     </button>
                   ))}
                 </div>
-                <p aria-live="polite" className={helperText}>
-                  {qty !== null ? t('Timbang {0}', formatQuantity(qty, unit)) : t('Isi nominal untuk melihat beratnya.')}
-                </p>
+                {/* What to put on the scale: the number the seller acts on, so it gets the biggest type here. */}
+                <div
+                  aria-live="polite"
+                  className={`mt-3 flex min-h-[72px] items-center gap-3 rounded-xl px-4 py-3 ${qty !== null ? 'border-2 border-brand-600 bg-brand-50' : 'border border-dashed border-line-strong bg-subtle'}`}
+                >
+                  <Scale aria-hidden size={26} className={`shrink-0 ${qty !== null ? 'text-brand-700' : 'text-muted'}`} />
+                  {qty !== null ? (
+                    <p className="flex min-w-0 flex-wrap items-baseline gap-x-2">
+                      <span className="text-[14px] font-semibold text-brand-800">{t('Timbang sebanyak')}</span>
+                      <span className="num text-[28px] font-bold leading-none text-brand-800">{formatQuantity(qty, unit)}</span>
+                    </p>
+                  ) : (
+                    <p className="text-[14px] text-muted">{t('Isi nominal untuk melihat beratnya.')}</p>
+                  )}
+                </div>
               </div>
             )}
           </div>

@@ -1,6 +1,8 @@
 # Handoff — device sync delivered (2026-11-21)
 
-**Latest:** v0.19.2 on `claude/project-thread-5a5zxj`: round-3 polish. `SidePanel` (src/components/Layout/SidePanel.tsx) is the shared foldable tablet sub-menu; `Switch tone="danger"`; `Store.receiptPrefix` + `normalizeReceiptPrefix` in businessDate.ts; weight-sale switch lives in `WeightSaleSetting` under Mode Penjualan. Next ADR: 027.
+**Latest:** v0.19.3 on `claude/project-thread-5a5zxj`: round-4 polish. Use `NumberInput` (src/components/ui/NumberInput.tsx) for small number fields so 0 is a placeholder. Settings content is `@container/settings` with two columns from @4xl. Next ADR: 027.
+
+**Earlier:** v0.19.2 on `claude/project-thread-5a5zxj`: round-3 polish. `SidePanel` (src/components/Layout/SidePanel.tsx) is the shared foldable tablet sub-menu; `Switch tone="danger"`; `Store.receiptPrefix` + `normalizeReceiptPrefix` in businessDate.ts; weight-sale switch lives in `WeightSaleSetting` under Mode Penjualan. Next ADR: 027.
 
 **Earlier:** v0.19.1 on `claude/project-thread-5a5zxj`: product form fixes (pending category created on save, price input replaces its 0) and a quicker form (ProductBasics / ProductPricing / ProductVariantsEditor / ProductMoreOptions; "Simpan & tambah lagi"). e2e `e2e/v20.py`; v12/v13 updated for the folded settings and "Ada varian". Next ADR: 027.
 
