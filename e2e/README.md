@@ -50,3 +50,8 @@ Set `CHROME=/path/to/chrome` to pick the browser. `v14.py` and `v15.py` used ema
 ```bash
 python3 e2e/v20.py http://localhost:4173/app ./shots   # pending category created on save, price replaces 0, save & add another, variants quick fill
 ```
+
+## v0.19.5: admin shows the latest shop profile
+```bash
+python3 e2e/v21.py http://localhost:4173 ./shots admin-kata-sandi-panjang   # merchant edits Toko & Struk + syncs → console list and sheet show the new name, WhatsApp, address
+```

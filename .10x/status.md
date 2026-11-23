@@ -1,5 +1,13 @@
 # Status
 
+## Admin shows the latest shop profile (v0.19.5) — In review (2026-11-23)
+Branch `claude/project-thread-m0f9ao` from `main` `f874b2e`. Kenny: after a merchant edits Pengaturan > Toko & Struk, the console still showed the sign-up details. Cause: the console read only `accounts` (sign-up form); the edited store row lives in `sync_records` (tbl `stores`). No DB change, no ADR. Next ADR: 027.
+- [x] `SyncRepo.storeProfiles()` (Neon: `account_store` join `sync_records` on the bound store) feeds `loadAll` in `server/merchants.ts`
+- [x] Name and address from the app win; the app phone wins only when it is an Indonesian mobile (else the sign-up WhatsApp stays, so wa.me works); city stays from sign-up
+- [x] Merchant sheet section "Data pendaftaran" → "Profil toko" with a new "Alamat" row; search and CSV include the address
+- [x] Checks: typecheck, i18n, 266 tests, build; e2e v21 (new) and v18 pass, phone + tablet
+- [ ] Kenny: try on the Vercel preview, merge
+
 ## Round 5: consistent field sizes in Settings (v0.19.4) — In review (2026-11-23)
 Branch `claude/project-thread-5a5zxj` from `main` `49f04a9`. Kenny: field widths differ between Settings pages; two-column cards leave uneven gaps. No ADR (UI only). Next ADR: 027.
 - [x] Settings is one column of full-width cards again (no card masonry)

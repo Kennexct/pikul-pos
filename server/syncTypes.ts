@@ -60,6 +60,14 @@ export interface StoreSummary {
   lastSaleAt: string | null;
 }
 
+/** Shop profile as the merchant last saved it in Pengaturan > Toko & Struk (the synced store row). */
+export interface StoreProfile {
+  accountId: string;
+  name: string;
+  phone: string;
+  address: string;
+}
+
 export interface SyncRepo {
   /** The store id this account is tied to, or null before the first device claims it. */
   getBoundStore(accountId: string): Promise<string | null>;
@@ -73,6 +81,8 @@ export interface SyncRepo {
   /** Rows with seq > after, not last written by deviceId, changed before settledBefore, oldest first. */
   pullSyncRecords(accountId: string, deviceId: string, after: number, limit: number, settledBefore: number): Promise<StoredSyncRecord[]>;
   storeSummary(accountId: string): Promise<StoreSummary | null>;
+  /** The synced store row of every account that has one, for the business console. */
+  storeProfiles(): Promise<StoreProfile[]>;
   touchDevice(accountId: string, hello: DeviceHello, now: number): Promise<void>;
   listDevices(accountId: string): Promise<SyncDevice[]>;
   renameDevice(accountId: string, deviceId: string, name: string): Promise<boolean>;

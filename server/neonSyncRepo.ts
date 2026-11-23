@@ -73,6 +73,11 @@ export function neonSyncRepo(sql: Sql): SyncRepo {
       if (!r) return null;
       return { name: (r.name as string | null) ?? '', products: Number(r.products), orders: Number(r.orders), lastSaleAt: (r.last_sale as string | null) ?? null };
     },
+    async storeProfiles() {
+      const r = await rows(sql`select a.account_id, s.data->>'name' as name, s.data->>'phone' as phone, s.data->>'address' as address
+        from account_store a join sync_records s on s.account_id = a.account_id and s.tbl = 'stores' and s.id = a.store_id`);
+      return r.map((x) => ({ accountId: x.account_id as string, name: (x.name as string | null) ?? '', phone: (x.phone as string | null) ?? '', address: (x.address as string | null) ?? '' }));
+    },
     async touchDevice(accountId, hello, now) {
       await sql`insert into sync_devices (account_id, device_id, receipt_code, app_version, first_seen, last_seen)
         values (${accountId}, ${hello.deviceId}, ${hello.receiptCode}, ${hello.appVersion}, ${iso(now)}, ${iso(now)})

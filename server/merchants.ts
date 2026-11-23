@@ -3,6 +3,8 @@ import { isResponse, requireAdmin } from './adminAuth';
 import { entitledUntil } from './auth';
 import { offers } from './catalog';
 import { toCsv } from './csv';
+import { normalizePhone } from './signup';
+import type { StoreProfile } from './syncTypes';
 import { buildGrant, buildPayment, checkGrantInput, checkPaymentInput, isEnding, isInactive, isLapsed, jakartaDate, paidUntilAfterCancel, statusOf } from './ledger';
 import { DAY_MS, type ApiResponse, type Deps, type PlanDef, type RequestCtx } from './types';
 
@@ -16,15 +18,26 @@ type Filter = (typeof FILTERS)[number];
 
 const daysBack = (now: number, days: number) => ({ from: jakartaDate(now - (days - 1) * DAY_MS), to: jakartaDate(now) });
 
-function accountView(a: AccountLite, now: number, totals: PaymentTotal | undefined, plans: readonly PlanDef[], sales?: { transactions: number; net: number }) {
+/**
+ * Name, WhatsApp and address the merchant last saved in the app win over what they typed at sign-up.
+ * A shop phone that is not an Indonesian mobile number keeps the sign-up WhatsApp, so the wa.me link still works.
+ */
+function profileOf(a: AccountLite, shop: StoreProfile | undefined) {
+  return {
+    storeName: shop?.name.trim() || (a.storeName ?? ''),
+    phone: normalizePhone(shop?.phone ?? '') ?? (a.phone ?? ''),
+    address: shop?.address.trim() ?? '',
+  };
+}
+
+function accountView(a: AccountLite, now: number, totals: PaymentTotal | undefined, plans: readonly PlanDef[], sales?: { transactions: number; net: number }, shop?: StoreProfile) {
   const status = statusOf(a, now);
   const plan = totals?.lastPlanId ? plans.find((p) => p.id === totals.lastPlanId) : undefined;
   return {
     id: a.id,
     email: a.email,
     ownerName: a.ownerName ?? '',
-    storeName: a.storeName ?? '',
-    phone: a.phone ?? '',
+    ...profileOf(a, shop),
     city: a.city ?? '',
     createdAt: a.createdAt,
     status,
@@ -45,15 +58,22 @@ function accountView(a: AccountLite, now: number, totals: PaymentTotal | undefin
 export type AccountView = ReturnType<typeof accountView>;
 
 async function loadAll(deps: Deps, now: number) {
-  const [accounts, totals, plans, sales] = await Promise.all([deps.repo.allAccounts(), deps.repo.paymentTotals(), deps.repo.listPlans(), deps.repo.merchantTotals(daysBack(now, 30))]);
+  const [accounts, totals, plans, sales, shops] = await Promise.all([
+    deps.repo.allAccounts(),
+    deps.repo.paymentTotals(),
+    deps.repo.listPlans(),
+    deps.repo.merchantTotals(daysBack(now, 30)),
+    deps.repo.storeProfiles(),
+  ]);
   const byTotals = new Map(totals.map((t) => [t.accountId, t]));
   const bySales = new Map(sales.map((s) => [s.accountId, s]));
-  const views = accounts.map((a) => accountView(a, now, byTotals.get(a.id), plans, bySales.get(a.id)));
+  const byShop = new Map(shops.map((s) => [s.accountId, s]));
+  const views = accounts.map((a) => accountView(a, now, byTotals.get(a.id), plans, bySales.get(a.id), byShop.get(a.id)));
   return { accounts, views, plans };
 }
 
-/** Search matches email, store, owner, WhatsApp (also typed as 08…) and city. */
-const searchText = (v: AccountView) => [v.email, v.storeName, v.ownerName, v.phone, v.phone.replace(/^62/, '0'), v.city].join(' ').toLowerCase();
+/** Search matches email, store, owner, WhatsApp (also typed as 08…), city and address. */
+const searchText = (v: AccountView) => [v.email, v.storeName, v.ownerName, v.phone, v.phone.replace(/^62/, '0'), v.city, v.address].join(' ').toLowerCase();
 
 const matches = (v: AccountView, f: Filter) =>
   f === 'all' || (f === 'ending' ? v.ending : f === 'inactive' ? v.inactive && v.status !== 'expired' : v.status === f);
@@ -93,8 +113,8 @@ export async function adminMerchants(deps: Deps, auth: string | null, ctx: Reque
   if (ctx.query.get('format') === 'csv') {
     const date = (v: number | null) => (v === null ? null : jakartaDate(v));
     const csv = toCsv([
-      ['Daftar', 'Nama toko', 'Pemilik', 'Email', 'WhatsApp', 'Kota', 'Status', 'Paket', 'Aktif sampai', 'Terakhir aktif', 'Total dibayar', 'Transaksi 30 hari', 'Penjualan bersih 30 hari'],
-      ...hits.map((v) => [date(v.createdAt), v.storeName, v.ownerName, v.email, v.phone, v.city, v.status, v.planName, date(v.until), date(v.lastSeenAt), v.totalPaid, v.tx30, v.net30]),
+      ['Daftar', 'Nama toko', 'Pemilik', 'Email', 'WhatsApp', 'Kota', 'Alamat', 'Status', 'Paket', 'Aktif sampai', 'Terakhir aktif', 'Total dibayar', 'Transaksi 30 hari', 'Penjualan bersih 30 hari'],
+      ...hits.map((v) => [date(v.createdAt), v.storeName, v.ownerName, v.email, v.phone, v.city, v.address, v.status, v.planName, date(v.until), date(v.lastSeenAt), v.totalPaid, v.tx30, v.net30]),
     ]);
     return { status: 200, body: null, text: { contentType: 'text/csv; charset=utf-8', content: csv, filename: `merchant-pikul-${jakartaDate(now)}.csv` } };
   }

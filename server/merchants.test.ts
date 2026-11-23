@@ -152,6 +152,31 @@ describe('merchant list, payments and overview', () => {
     expect(Object.fromEntries((await list('')).plans.map((p) => [p.key, p.count]))).toEqual({ trial: 1, monthly: 0, yearly: 1, expired: 1 });
   });
 
+  it('shows the shop profile the merchant last saved in the app, not the sign-up details', async () => {
+    const m = await merchant('budi@warung.id');
+    const view = async () => ((await call('GET', `/api/admin/merchants/${m.id}`)).body as { merchant: View & { storeName: string; phone: string; address: string } }).merchant;
+    const signUp = await view();
+    expect(signUp.address).toBe('');
+
+    const store = '0190f0aa-0000-7000-8000-000000000001';
+    const hello = { storeId: store, deviceId: '0190f0aa-0000-7000-8000-0000000000d1', receiptCode: 'AB', appVersion: '0.19.4' };
+    const bearer = (path: string, body: unknown) => raw('POST', path, body, m.refreshToken, '');
+    expect((await bearer('/api/sync/claim', hello)).status).toBe(200);
+    const row = (name: string, phone: string, at: number) => ({
+      table: 'stores',
+      id: store,
+      data: { id: store, name, phone, address: 'Jl. Melati 5, Bekasi', updatedAt: new Date(at).toISOString() },
+    });
+    expect((await bearer('/api/sync/push', { ...hello, records: [row('Warung Budi Jaya', '0813-1111-2222', now)] })).status).toBe(200);
+    expect(await view()).toMatchObject({ storeName: 'Warung Budi Jaya', phone: '6281311112222', address: 'Jl. Melati 5, Bekasi' });
+
+    // A landline cannot open WhatsApp: the sign-up number stays; the newer name still wins.
+    now += 60_000;
+    await bearer('/api/sync/push', { ...hello, records: [row('Warung Budi Baru', '021 555 123', now)] });
+    expect(await view()).toMatchObject({ storeName: 'Warung Budi Baru', phone: signUp.phone });
+    expect(((await call('GET', '/api/admin/merchants', undefined, null, 'q=melati')).body as { total: number }).total).toBe(1);
+  });
+
   it('lists a month of payments with a total and a CSV download', async () => {
     const m = await merchant('budi@warung.id');
     await call('POST', `/api/admin/merchants/${m.id}/payments`, pay({ reference: '=HYPERLINK("x")' }));
