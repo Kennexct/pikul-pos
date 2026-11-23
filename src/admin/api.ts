@@ -113,7 +113,7 @@ export const saveCampaign = (id: string | null, c: CampaignInput) => call<{ camp
 export const toggleCampaign = (id: string, enabled: boolean) => call<{ campaign: CampaignRow }>('POST', `/api/admin/campaigns/${id}/toggle`, { enabled });
 export const archiveCampaign = (id: string) => call<{ ok: true }>('POST', `/api/admin/campaigns/${id}/archive`, {});
 
-export async function uploadImage(file: File): Promise<string> {
+export async function uploadImage(file: Blob): Promise<string> {
   const buf = new Uint8Array(await file.arrayBuffer());
   let bin = '';
   for (let i = 0; i < buf.length; i += 0x8000) bin += String.fromCharCode(...buf.subarray(i, i + 0x8000));

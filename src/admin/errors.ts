@@ -32,6 +32,8 @@ const ERRORS: Record<string, string> = {
   invalid_text: t('Periksa judul dan teks (judul wajib, maks. 80 karakter; teks maks. 400).'),
   invalid_image: t('Gambar harus PNG, JPG, atau WebP, atau tautan https.'),
   image_too_large: t('Gambar maksimal 500 KB.'),
+  image_source_too_large: t('File gambar maksimal 10 MB.'),
+  image_unreadable: t('Gambar tidak bisa dibaca. Pakai PNG, JPG, atau WebP.'),
   invalid_link: t('Tautan harus diawali https:// atau / (halaman di situs ini).'),
   invalid_cta: t('Teks tombol maksimal 30 karakter.'),
   no_placement: t('Pilih minimal satu tempat tampil.'),

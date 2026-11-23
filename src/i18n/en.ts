@@ -3,6 +3,13 @@
  * `{0}` inserts an argument; `{0|order|orders}` picks a word by whether argument 0 is exactly 1.
  */
 export const EN = {
+  'Persegi 1:1, saran 1080×1080 px. Gambar dipotong di tengah ke format ini. Banner tampil besar tanpa judul dan teks.': 'Square 1:1, suggested 1080×1080 px. The image is centre-cropped to this format. The banner shows large, without the title and text.',
+  'Lebar 16:9, saran 1920×1080 px. Gambar dipotong di tengah ke format ini. Banner tampil besar tanpa judul dan teks.': 'Wide 16:9, suggested 1920×1080 px. The image is centre-cropped to this format. The banner shows large, without the title and text.',
+  'Format banner': 'Banner format',
+  '1:1 Persegi': '1:1 Square',
+  '16:9 Lebar': '16:9 Wide',
+  'File gambar maksimal 10 MB.': 'Image file max. 10 MB.',
+  'Gambar tidak bisa dibaca. Pakai PNG, JPG, atau WebP.': 'The image can\'t be read. Use PNG, JPG or WebP.',
   '"{0}" sudah ada.': '"{0}" already exists.',
   ' (opsional)': ' (optional)',
   '(opsional)': '(optional)',
@@ -1045,7 +1052,7 @@ export const EN = {
   'Hemat 2 bulan': 'Save 2 months',
   'Jadwal': 'Schedule',
   'Judul': 'Title',
-  'Juga dipakai sebagai teks alternatif gambar.': 'Also used as the image\'s alt text.',
+  'Tidak tampil di pop-up bila ada banner; dipakai sebagai teks alternatif gambar.': 'Not shown in the pop-up when there is a banner; used as the image\'s alt text.',
   'Kampanye "{0}" tersimpan.': 'Campaign "{0}" saved.',
   'Kampanye baru': 'New campaign',
   'Kampanye dihapus.': 'Campaign deleted.',
@@ -1072,7 +1079,6 @@ export const EN = {
   'Nama paket': 'Plan name',
   'Nama paket wajib diisi (maks. 40 karakter).': 'A plan name is required (max. 40 characters).',
   'Nyala': 'On',
-  'PNG, JPG, atau WebP, maks. 500 KB. Saran 1200×800 px.': 'PNG, JPG or WebP, max. 500 KB. Suggested 1200×800 px.',
   'Paket': 'Plan',
   'Paket "{0}" tersimpan.': 'Plan "{0}" saved.',
   'Paket baru': 'New plan',
@@ -1095,6 +1101,7 @@ export const EN = {
   'Tautan di balik banner (opsional)': 'Link behind the banner (optional)',
   'Tautan harus diawali https:// atau / (halaman di situs ini).': 'Links must start with https:// or / (a page on this site).',
   'Tayang sekarang': 'Live now',
+  'Teks (hanya tampil tanpa banner)': 'Text (shown only without a banner)',
   'Teks (opsional)': 'Text (optional)',
   'Teks tombol': 'Button text',
   'Teks tombol maksimal 30 karakter.': 'Button text can be at most 30 characters.',

@@ -108,7 +108,7 @@ def landing_flow(p, viewport, is_mobile, name):
     dialog = page.get_by_role('dialog', name='Diskon 20% paket tahunan')
     dialog.wait_for(timeout=8000)
     assert dialog.get_by_role('img', name='Diskon 20% paket tahunan').count() == 1
-    link = dialog.get_by_role('link', name='Tanya via WhatsApp')
+    link = dialog.get_by_role('link', name='Diskon 20% paket tahunan')  # banner-only pop-up: the whole banner is the link
     assert link.get_attribute('href') == 'https://wa.me/6281200000000' and link.get_attribute('rel') == 'noopener noreferrer'
     shot(page, f'{name}-c1-landing-popup')
     page.keyboard.press('Escape')

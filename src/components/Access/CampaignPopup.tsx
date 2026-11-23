@@ -6,6 +6,7 @@ import { cacheRegisterPopup } from '../../services/registerPopup';
 import { t } from '../../i18n';
 import { btnPrimary } from '../ui/styles';
 import { Sheet } from '../ui/Sheet';
+import { BannerDialog } from './BannerDialog';
 
 const SEEN_KEY = 'kk.campaignsSeen';
 
@@ -64,14 +65,30 @@ export function CampaignPopup() {
   return popup ? <CampaignSheet popup={popup} onClose={() => setPopup(null)} /> : null;
 }
 
-/** The banner sheet shared by the account pop-up and the register pop-up. Clickable only when it has a link. */
+/**
+ * The pop-up shared by the account pop-up and the register pop-up. With a banner image it shows the banner alone,
+ * large and uncropped (clickable when it has a link); without one it falls back to the title, text and button.
+ */
 export function CampaignSheet({ popup, onClose }: { popup: Popup; onClose: () => void }) {
+  const [isImageBroken, setIsImageBroken] = useState(false);
   const close = onClose;
   const go = () => {
     if (popup.linkUrl) openLink(popup.linkUrl);
     close();
   };
-  const image = popup.imageUrl && <img src={popup.imageUrl} alt={popup.title} className="block h-auto w-full rounded-lg" />;
+
+  if (popup.imageUrl && !isImageBroken) {
+    const link = popup.linkUrl;
+    return (
+      <BannerDialog
+        title={popup.title}
+        imageUrl={popup.imageUrl}
+        onOpen={link ? () => openLink(link) : undefined}
+        onClose={close}
+        onError={() => setIsImageBroken(true)}
+      />
+    );
+  }
 
   return (
     <Sheet
@@ -87,15 +104,7 @@ export function CampaignSheet({ popup, onClose }: { popup: Popup; onClose: () =>
         ) : undefined
       }
     >
-      {image &&
-        (popup.linkUrl ? (
-          <button type="button" onClick={go} className="block w-full" aria-label={popup.ctaLabel || popup.title}>
-            {image}
-          </button>
-        ) : (
-          image
-        ))}
-      {popup.body && <p className="mt-3 whitespace-pre-line text-[15px] leading-relaxed text-ink-soft">{popup.body}</p>}
+      {popup.body && <p className="whitespace-pre-line text-[15px] leading-relaxed text-ink-soft">{popup.body}</p>}
     </Sheet>
   );
 }

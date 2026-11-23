@@ -41,6 +41,9 @@ const INK = '#0f1a16';
 const SOFT = '#3d4a44';
 const MUTED = '#5b6862';
 const SEEN_KEY = 'kk.landingPopupsSeen';
+/** Largest banner width in the landing pop-up (tablet and desktop): square (1:1) and wide (16:9) banners. */
+const BANNER_MAX_SQUARE = 720;
+const BANNER_MAX_WIDE = 960;
 const rupiah = (n: number) => `Rp${new Intl.NumberFormat('id-ID', { maximumFractionDigits: 0 }).format(n)}`;
 const date = (ms: number) => new Date(ms).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
 
@@ -144,31 +147,51 @@ function showPopup(p: Popup) {
   backdrop.addEventListener('click', (e) => e.target === backdrop && close());
   document.addEventListener('keydown', onKey);
 
-  const x = el('button', 'position: absolute; top: 10px; right: 10px; width: 44px; height: 44px; border: 0; border-radius: 999px; background: rgba(255,255,255,.92); cursor: pointer; display: flex; align-items: center; justify-content: center', undefined, { type: 'button', 'aria-label': 'Tutup' });
+  const x = el('button', 'position: absolute; top: 10px; right: 10px; width: 44px; height: 44px; border: 0; border-radius: 999px; background: rgba(255,255,255,.92); box-shadow: 0 2px 8px rgba(15,26,22,.25); cursor: pointer; z-index: 1; display: flex; align-items: center; justify-content: center', undefined, { type: 'button', 'aria-label': 'Tutup' });
   x.append(svg('M18 6 6 18M6 6l12 12', INK, 20));
   x.addEventListener('click', close);
 
   const link = p.linkUrl && isSafeLink(p.linkUrl) ? p.linkUrl : null;
   const external = link !== null && !link.startsWith('/');
   const linkAttrs = (extra: Record<string, string> = {}) => ({ href: link ?? '#', ...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {}), ...extra });
-  if (p.imageUrl && isSafeLink(p.imageUrl)) {
-    const img = el('img', 'display: block; width: 100%; height: auto; border-radius: 18px 18px 0 0', undefined, { src: p.imageUrl, alt: p.title });
+  const hasImage = p.imageUrl !== null && isSafeLink(p.imageUrl);
+  if (hasImage) {
+    // Image-led pop-up: the banner alone, as large as the screen allows at its own aspect ratio, never cropped.
+    box.setAttribute('aria-label', p.title);
+    box.removeAttribute('aria-labelledby');
+    const fit = (ratio: number) =>
+      `min(${ratio > 1.3 ? BANNER_MAX_WIDE : BANNER_MAX_SQUARE}px, calc(100vw - 32px), calc((100dvh - 32px) * ${ratio}))`;
+    box.style.width = fit(1);
+    box.style.maxWidth = 'none';
+    box.style.overflow = 'hidden';
+    box.style.opacity = '0';
+    box.style.animation = 'none';
+    const img = el('img', 'display: block; width: 100%; height: auto', undefined, { src: p.imageUrl ?? '', alt: p.title });
+    img.addEventListener('load', () => {
+      const ratio = img.naturalWidth > 0 && img.naturalHeight > 0 ? img.naturalWidth / img.naturalHeight : 1;
+      box.style.width = fit(ratio);
+      box.style.opacity = '1';
+      if (!reduce) box.style.animation = 'kk-rise .32s cubic-bezier(.25,1,.5,1)';
+    });
+    img.addEventListener('error', close);
     if (link) {
       const a = el('a', 'display: block', undefined, linkAttrs());
       a.addEventListener('click', close);
       a.append(img);
       box.append(a);
     } else box.append(img);
+    box.append(x);
+  } else {
+    const content = el('div', 'padding: 22px 24px 24px; display: flex; flex-direction: column; gap: 10px');
+    content.append(el('h2', `margin: 0; padding-right: 36px; font-size: 22px; line-height: 1.25; font-weight: 800; letter-spacing: -0.02em; color: ${INK}`, p.title, { id: 'kk-popup-title' }));
+    if (p.body) content.append(el('p', `margin: 0; font-size: 16px; line-height: 1.6; color: ${SOFT}; white-space: pre-line`, p.body));
+    if (link) {
+      const cta = el('a', `display: inline-flex; align-items: center; justify-content: center; min-height: 48px; margin-top: 8px; padding: 0 22px; border-radius: 10px; font-size: 16px; font-weight: 700; text-decoration: none; background: ${G}; color: #fff`, p.ctaLabel || 'Lihat promo', linkAttrs());
+      cta.addEventListener('click', close);
+      content.append(cta);
+    }
+    box.append(x, content);
   }
-  const content = el('div', 'padding: 22px 24px 24px; display: flex; flex-direction: column; gap: 10px');
-  content.append(el('h2', `margin: 0; padding-right: 36px; font-size: 22px; line-height: 1.25; font-weight: 800; letter-spacing: -0.02em; color: ${INK}`, p.title, { id: 'kk-popup-title' }));
-  if (p.body) content.append(el('p', `margin: 0; font-size: 16px; line-height: 1.6; color: ${SOFT}; white-space: pre-line`, p.body));
-  if (link) {
-    const cta = el('a', `display: inline-flex; align-items: center; justify-content: center; min-height: 48px; margin-top: 8px; padding: 0 22px; border-radius: 10px; font-size: 16px; font-weight: 700; text-decoration: none; background: ${G}; color: #fff`, p.ctaLabel || 'Lihat promo', linkAttrs());
-    cta.addEventListener('click', close);
-    content.append(cta);
-  }
-  box.append(x, content);
   backdrop.append(box);
   if (!document.getElementById('kk-popup-style')) document.head.append(el('style', '', '@keyframes kk-fade{from{opacity:0}to{opacity:1}}@keyframes kk-rise{from{opacity:0;transform:translateY(16px) scale(.97)}}@keyframes kk-unfade{to{opacity:0}}@keyframes kk-sink{to{opacity:0;transform:translateY(8px) scale(.98)}}', { id: 'kk-popup-style' }));
   document.body.append(backdrop);
