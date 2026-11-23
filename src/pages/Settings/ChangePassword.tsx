@@ -1,7 +1,7 @@
 import { KeyRound } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 import toast from 'react-hot-toast';
-import { btnPrimary, btnSecondary, helperText, labelBase } from '../../components/ui/styles';
+import { btnPrimary, btnSecondary, fieldGrid, helperText, labelBase } from '../../components/ui/styles';
 import { changePassword } from '../../services/account';
 import { useAccessStore } from '../../store/useAccessStore';
 import { t } from '../../i18n';
@@ -42,19 +42,21 @@ export function ChangePassword() {
       </button>
     );
   return (
-    <form onSubmit={(e) => void submit(e)} noValidate className="max-w-sm space-y-4">
-      <div>
-        <label htmlFor="pw-current" className={labelBase}>
-          {t('Kata sandi sekarang')}
-        </label>
-        <PasswordInput id="pw-current" value={current} onChange={setCurrent} autoComplete="current-password" />
-      </div>
-      <div>
-        <label htmlFor="pw-new" className={labelBase}>
-          {t('Kata sandi baru')}
-        </label>
-        <PasswordInput id="pw-new" value={next} onChange={setNext} autoComplete="new-password" />
-        <p className={helperText}>{t('Minimal 8 karakter.')}</p>
+    <form onSubmit={(e) => void submit(e)} noValidate className="space-y-4">
+      <div className={fieldGrid}>
+        <div>
+          <label htmlFor="pw-current" className={labelBase}>
+            {t('Kata sandi sekarang')}
+          </label>
+          <PasswordInput id="pw-current" value={current} onChange={setCurrent} autoComplete="current-password" />
+        </div>
+        <div>
+          <label htmlFor="pw-new" className={labelBase}>
+            {t('Kata sandi baru')}
+          </label>
+          <PasswordInput id="pw-new" value={next} onChange={setNext} autoComplete="new-password" />
+          <p className={helperText}>{t('Minimal 8 karakter.')}</p>
+        </div>
       </div>
       {error && (
         <p role="alert" className="rounded-lg bg-danger-50 px-3 py-2.5 text-[14px] text-danger-700">

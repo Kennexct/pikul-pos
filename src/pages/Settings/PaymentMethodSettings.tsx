@@ -2,7 +2,7 @@ import { MoreHorizontal, Plus, QrCode, Upload } from 'lucide-react';
 import { useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { SegmentedControl } from '../../components/ui/SegmentedControl';
-import { btnIcon, btnSecondary, card, helperText, inputBase, labelBase } from '../../components/ui/styles';
+import { btnIcon, btnSecondary, card, fieldGrid, helperText, inputBase, labelBase } from '../../components/ui/styles';
 import { Switch } from '../../components/ui/Switch';
 import { compressQrisImage } from '../../lib/image';
 import { savePaymentMethod } from '../../services/catalog';
@@ -37,8 +37,8 @@ export function PaymentMethodSettings({ storeId, methods }: { storeId: Id; metho
   const activeCount = methods.filter((m) => m.isActive).length;
 
   return (
-    <div className="grid items-start gap-4 @4xl/settings:grid-cols-2">
-      <div className="col-span-full flex items-center gap-3">
+    <div className="flex flex-col gap-4">
+      <div className="flex items-center gap-3">
         <p className="min-w-0 flex-1 text-[14px] text-muted">
           {isFull ? t('Sudah {0} metode (batas maksimal).', MAX_PAYMENT_METHODS) : t('Urutan di sini sama dengan urutan di layar pembayaran.')}
         </p>
@@ -104,22 +104,24 @@ function PaymentMethodCard({ method, isLastActive, onManage }: { method: Payment
       </div>
 
       {method.isActive && !isCash && (
-        <div className="flex flex-col gap-4 border-t border-line px-5 py-4">
+        <div className="@container/card flex flex-col gap-4 border-t border-line px-5 py-4">
           <div>
             <p className={labelBase}>{t('Nomor referensi')}</p>
             <SegmentedControl label={t('Referensi {0}', method.name)} options={REFERENCE_OPTIONS} value={method.referenceMode} onChange={(referenceMode) => void persist({ ...method, referenceMode })} />
             <p className={helperText}>{t('Untuk mencocokkan dengan mutasi bank / aplikasi merchant.')}</p>
           </div>
           {method.referenceMode !== 'off' && (
-            <div className="max-w-sm">
-              <label htmlFor={`ref-${method.id}`} className={labelBase}>{t('Label kolom referensi')}</label>
-              <input
-                id={`ref-${method.id}`}
-                defaultValue={method.referenceLabel}
-                placeholder={t('No. Ref / 4 digit terakhir')}
-                onBlur={(e) => e.target.value !== method.referenceLabel && void persist({ ...method, referenceLabel: e.target.value.trim() })}
-                className={inputBase}
-              />
+            <div className={fieldGrid}>
+              <div>
+                <label htmlFor={`ref-${method.id}`} className={labelBase}>{t('Label kolom referensi')}</label>
+                <input
+                  id={`ref-${method.id}`}
+                  defaultValue={method.referenceLabel}
+                  placeholder={t('No. Ref / 4 digit terakhir')}
+                  onBlur={(e) => e.target.value !== method.referenceLabel && void persist({ ...method, referenceLabel: e.target.value.trim() })}
+                  className={inputBase}
+                />
+              </div>
             </div>
           )}
 

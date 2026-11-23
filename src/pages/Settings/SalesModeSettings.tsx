@@ -2,7 +2,7 @@ import { MoreHorizontal, Plus, Star } from 'lucide-react';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { SegmentedControl } from '../../components/ui/SegmentedControl';
-import { badgeBrand, btnGhost, btnIcon, btnSecondary, card, helperText, labelBase } from '../../components/ui/styles';
+import { badgeBrand, btnGhost, btnIcon, btnSecondary, card, fieldGrid, helperText, labelBase } from '../../components/ui/styles';
 import { Switch } from '../../components/ui/Switch';
 import { saveSalesMode } from '../../services/catalog';
 import { MAX_SALES_MODES } from '../../constants';
@@ -37,8 +37,8 @@ export function SalesModeSettings({ storeId, modes }: { storeId: Id; modes: Sale
   };
 
   return (
-    <div className="grid items-start gap-4 @4xl/settings:grid-cols-2">
-      <div className="col-span-full flex items-center gap-3">
+    <div className="flex flex-col gap-4">
+      <div className="flex items-center gap-3">
         <p className="min-w-0 flex-1 text-[14px] text-muted">
           {isFull ? t('Sudah {0} mode (batas maksimal).', MAX_SALES_MODES) : t('Urutan di sini sama dengan urutan di kasir.')}
         </p>
@@ -70,22 +70,24 @@ export function SalesModeSettings({ storeId, modes }: { storeId: Id; modes: Sale
             </button>
           </div>
           {mode.isActive && (
-            <div className="border-t border-line px-5 py-4">
+            <div className="@container/card border-t border-line px-5 py-4">
               <p className={labelBase}>{t('Aturan harga')}</p>
               <SegmentedControl label={t('Aturan harga {0}', mode.name)} options={PRICE_RULE_OPTIONS} value={mode.priceRule} onChange={(priceRule) => void persist({ ...mode, priceRule })} />
               <p className={helperText}>{PRICE_RULE_HELP[mode.priceRule]}</p>
               {mode.priceRule === 'markup' && (
-                <div className="mt-3 max-w-[180px]">
-                  <label htmlFor={`markup-${mode.id}`} className={labelBase}>{t('Markup (%)')}</label>
-                  <NumberInput
-                    id={`markup-${mode.id}`}
-                    max={100}
-                    value={mode.markupPct}
-                    onChange={() => undefined}
-                    onCommit={(markupPct) => {
-                      if (markupPct !== mode.markupPct) void persist({ ...mode, markupPct });
-                    }}
-                  />
+                <div className={`mt-3 ${fieldGrid}`}>
+                  <div>
+                    <label htmlFor={`markup-${mode.id}`} className={labelBase}>{t('Markup (%)')}</label>
+                    <NumberInput
+                      id={`markup-${mode.id}`}
+                      max={100}
+                      value={mode.markupPct}
+                      onChange={() => undefined}
+                      onCommit={(markupPct) => {
+                        if (markupPct !== mode.markupPct) void persist({ ...mode, markupPct });
+                      }}
+                    />
+                  </div>
                 </div>
               )}
             </div>

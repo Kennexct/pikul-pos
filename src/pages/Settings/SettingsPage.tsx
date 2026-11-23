@@ -71,8 +71,9 @@ export function SettingsPage() {
         </div>
       </PageHeader>
       <div className="@container/settings min-h-0 flex-1 overflow-y-auto p-4 md:px-8 md:py-6">
-        {/* Wide screens (desktop): section cards sit in two columns instead of one narrow strip. */}
-        <div className={tab === 'payments' || tab === 'modes' ? 'w-full' : 'grid w-full items-start gap-x-4 @4xl/settings:grid-cols-2'}>
+        {/* One column of full-width cards; inside a card, fields share one grid (fieldGrid) so every
+            field has the same width on every Settings page (Kenny, round 5). */}
+        <div className="w-full">
           {tab === 'subscription' && <SubscriptionSettings />}
           {tab === 'store' && (
             <>
@@ -86,7 +87,7 @@ export function SettingsPage() {
           {tab === 'modes' && (
             <>
               <SalesModeSettings storeId={store.id} modes={catalog.salesModes} />
-              <div className="mt-6 @4xl/settings:max-w-[calc(50%-0.5rem)]">
+              <div className="mt-6">
                 <WeightSaleSetting store={store} />
               </div>
             </>

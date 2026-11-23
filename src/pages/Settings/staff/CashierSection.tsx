@@ -5,7 +5,7 @@ import { PinInput } from '../../../components/Pin/PinInput';
 import { initialsOf } from '../../../components/Pin/SellerSwitcher';
 import { EmptyState } from '../../../components/ui/EmptyState';
 import { Sheet } from '../../../components/ui/Sheet';
-import { btnDangerSolid, btnGhost, btnPrimary, btnSecondary, inputBase, labelBase } from '../../../components/ui/styles';
+import { btnDangerSolid, btnGhost, btnPrimary, btnSecondary, fieldGrid, inputBase, labelBase } from '../../../components/ui/styles';
 import { MEMBER_NAME_MAX } from '../../../constants';
 import { useStaff } from '../../../hooks/useStaff';
 import { isValidPin } from '../../../lib/pin';
@@ -95,7 +95,7 @@ export function CashierSection({ storeId }: { storeId: Id }) {
             </ul>
           )}
 
-          <fieldset className="grid items-end gap-3 rounded-lg border border-dashed border-line-strong p-4 sm:grid-cols-[1fr_150px_auto]">
+          <fieldset className={`${fieldGrid} items-end rounded-lg border border-dashed border-line-strong p-4`}>
             <legend className="px-1 text-[13px] font-semibold text-ink-soft">{t('Tambah kasir')}</legend>
             <div>
               <label htmlFor="cashier-name" className={labelBase}>{t('Nama')}</label>
@@ -105,7 +105,7 @@ export function CashierSection({ storeId }: { storeId: Id }) {
               <label htmlFor="cashier-pin" className={labelBase}>{t('PIN kasir')}</label>
               <PinInput id="cashier-pin" value={pin} onChange={setPin} />
             </div>
-            <button type="button" disabled={isBusy || name.trim() === '' || !isValidPin(pin)} onClick={() => void handleAdd()} className={btnPrimary}>
+            <button type="button" disabled={isBusy || name.trim() === '' || !isValidPin(pin)} onClick={() => void handleAdd()} className={`${btnPrimary} justify-self-start`}>
               <UserPlus aria-hidden size={18} /> {t('Tambah')}
             </button>
           </fieldset>

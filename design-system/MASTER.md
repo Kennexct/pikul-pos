@@ -56,6 +56,7 @@ Components must use semantic tokens only — no raw `slate-*`, `orange-*` or hex
 | Sections / categories | `Tabs` (underline, scrolls horizontally) |
 | Pick one or many from a set (variants, quick cash, presets) | `option()` class — bordered square, check icon when selected |
 | Small number (%, days, counts) | `NumberInput`; a 0 shows as the grey placeholder |
+| Fields inside a settings card | `fieldGrid`: every field one equal cell, 2 per row when the card is wide; no per-field max-width |
 | On/off setting | `Switch` (row with label + description) |
 | Sub-menu column (tablet) | `SidePanel` + `sideItem`; folds to an icon strip, choice kept per device |
 | Turning something off for sale (Habis) | `Switch tone="danger"`; sold-out controls and badges use danger-600/50 |

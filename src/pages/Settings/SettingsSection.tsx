@@ -16,7 +16,7 @@ export function SettingsSection({ title, description, children, footer }: Settin
         <h2 className="text-[16px] font-bold tracking-[-0.01em]">{title}</h2>
         {description && <p className="mt-0.5 text-[13px] text-muted">{description}</p>}
       </header>
-      <div className="px-5 py-4">{children}</div>
+      <div className="@container/card px-5 py-4">{children}</div>
       {footer && <footer className="flex justify-end border-t border-line bg-subtle px-5 py-3">{footer}</footer>}
     </section>
   );
