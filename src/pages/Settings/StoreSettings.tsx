@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { SegmentedControl } from '../../components/ui/SegmentedControl';
-import { btnGhost, btnPrimary, inputBase, labelBase } from '../../components/ui/styles';
+import { btnGhost, btnPrimary, helperText, inputBase, labelBase } from '../../components/ui/styles';
+import { normalizeReceiptPrefix, RECEIPT_PREFIX_DEFAULT, RECEIPT_PREFIX_MAX } from '../../lib/businessDate';
 import { Switch } from '../../components/ui/Switch';
 import { PERCENT_MAX } from '../../constants';
 import { updateStore } from '../../services/bootstrap';
@@ -68,6 +69,22 @@ export function StoreSettings({ store }: { store: Store }) {
         <div className="grid gap-4">
           {RECEIPT_FIELDS.map(textField)}
           <div>
+            <label htmlFor="store-receiptPrefix" className={labelBase}>{t('Awalan nomor struk')}</label>
+            <input
+              id="store-receiptPrefix"
+              value={draft.receiptPrefix ?? ''}
+              maxLength={RECEIPT_PREFIX_MAX}
+              autoCapitalize="characters"
+              autoComplete="off"
+              placeholder={RECEIPT_PREFIX_DEFAULT}
+              onChange={(e) => update({ receiptPrefix: e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, RECEIPT_PREFIX_MAX) || undefined })}
+              className={`${inputBase} num max-w-[12rem] uppercase`}
+            />
+            <p className={helperText}>
+              {t('Huruf/angka di depan nomor struk, maks. {0}. Contoh: {1}', RECEIPT_PREFIX_MAX, `${normalizeReceiptPrefix(draft.receiptPrefix)}-20261123-A10001`)}
+            </p>
+          </div>
+          <div>
             <p className={labelBase}>{t('Lebar kertas')}</p>
             <SegmentedControl
               label={t('Lebar kertas')}
@@ -83,15 +100,6 @@ export function StoreSettings({ store }: { store: Store }) {
             description={t('Matikan jika antrean ramai dan struk jarang diminta.')}
           />
         </div>
-      </SettingsSection>
-
-      <SettingsSection title={t('Jual per berat atau ukuran')} description={t('Untuk pedagang pasar yang menjual per kilo, ons, liter, atau meter.')}>
-        <Switch
-          checked={draft.settings.isWeightSaleEnabled === true}
-          onChange={(isWeightSaleEnabled) => update({ settings: { ...draft.settings, isWeightSaleEnabled } })}
-          label={t('Aktifkan satuan berat dan ukuran')}
-          description={t('Di halaman Produk muncul pilihan "Dijual per". Di kasir, berat atau nominal diketik saat menjual.')}
-        />
       </SettingsSection>
 
       <SettingsSection title={t('Pajak & service')} description={t('Isi 0 jika usaha Anda tidak memungut pajak.')}>

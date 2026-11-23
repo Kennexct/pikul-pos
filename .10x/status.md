@@ -1,5 +1,15 @@
 # Status
 
+## Round 3 polish: sold-out red, Uang pas, foldable sub-menu, receipt prefix (v0.19.2) — In review (2026-11-23)
+Branch `claude/project-thread-5a5zxj` from `main` `0949d83`. Kenny's round-3 feedback. No ADR (UI + one optional Store field `receiptPrefix`, absent = "INV"). Next ADR: 027.
+- [x] Sold-out button on the cashier and "Habis" badges in red; sold-out switches use `Switch tone="danger"`
+- [x] "Uang pas" quick-cash button highlighted (brand border/fill + Banknote icon)
+- [x] Tablet sub-menu (Transaksi, Kelola, Pengaturan) folds to an icon strip (`SidePanel`, remembered per device in localStorage `kk.subnav.collapsed`)
+- [x] "Jual per berat atau ukuran" moved to Pengaturan → Mode Penjualan (saves straight away)
+- [x] Toko & Struk → "Awalan nomor struk" (A–Z/0–9, max 6) used by new receipt numbers `<PREFIX>-YYYYMMDD-<dev><seq>`
+- [x] Checks: typecheck, i18n, 261 tests, build; e2e v12, flow, manage, staff, v13, v16, v09, v11, v08 pass
+- [ ] Kenny: try on the Vercel preview, merge
+
 ## Product form: category + price fixes, quicker redesign (v0.19.1) — In review (2026-11-23)
 Branch `claude/project-thread-5a5zxj` on `main` `b73980a`. Kenny: new category typed in "Produk baru" was lost on save; base price "0" turned 10.000 into 100.000; make adding products and variants feel quick. No ADR (UI only, no data change). Next ADR: 027.
 - [x] Fix: a category typed but not added is created (or matched by name) on save; Enter adds it

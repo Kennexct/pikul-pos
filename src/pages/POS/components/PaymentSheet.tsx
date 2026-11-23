@@ -1,3 +1,4 @@
+import { Banknote } from 'lucide-react';
 import { useState } from 'react';
 import { METHOD_ICON } from '../../../components/ui/paymentIcon';
 import { RupiahInput } from '../../../components/ui/RupiahInput';
@@ -106,7 +107,13 @@ export function PaymentSheet({ total, methods, storeName, isSubmitting, onConfir
         <section className="flex flex-col gap-3">
           <div className="grid grid-cols-2 gap-2">
             {quickAmounts.map((amount, index) => (
-              <button key={amount} type="button" onClick={() => setCashReceived(amount)} className={`${option(cashReceived === amount)} num`}>
+              <button
+                key={amount}
+                type="button"
+                onClick={() => setCashReceived(amount)}
+                className={`${option(cashReceived === amount)} num ${index === 0 ? 'font-semibold' : ''}`}
+              >
+                {index === 0 && <Banknote aria-hidden size={17} />}
                 {index === 0 ? t('Uang pas') : formatRupiah(amount)}
               </button>
             ))}

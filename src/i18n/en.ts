@@ -289,7 +289,6 @@ export const EN = {
   'Ingin tahu untungnya?': 'Want to know your profit?',
   'Ini bukan berkas cadangan Pikul.': 'This is not a Pikul backup file.',
   'Ini satu-satunya metode aktif, jadi tidak bisa dihapus. Aktifkan metode lain dulu.': 'This is the only active method, so it cannot be deleted. Turn on another method first.',
-  'INV-{0}-{1}{2}': 'INV-{0}-{1}{2}',
   'Invalid money value: {0}': 'Invalid money value: {0}',
   'Isi': 'Contents',
   'Isi 0 jika usaha Anda tidak memungut pajak.': 'Enter 0 if your business does not charge tax.',
@@ -1533,4 +1532,10 @@ export const EN = {
   "Menu {0}": "{0} menu",
   "Transaksi::menu": "Sales",
   "Kelola": "Manage",
+  "Tampilkan sub-menu": "Show sub-menu",
+  "Sembunyikan sub-menu": "Hide sub-menu",
+  "Satuan berat dan ukuran aktif": "Weight and measure units on",
+  "Satuan berat dan ukuran nonaktif": "Weight and measure units off",
+  "Awalan nomor struk": "Receipt number prefix",
+  "Huruf/angka di depan nomor struk, maks. {0}. Contoh: {1}": "Letters/numbers at the start of the receipt number, max {0}. Example: {1}",
 } as const;

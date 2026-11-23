@@ -70,7 +70,7 @@ export function ProductGrid({ products, salesMode, qtyByProduct, onSelect, isMen
                 </span>
               </span>
               {isSoldOut && (
-                <span className="absolute left-1.5 top-1.5 flex h-6 items-center rounded-md bg-ink px-2 text-[12px] font-semibold text-white">{t('Habis')}</span>
+                <span className="absolute left-1.5 top-1.5 flex h-6 items-center rounded-md bg-danger-600 px-2 text-[12px] font-semibold text-white">{t('Habis')}</span>
               )}
               {isSelected && (
                 <span key={qty} className="num animate-pop absolute right-1.5 top-1.5 flex h-6 min-w-6 items-center justify-center rounded-md bg-brand-600 px-1.5 text-[13px] font-bold text-white shadow-xs">

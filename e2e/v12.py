@@ -64,11 +64,10 @@ def run(p, name, viewport, is_mobile):
     page.get_by_role('button', name='Produk', exact=True).first.click()
     unit_hidden_by_default = dialog.get_by_role('radiogroup', name='Dijual per').count() == 0
     page.keyboard.press('Escape')
-    page.goto(BASE + '/pengaturan?tab=store')
+    page.goto(BASE + '/pengaturan?tab=modes')  # v0.19.2: moved to Mode Penjualan, saves on tap
     page.get_by_text('Aktifkan satuan berat dan ukuran').click()
+    page.get_by_text('Satuan berat dan ukuran aktif').wait_for()
     shot(page, f'{name}-z1-setting')
-    page.get_by_role('button', name='Simpan perubahan').click()
-    page.get_by_text('Pengaturan toko disimpan').wait_for()
 
     # 2. Product per kg, Rp40.000/kg, cost Rp30.000/kg, flexible price. Kerupuk becomes flexible too (per piece).
     page.goto(BASE + '/produk')

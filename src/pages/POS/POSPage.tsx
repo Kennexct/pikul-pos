@@ -259,10 +259,10 @@ export function POSPage() {
           <div className="flex flex-col gap-2 md:flex-row md:items-center md:gap-3">
             <div className="flex min-w-0 flex-1 gap-2">
               <SearchInput value={search} onChange={setSearch} placeholder={t('Cari menu…')} label={t('Cari produk')} />
-              <button type="button" aria-label={t('Tandai stok habis')} title={t('Tandai stok habis')} onClick={() => setPanel('soldOut')} className={`${btnIcon} relative`}>
+              <button type="button" aria-label={t('Tandai stok habis')} title={t('Tandai stok habis')} onClick={() => setPanel('soldOut')} className={`${btnIcon} relative border-danger-200! bg-danger-50! text-danger-700! hover:bg-danger-200/50!`}>
                 <PackageX aria-hidden size={20} />
                 {soldOutCount > 0 && (
-                  <span className="num absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-md bg-ink px-1 text-[11px] font-bold text-white">
+                  <span className="num absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-md bg-danger-600 px-1 text-[11px] font-bold text-white ring-2 ring-surface">
                     {soldOutCount}
                   </span>
                 )}

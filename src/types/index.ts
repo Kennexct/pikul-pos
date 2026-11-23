@@ -65,6 +65,8 @@ export interface Store {
   receiptHeader: string;
   receiptFooter: string;
   receiptPaperMm: 58 | 80;
+  /** Start of every receipt number, e.g. "BKS" → BKS-20261123-A10001. Absent = "INV". */
+  receiptPrefix?: string;
   taxPct: number;
   servicePct: number;
   isTaxInclusive: boolean;

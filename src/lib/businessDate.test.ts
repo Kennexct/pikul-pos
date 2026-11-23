@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatReceiptNo, getBusinessDate } from './businessDate';
+import { formatReceiptNo, getBusinessDate, normalizeReceiptPrefix } from './businessDate';
 import { uuidv7 } from './id';
 
 describe('getBusinessDate', () => {
@@ -23,6 +23,20 @@ describe('formatReceiptNo', () => {
 
   it('rejects invalid device codes', () => {
     expect(() => formatReceiptNo('2026-11-18', 'a', 1)).toThrow();
+  });
+
+  it('uses the store prefix, cleaned to A-Z/0-9 and 6 characters', () => {
+    expect(formatReceiptNo('2026-11-18', 'A1', 7, 'BKS')).toBe('BKS-20261118-A10007');
+    expect(formatReceiptNo('2026-11-18', 'A1', 7, 'bakso pak-budi')).toBe('BAKSOP-20261118-A10007');
+    expect(formatReceiptNo('2026-11-18', 'A1', 7, '  ')).toBe('INV-20261118-A10007');
+  });
+});
+
+describe('normalizeReceiptPrefix', () => {
+  it('falls back to INV when empty', () => {
+    expect(normalizeReceiptPrefix(undefined)).toBe('INV');
+    expect(normalizeReceiptPrefix('--')).toBe('INV');
+    expect(normalizeReceiptPrefix('wr1')).toBe('WR1');
   });
 });
 
