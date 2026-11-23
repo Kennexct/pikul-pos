@@ -41,4 +41,10 @@ describe('i18n (ADR-010)', () => {
     const offenders = (Object.keys(EN) as Msg[]).filter((key) => /\{\d+\|/.test(EN[key]) && !/\{\d+\}/.test(key));
     expect(offenders).toEqual([]);
   });
+
+  it('a plural word never replaces the number itself', () => {
+    const offenders = Object.entries(EN).filter(([, value]) => [...value.matchAll(/\{(\d+)\|/g)].some((m) => !value.includes(`{${m[1]}}`)));
+    expect(offenders.map(([key]) => key)).toEqual([]);
+    expect(translate('en', 'Coba gratis, sisa {0} hari (sampai {1}).', 12, '5 December 2026')).toBe('Free trial, 12 days left (until 5 December 2026).');
+  });
 });

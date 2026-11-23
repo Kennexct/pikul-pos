@@ -7,6 +7,12 @@ import { isMeasured, perUnit, SALE_UNITS, UNIT_INFO } from '../../lib/quantity';
 import type { Id, Product, SalesMode } from '../../types';
 import { ProductVariantsEditor } from './ProductVariantsEditor';
 
+/** "Ons (100 g)" → name "Ons", hint "100 g": two short lines instead of one wrapped label. */
+const splitUnitLabel = (label: string): { name: string; hint: string } => {
+  const match = /^(.*?)\s*\((.*)\)$/.exec(label);
+  return match ? { name: match[1] ?? label, hint: match[2] ?? '' } : { name: label, hint: '' };
+};
+
 export type PriceKind = 'single' | 'variants';
 
 interface ProductPricingProps {
@@ -55,12 +61,24 @@ export function ProductPricing({ draft, update, priceKind, onPriceKind, salesMod
       {showsUnit && (
         <div className="mb-4">
           <p className={labelBase}>{t('Dijual per')}</p>
-          <div role="radiogroup" aria-label={t('Dijual per')} className="grid grid-cols-3 gap-2 sm:grid-cols-6">
-            {SALE_UNITS.map((value) => (
-              <button key={value} type="button" role="radio" aria-checked={unit === value} onClick={() => update({ unit: value })} className={`${option(unit === value)} h-11 px-2 text-[13px]`}>
-                {UNIT_INFO[value].label}
-              </button>
-            ))}
+          <div role="radiogroup" aria-label={t('Dijual per')} className="grid grid-cols-3 gap-2">
+            {SALE_UNITS.map((value) => {
+              const { name, hint } = splitUnitLabel(UNIT_INFO[value].label);
+              return (
+                <button
+                  key={value}
+                  type="button"
+                  role="radio"
+                  aria-checked={unit === value}
+                  aria-label={UNIT_INFO[value].label}
+                  onClick={() => update({ unit: value })}
+                  className={`${option(unit === value)} h-14 flex-col gap-0! px-2 leading-tight`}
+                >
+                  <span className="truncate text-[14px] font-semibold">{name}</span>
+                  {hint && <span className="num truncate text-[12px] font-normal text-muted">{hint}</span>}
+                </button>
+              );
+            })}
           </div>
           {isMeasured(unit) && <p className={helperText}>{t('Semua harga di bawah ini adalah harga per {0}. Berat diketik di kasir saat menjual.', UNIT_INFO[unit].symbol)}</p>}
         </div>

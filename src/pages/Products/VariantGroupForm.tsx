@@ -10,6 +10,7 @@ import { uuidv7 } from '../../lib/id';
 import { newMeta, saveVariantGroup } from '../../services/catalog';
 import type { Id, VariantGroup, VariantOption } from '../../types';
 import { t } from '../../i18n';
+import { NumberInput } from '../../components/ui/NumberInput';
 
 interface VariantGroupFormProps {
   group: VariantGroup | null;
@@ -90,7 +91,7 @@ export function VariantGroupForm({ group, storeId, onClose }: VariantGroupFormPr
         {draft.selectType === 'multi' && (
           <div className="max-w-[160px]">
             <label htmlFor="group-max" className={labelBase}>{t('Maksimal pilihan')}</label>
-            <input id="group-max" type="number" inputMode="numeric" min={1} value={draft.max} onChange={(e) => update({ max: Math.max(1, Number(e.target.value) || 1) })} className={`${inputBase} num`} />
+            <NumberInput id="group-max" isInteger min={1} max={99} value={draft.max} onChange={(max) => update({ max })} />
           </div>
         )}
 

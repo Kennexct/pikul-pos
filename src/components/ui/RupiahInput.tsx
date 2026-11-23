@@ -21,7 +21,8 @@ const groupFormatter = new Intl.NumberFormat(LOCALE, { maximumFractionDigits: 0 
 /** Numeric keypad input that shows thousand separators ("12.500") and emits integer Rupiah. */
 /**
  * Focus selects the whole amount, so typing replaces it instead of landing beside an existing "0"
- * (typing 10.000 used to become 100.000).
+ * (typing 10.000 used to become 100.000). A zero shows as the grey "0" placeholder; with any other
+ * placeholder ("Ikut harga dasar") a typed 0 stays visible because it means something.
  */
 export function RupiahInput({ id, value, onChange, placeholder = '0', autoFocus, ariaLabel, size = 'md', onEnter, enterKeyHint }: RupiahInputProps) {
   /** Safari/iOS collapse the selection on the mouseup that follows focus; skip that one. */
@@ -37,7 +38,7 @@ export function RupiahInput({ id, value, onChange, placeholder = '0', autoFocus,
         autoComplete="off"
         autoFocus={autoFocus}
         placeholder={placeholder}
-        value={value === null ? '' : groupFormatter.format(value)}
+        value={value === null || (value === 0 && placeholder === '0') ? '' : groupFormatter.format(value)}
         enterKeyHint={enterKeyHint}
         onFocus={(event) => {
           justFocused.current = true;

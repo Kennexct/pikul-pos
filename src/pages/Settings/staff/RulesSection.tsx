@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { SegmentedControl } from '../../../components/ui/SegmentedControl';
-import { btnPrimary, helperText, inputBase, labelBase } from '../../../components/ui/styles';
+import { btnPrimary, helperText, labelBase } from '../../../components/ui/styles';
 import { PERCENT_MAX } from '../../../constants';
 import { updateStore } from '../../../services/bootstrap';
 import type { PermissionLevel, Store, StoreRules } from '../../../types';
 import { SettingsSection } from '../SettingsSection';
 import { t } from '../../../i18n';
+import { NumberInput } from '../../../components/ui/NumberInput';
 
 type RuleChoice = 'free' | 'pin';
 const RULE_OPTIONS = [
@@ -18,7 +19,6 @@ const MAX_REFUND_WINDOW_DAYS = 90;
 /** `owner_only` and `cashier_with_pin` behave the same (ADR-004), so the UI offers two choices. */
 const toChoice = (level: PermissionLevel): RuleChoice => (level === 'cashier' ? 'free' : 'pin');
 const toLevel = (choice: RuleChoice): PermissionLevel => (choice === 'free' ? 'cashier' : 'cashier_with_pin');
-const clamp = (value: string, max: number): number => Math.min(max, Math.max(0, Math.round(Number(value)) || 0));
 
 /** Rules a cashier works under: void, refund, discount limit, refund window (PRD M11/M14). */
 export function RulesSection({ store }: { store: Store }) {
@@ -57,12 +57,12 @@ export function RulesSection({ store }: { store: Store }) {
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <label htmlFor="rule-discount" className={labelBase}>{t('Batas diskon kasir (%)')}</label>
-            <input id="rule-discount" type="number" inputMode="numeric" min={0} max={PERCENT_MAX} value={rules.cashierMaxDiscountPct} onChange={(e) => update({ cashierMaxDiscountPct: clamp(e.target.value, PERCENT_MAX) })} className={`${inputBase} num`} />
+            <NumberInput id="rule-discount" isInteger max={PERCENT_MAX} value={rules.cashierMaxDiscountPct} onChange={(cashierMaxDiscountPct) => update({ cashierMaxDiscountPct })} />
             <p className={helperText}>{t('Di atas batas ini perlu PIN pemilik.')}</p>
           </div>
           <div>
             <label htmlFor="rule-refund-window" className={labelBase}>{t('Batas waktu refund (hari)')}</label>
-            <input id="rule-refund-window" type="number" inputMode="numeric" min={0} max={MAX_REFUND_WINDOW_DAYS} value={rules.refundWindowDays} onChange={(e) => update({ refundWindowDays: clamp(e.target.value, MAX_REFUND_WINDOW_DAYS) })} className={`${inputBase} num`} />
+            <NumberInput id="rule-refund-window" isInteger max={MAX_REFUND_WINDOW_DAYS} value={rules.refundWindowDays} onChange={(refundWindowDays) => update({ refundWindowDays })} />
             <p className={helperText}>{t('0 = hanya di hari yang sama.')}</p>
           </div>
         </div>

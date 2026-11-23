@@ -102,7 +102,8 @@ def run(p, name, viewport, is_mobile):
     dialog.get_by_role('radio', name='Nominal (Rp)').click()
     page.locator('#entry-price').fill('30000')
     page.locator('#entry-amount').fill('10000')
-    dialog.get_by_text('Timbang 0,333 kg').wait_for()
+    dialog.get_by_text('Timbang sebanyak').wait_for()
+    dialog.get_by_text('0,333 kg', exact=True).wait_for()
     shot(page, f'{name}-z4-entry-amount')
     dialog.get_by_role('button', name=re.compile('Tambah ke pesanan')).click()
 

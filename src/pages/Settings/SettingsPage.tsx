@@ -70,8 +70,9 @@ export function SettingsPage() {
           <Tabs label={t('Bagian pengaturan')} items={TABS} value={tab} onChange={setTab} />
         </div>
       </PageHeader>
-      <div className="min-h-0 flex-1 overflow-y-auto p-4 md:px-8 md:py-6">
-        <div className="w-full max-w-3xl">
+      <div className="@container/settings min-h-0 flex-1 overflow-y-auto p-4 md:px-8 md:py-6">
+        {/* Wide screens (desktop): section cards sit in two columns instead of one narrow strip. */}
+        <div className={tab === 'payments' || tab === 'modes' ? 'w-full' : 'grid w-full items-start gap-x-4 @4xl/settings:grid-cols-2'}>
           {tab === 'subscription' && <SubscriptionSettings />}
           {tab === 'store' && (
             <>
@@ -85,7 +86,7 @@ export function SettingsPage() {
           {tab === 'modes' && (
             <>
               <SalesModeSettings storeId={store.id} modes={catalog.salesModes} />
-              <div className="mt-6">
+              <div className="mt-6 @4xl/settings:max-w-[calc(50%-0.5rem)]">
                 <WeightSaleSetting store={store} />
               </div>
             </>

@@ -8,19 +8,20 @@ import { createSalesMode } from '../../services/checkoutConfig';
 import type { Id, PriceRule } from '../../types';
 import { PRICE_RULE_HELP, PRICE_RULE_OPTIONS } from './priceRules';
 import { t } from '../../i18n';
+import { NumberInput } from '../../components/ui/NumberInput';
 
 const DEFAULT_MARKUP_PCT = 20;
 
 export function AddModeSheet({ storeId, onClose }: { storeId: Id; onClose: () => void }) {
   const [name, setName] = useState('');
   const [priceRule, setPriceRule] = useState<PriceRule>('none');
-  const [markupPct, setMarkupPct] = useState(String(DEFAULT_MARKUP_PCT));
+  const [markupPct, setMarkupPct] = useState(DEFAULT_MARKUP_PCT);
   const [isSaving, setIsSaving] = useState(false);
 
   const submit = async () => {
     setIsSaving(true);
     try {
-      const mode = await createSalesMode(storeId, { name, priceRule, markupPct: Number(markupPct) || 0 });
+      const mode = await createSalesMode(storeId, { name, priceRule, markupPct });
       toast.success(t('{0} ditambahkan', mode.name));
       onClose();
     } catch (error) {
@@ -53,7 +54,7 @@ export function AddModeSheet({ storeId, onClose }: { storeId: Id; onClose: () =>
         {priceRule === 'markup' && (
           <div className="max-w-[180px]">
             <label htmlFor="mode-markup" className={labelBase}>{t('Markup (%)')}</label>
-            <input id="mode-markup" type="number" inputMode="decimal" min={0} max={100} value={markupPct} onChange={(e) => setMarkupPct(e.target.value)} className={`${inputBase} num`} />
+            <NumberInput id="mode-markup" max={100} value={markupPct} onChange={setMarkupPct} />
           </div>
         )}
       </div>
