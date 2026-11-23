@@ -111,7 +111,7 @@ export function PaymentSheet({ total, methods, storeName, isSubmitting, onConfir
                 key={amount}
                 type="button"
                 onClick={() => setCashReceived(amount)}
-                className={`${option(cashReceived === amount)} num ${index === 0 && cashReceived !== amount ? 'border-brand-600! bg-brand-50! font-semibold text-brand-800!' : ''}`}
+                className={`${option(cashReceived === amount)} num ${index === 0 ? 'font-semibold' : ''}`}
               >
                 {index === 0 && <Banknote aria-hidden size={17} />}
                 {index === 0 ? t('Uang pas') : formatRupiah(amount)}
