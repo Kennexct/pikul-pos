@@ -15,7 +15,7 @@ Admin UI only (`src/admin/*`). Same data, same API (`GET/PUT /api/admin/content`
 - **Click to edit:** clicking a row (or "Ubah") opens only that row's fields in place, with Selesai / Batal. One open row at a time; opening another while the current one has changes asks to discard first. Esc = Batal.
 - **Add:** "Tambah …" appends a blank row already open; Batal on a never-saved row removes it.
 - **Preview:** a `LandingPreview` component styled like the real landing section (hero block, feature card grid, FAQ list with the edited item expanded, footer contact). It renders the draft as typed, highlights the item being edited, and leaves hidden items out (as the real page does). Rendered with React text nodes only (no HTML).
-- **Layout:** two columns (editor | sticky preview) at ≥1280 px viewport (sidebar takes 240 px); below that the preview sits under the editor with a "Contoh tampilan" heading.
+- **Layout:** two columns (editor | sticky preview) at ≥1024 px viewport (preview 340 px, 400 px at ≥1280); below that the preview sits under the editor. Row actions move under the row text when the editor column is narrow (container query).
 - **Save model (Kenny chose "one Simpan for all"):** Selesai on a row only puts the row into the page draft (and the preview). Hide, reorder, delete and add also change the draft. The existing sticky bottom bar (status text, Batalkan, Simpan) publishes the whole document with one PUT. Selesai is disabled while a required field in the row is empty, so the draft never holds a row the server would refuse. Leaving the tab with an open row keeps the draft in memory only (no browser storage). "Pulihkan bawaan" stays at the bottom of the tab.
 
 ## Paket harga
@@ -28,7 +28,7 @@ Admin UI only (`src/admin/*`). Same data, same API (`GET/PUT /api/admin/content`
   - Urutan: no field; the up/down arrows swap `sort` with the neighbour (two saves).
   - Harga: existing `RupiahInput`.
 - **Validation before Simpan:** name required, price Rp1.000–Rp100.000.000, days 1–1095, code matches the server pattern `^[a-z0-9][a-z0-9-]{1,23}$`. Simpan stays disabled and shows the reason under the field.
-- Closing the sheet with unsaved changes asks "Buang perubahan?".
+- Closing the sheet drops unsaved changes (Sheet plays its exit before onClose, so a confirm cannot interrupt it; deviation noted in sde decisions).
 
 ## Error handling
 Server errors keep using `errorText()` toasts; auth errors go through `onError`. A failed row save keeps the row open with the draft intact.

@@ -106,7 +106,7 @@ export function ContentRows({ name, items, fields, max, addLabel, openIndex, isL
   const [confirmDelete, setConfirmDelete] = useState<number | null>(null);
   const [first, second] = fields;
   return (
-    <div>
+    <div className="@container">
       {items.length === 0 && <p className="rounded-lg border border-dashed border-line-strong p-4 text-[14px] text-muted">{t('Belum ada isi.')}</p>}
       <ol className="space-y-2">
         {items.map((it, i) => {
@@ -114,7 +114,7 @@ export function ContentRows({ name, items, fields, max, addLabel, openIndex, isL
           const title = first ? valueOf(it, first.key) : '';
           const sub = second ? valueOf(it, second.key) : '';
           return (
-            <li key={i} className={`flex items-start gap-1 rounded-lg border border-line p-1 ${it.hidden ? 'bg-subtle' : 'bg-surface'}`}>
+            <li key={i} className={`flex flex-col gap-1 rounded-lg border border-line p-1 @lg:flex-row @lg:items-start ${it.hidden ? 'bg-subtle' : 'bg-surface'}`}>
               <button
                 type="button"
                 disabled={isLocked}
@@ -131,8 +131,8 @@ export function ContentRows({ name, items, fields, max, addLabel, openIndex, isL
                 <Pencil aria-hidden size={16} className="mt-1 shrink-0 text-faint" />
               </button>
               {confirmDelete === i ? (
-                <div className="flex shrink-0 items-center gap-1 p-1">
-                  <span className="hidden text-[13px] font-semibold text-danger-700 sm:inline">{t('Hapus?')}</span>
+                <div className="flex shrink-0 items-center justify-end gap-1 p-1">
+                  <span className="text-[13px] font-semibold text-danger-700">{t('Hapus?')}</span>
                   <button type="button" className={`${btnIcon} text-danger-700`} aria-label={t('Ya, hapus')} onClick={() => (setConfirmDelete(null), onDelete(i))}>
                     <Check aria-hidden size={18} />
                   </button>
@@ -141,7 +141,7 @@ export function ContentRows({ name, items, fields, max, addLabel, openIndex, isL
                   </button>
                 </div>
               ) : (
-                <div className="flex shrink-0 flex-wrap justify-end gap-1 p-1">
+                <div className="flex shrink-0 justify-end gap-1 border-t border-line p-1 @lg:border-t-0">
                   <button type="button" className={btnIcon} disabled={isLocked || i === 0} onClick={() => onMove(i, -1)} aria-label={t('Naikkan')}>
                     <ArrowUp aria-hidden size={18} />
                   </button>

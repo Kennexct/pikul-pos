@@ -1,9 +1,11 @@
 # Status
 
-## Admin click-to-edit: Konten landing + Paket harga (v0.18.1) — Planning complete (2026-11-23)
+## Admin click-to-edit: Konten landing + Paket harga (v0.18.1) — Delivered (2026-11-23)
 Branch `claude/project-thread-6ibfvj` on `main` `f376b98`. Spec `specs/2026-11-23-admin-click-to-edit-design.md`, ADR-024. Kenny: forms closed by default, landing sub-sections + preview on the right; chose "one Simpan for all". Next ADR: 025.
 - [x] Spec, ADR-024, PM/architect/staff/EM/senior decisions
-- [ ] T1 editing.ts + tests · [ ] T2 LandingPreview · [ ] T3 ContentRows + ContentPanel · [ ] T4 PlanCard/PlanSheet/PlansPanel · [ ] T5 i18n, e2e v17, checks, screenshots
+- [x] T1 editing.ts + tests · [x] T2 LandingPreview · [x] T3 ContentRows + ContentPanel · [x] T4 PlanCard/PlanSheet/PlansPanel · [x] T5 i18n, e2e v17, checks, screenshots
+- [x] QA + security PASS (`reviews/2026-11-23-admin-click-to-edit-review.md`)
+- [ ] Kenny: review on the branch / merge; ships with the next deploy (no migration)
 
 ## Vercel + Neon launch, merchant sign-up (v0.18) — Delivered (2026-11-21)
 Branch `feat/vercel-neon-launch` on top of `main` `cbd5680`. Spec `specs/2026-11-21-vercel-neon-launch-design.md`, ADR-022 (Vercel Build Output API + Neon, preview mode removed), ADR-023 (email + password sign-up with profile; Kenny chose it). Review `reviews/2026-11-21-vercel-neon-launch-review.md` PASS. Runbook `docs/runbooks/deploy-vercel-neon.md`. Next ADR: 024.

@@ -63,17 +63,60 @@ def admin_sign_in(page, name):
         shot(page, f'{name}-c0-menu')
 
 
+def no_open_fields(page, where):
+    """ADR-024: nothing on the tab is typeable until a row or plan is opened."""
+    n = page.locator('main input:visible, main textarea:visible').count()
+    assert n == 0, f'{where}: {n} open fields before editing'
+
+
 def edit_landing(page, name, faq_q, faq_a):
     tab(page, 'Konten landing')
     page.get_by_role('heading', name='Konten halaman depan').wait_for()
-    page.locator('#c-hero-title').fill('Kasir offline untuk warung Anda')
+    no_open_fields(page, 'Konten landing')
+    page.get_by_role('button', name='Ubah Bagian atas').click()
+    page.locator('#c-hero-0-heroTitle').fill('Kasir offline untuk warung Anda')
+    page.get_by_role('figure', name='Contoh tampilan').get_by_text('Kasir offline untuk warung Anda').wait_for()
+    shot(page, f'{name}-c2a-hero-edit')
+    page.get_by_role('button', name='Selesai').click()
+    no_open_fields(page, 'after Selesai')
+    page.get_by_role('tab', name=re.compile('^Tanya jawab')).click()
     page.get_by_role('button', name='Tambah pertanyaan').click()
-    faqs = page.get_by_role('region', name='Tanya jawab (FAQ)')
-    faqs.locator('input').last.fill(faq_q)
-    faqs.locator('textarea').last.fill(faq_a)
+    editor = page.get_by_role('region', name='Ubah isi')
+    editor.locator('input').fill(faq_q)
+    # Simpan waits while a row is open.
+    assert page.get_by_role('button', name='Simpan', exact=True).is_disabled(), 'Simpan disabled while a row is open'
+    editor.locator('textarea').fill(faq_a)
+    page.get_by_role('figure', name='Contoh tampilan').get_by_text(faq_q).wait_for()
+    shot(page, f'{name}-c2b-faq-edit')
+    page.get_by_role('button', name='Selesai').click()
     page.get_by_role('button', name='Simpan', exact=True).click()
     page.get_by_text('Konten disimpan').wait_for()
     shot(page, f'{name}-c2-content')
+
+
+def edit_plans(page, name):
+    tab(page, 'Paket harga')
+    page.get_by_role('heading', name='Paket harga', level=2).wait_for()
+    no_open_fields(page, 'Paket harga')
+    shot(page, f'{name}-p1-plans')
+    page.get_by_role('button', name='Tambah paket').click()
+    dialog = page.get_by_role('dialog')
+    dialog.get_by_role('button', name='Buat paket').click()
+    dialog.get_by_text('Nama paket wajib diisi.').wait_for()  # invalid plan is refused with a reason
+    plan_name = f'Kuartal {name}'
+    dialog.locator('#plan-name').fill(plan_name)
+    dialog.get_by_text(f'Kode paket: kuartal-{name}').wait_for()
+    dialog.locator('#plan-amount').fill('129000')
+    dialog.get_by_role('button', name='90 hari').click()
+    dialog.get_by_role('textbox', name='Fitur 1', exact=True).fill('Semua fitur')
+    dialog.get_by_role('complementary', name='Contoh di halaman depan').get_by_text('/ 90 hari').wait_for()
+    shot(page, f'{name}-p2-plan-sheet')
+    dialog.get_by_role('button', name='Buat paket').click()
+    dialog.wait_for(state='detached')
+    page.get_by_role('article', name=plan_name).wait_for()
+    page.get_by_role('button', name=f'Naikkan {plan_name}').click()
+    page.wait_for_timeout(1_000)
+    no_open_fields(page, 'after plan save')
 
 
 def add_register_campaign(page, name, title):
@@ -148,6 +191,7 @@ def run(p, name, viewport, is_mobile):
 
     admin_sign_in(page, name)
     edit_landing(page, name, faq_q, faq_a)
+    edit_plans(page, name)
     add_register_campaign(page, name, title)
 
     # Landing page shows the saved text (as text, never HTML).

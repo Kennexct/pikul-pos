@@ -1,6 +1,6 @@
-# Handoff — admin click-to-edit planned (2026-11-23)
+# Handoff — admin click-to-edit delivered (2026-11-23)
 
-**Now:** SDE builds T1→T5 from `decisions/engineering-manager/admin-click-to-edit.md`, approach in `decisions/senior-engineer/admin-click-to-edit.md`, ADR-024. UI only, no API/DB change. Landing: Tabs sub-sections, read-only rows, one open row, Selesai changes draft, sticky Simpan publishes. Plans: read-only cards, Sheet editor with preview, constrained fields. Next ADR: 025.
+**Latest:** built and verified on `claude/project-thread-6ibfvj` (ADR-024, review PASS). e2e: `v17.py` now has `no_open_fields` + `edit_plans`; local run needs `PASS_PRIVATE_JWK` from `scripts/gen-pass-key.mjs` in the server env. UI only, no API/DB change. Landing: Tabs sub-sections, read-only rows, one open row, Selesai changes draft, sticky Simpan publishes. Plans: read-only cards, Sheet editor with preview, constrained fields. Next ADR: 025.
 
 # Handoff — Vercel + Neon launch delivered (2026-11-21)
 
