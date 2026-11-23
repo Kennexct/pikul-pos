@@ -103,7 +103,8 @@ Pastel random tile colors · dot-grid or pattern fills behind monograms · endle
 ## Page width
 
 - List and data pages (Kasir, Riwayat, Laporan, Produk, Pelanggan, Kas) use the full width.
-- Form-like pages (Pengaturan, Bantuan) use one centred column for header, tabs and content: `<PageHeader isNarrow>` + `NARROW_COLUMN` (`max-w-3xl`). Never cap content width while leaving it left-aligned.
+- Pengaturan (tablet) lists its sections in a left column like the other sub-menus; header and content sit in one left-aligned `max-w-3xl` column beside it. Its save bar appears only when something changed.
+- Form-like pages (Bantuan; Pengaturan on a phone) use one centred column for header, tabs and content: `<PageHeader isNarrow>` + `NARROW_COLUMN` (`max-w-3xl`). Never cap content width while leaving it left-aligned.
 
 ## Brand (ADR-016)
 
