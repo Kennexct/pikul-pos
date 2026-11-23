@@ -23,12 +23,12 @@ Admin UI only (`src/admin/*`). Same data, same API (`GET/PUT /api/admin/content`
 - **Read-only cards** shaped like the landing price card: name, label badge, price, "/ N hari", note, features with check marks, status chip (Dijual / Disembunyikan). Card actions: Ubah, naik, turun.
 - **Editor in a `Sheet`** (`isWide`), used for both Ubah and Tambah paket; the card preview sits beside the form on tablet, under it on phone.
 - **Fields that can no longer be mistyped:**
-  - Masa aktif: options 30 / 90 / 180 / 365 hari + "Lainnya" (numeric input 1–3650 only when chosen).
+  - Masa aktif: options 30 / 90 / 180 / 365 hari + "Lainnya" (numeric input 1–1095 only when chosen).
   - Fitur: list of single-line inputs (max 8, max 80 chars each per server), + Tambah fitur, delete per line; empty lines dropped on save.
   - Kode paket: auto from the name (lowercase, a–z 0–9 and `-`), shown as a hint, editable via "Ubah kode"; locked after creation (unchanged rule).
   - Urutan: no field; the up/down arrows swap `sort` with the neighbour (two saves).
   - Harga: existing `RupiahInput`.
-- **Validation before Simpan:** name required, price ≥ 0 set, days 1–3650, code matches the server pattern. Simpan stays disabled and shows the reason under the field.
+- **Validation before Simpan:** name required, price Rp1.000–Rp100.000.000, days 1–1095, code matches the server pattern `^[a-z0-9][a-z0-9-]{1,23}$`. Simpan stays disabled and shows the reason under the field.
 - Closing the sheet with unsaved changes asks "Buang perubahan?".
 
 ## Error handling
