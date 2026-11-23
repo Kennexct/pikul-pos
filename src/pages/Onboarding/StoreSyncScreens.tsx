@@ -8,7 +8,7 @@ import type { StoreFacts } from '../../services/syncBinding';
 import { PasswordInput } from '../Auth/PasswordInput';
 import { t } from '../../i18n';
 
-/** Screens between sign-in and the cashier while the device gets its store (ADR-024, spec §3). */
+/** Screens between sign-in and the cashier while the device gets its store (ADR-025, spec §3). */
 
 function Frame({ icon, title, children }: { icon: ReactNode; title: string; children: ReactNode }) {
   return (

@@ -12,7 +12,7 @@ beforeEach(async () => {
   resetDeviceCache();
 });
 
-describe('cash register per device (ADR-025)', () => {
+describe('cash register per device (ADR-026)', () => {
   it("another device's synced sale and closing never touch this drawer", async () => {
     const { store, owner } = await ensureLocalStore();
     const salesMode = (await localDb.salesModes.toArray()).find((m) => m.isDefault)!;

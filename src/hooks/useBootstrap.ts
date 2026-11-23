@@ -53,7 +53,7 @@ async function startSession({ store, owner }: BootstrapResult): Promise<void> {
 const message = (error: unknown, fallback: string) => (error instanceof Error ? error.message : fallback);
 
 /**
- * Loads the store for this device and account (ADR-009, ADR-024):
+ * Loads the store for this device and account (ADR-009, ADR-025):
  *  - store here and tied to this account (or offline) → sell
  *  - no store here, the account has one → download it, then the PIN / cashier screen
  *  - no store anywhere → the first-time journey, store name from sign-up
@@ -63,7 +63,7 @@ export function useBootstrap(): BootState {
   const [state, setState] = useState<BootStatus>({ status: 'loading' });
   const [attempt, setAttempt] = useState(0);
   const mismatch = useSessionStore((s) => s.syncStatus === 'mismatch');
-  // The store depends on the account (ADR-024): decide only once signed in, and again after signing in as someone.
+  // The store depends on the account (ADR-025): decide only once signed in, and again after signing in as someone.
   const isSignedIn = useAccessStore((s) => s.status === 'signedIn');
 
   const enter = useCallback(async () => {

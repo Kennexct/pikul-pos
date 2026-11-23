@@ -6,7 +6,7 @@ import { syncTick } from '../services/syncBinding';
 import { useSessionStore } from '../store/useSessionStore';
 import { t } from '../i18n';
 
-/** Tracks connectivity and runs the background sync loop (ADR-024): push, then pull, every 15 s while visible. */
+/** Tracks connectivity and runs the background sync loop (ADR-025): push, then pull, every 15 s while visible. */
 export function useOnlineStatus(): void {
   const setOnline = useSessionStore((s) => s.setOnline);
   const setPendingSyncCount = useSessionStore((s) => s.setPendingSyncCount);

@@ -1,4 +1,4 @@
-/** Device sync (ADR-024): what the server stores for each account's store. */
+/** Device sync (ADR-025): what the server stores for each account's store. */
 
 /** Dexie table names the app syncs, plus the store row itself. */
 export const SYNC_TABLES = [

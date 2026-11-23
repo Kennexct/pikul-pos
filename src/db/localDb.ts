@@ -20,7 +20,7 @@ import type {
 
 /**
  * Local IndexedDB — the POS reads and writes ONLY here.
- * The sync service mirrors changes to the Pikul server in the background (offline-first, ADR-024).
+ * The sync service mirrors changes to the Pikul server in the background (offline-first, ADR-025).
  */
 export class LocalDb extends Dexie {
   categories!: EntityTable<Category, 'id'>;
@@ -77,7 +77,7 @@ export class LocalDb extends Dexie {
       expenses: 'id, storeId, [storeId+businessDate]',
       dayClosings: 'id, storeId, [storeId+businessDate]',
     });
-    // ADR-025: cash records made before sync all belong to this device's drawer. Same key as services/device.ts.
+    // ADR-026: cash records made before sync all belong to this device's drawer. Same key as services/device.ts.
     this.version(5)
       .stores({})
       .upgrade(async (tx) => {

@@ -7,7 +7,7 @@ import { avoidReceiptCodes, getDeviceId, getReceiptCode } from './device';
 import { enqueueAll, getBinding, outcomeOf, setBinding, syncNow, type SyncOutcome } from './sync';
 import { version } from '../../package.json';
 
-/** Which store this device uses after sign-in (ADR-024, spec §3). */
+/** Which store this device uses after sign-in (ADR-025, spec §3). */
 
 export interface StoreFacts {
   name: string;

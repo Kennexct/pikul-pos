@@ -24,7 +24,7 @@ function useDevicesDay(storeId: Id, date: BusinessDate, names: ReadonlyMap<Id, s
   }, [storeId, date, names]);
 }
 
-/** Kas → "Semua perangkat" (ADR-025): owner sees every device's day and the store total. Hidden until another device has records that day. */
+/** Kas → "Semua perangkat" (ADR-026): owner sees every device's day and the store total. Hidden until another device has records that day. */
 export function AllDevicesCard({ storeId, date }: { storeId: Id; date: BusinessDate }) {
   const [names, setNames] = useState<ReadonlyMap<Id, string>>(new Map());
   useEffect(() => {

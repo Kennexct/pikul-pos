@@ -1,7 +1,7 @@
 import { SYNC_TABLES, type DeviceHello, type SyncHead, type SyncRecord, type SyncTableName } from './syncTypes';
 import { DAY_MS } from './types';
 
-/** Validation and the last-write-wins rule for device sync (ADR-024). Pure, so both are unit tested. */
+/** Validation and the last-write-wins rule for device sync (ADR-025). Pure, so both are unit tested. */
 
 export const MAX_PUSH_RECORDS = 100;
 export const MAX_RECORD_CHARS = 1_500_000;

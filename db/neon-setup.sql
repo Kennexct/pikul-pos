@@ -200,7 +200,7 @@ alter table accounts add column if not exists city text not null default '';
 --   delete from rate_events where at < now() - interval '1 day';
 
 -- ===== 005_device_sync.sql =====
--- v0.19 device sync (ADR-024). Neon Postgres. Run after 001–004.
+-- v0.19 device sync (ADR-025). Neon Postgres. Run after 001–004.
 -- One store per account; every synced record is stored as the device's JSON, last write wins by updatedAt.
 
 create table if not exists account_store (

@@ -21,7 +21,7 @@ interface SessionState {
   ownerUnlockedUntil: number | null;
   isOnline: boolean;
   pendingSyncCount: number;
-  /** Result of the last background sync run (ADR-024). */
+  /** Result of the last background sync run (ADR-025). */
   syncStatus: SyncStatus;
   setStore: (storeId: Id | null) => void;
   setOwnerInfo: (ownerId: Id, hasOwnerPin: boolean) => void;

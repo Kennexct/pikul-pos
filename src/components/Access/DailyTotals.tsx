@@ -11,7 +11,7 @@ import { Sheet } from '../ui/Sheet';
 
 const FIRST_DELAY_MS = 5_000;
 const EVERY_MS = 30 * 60_000;
-// v2 since device sync (ADR-024): the notice now explains that the whole store is backed up, so it shows once more.
+// v2 since device sync (ADR-025): the notice now explains that the whole store is backed up, so it shows once more.
 const NOTICE_KEY = 'kk.dailyTotalsNotice.v2';
 
 const noticeSeen = () => {

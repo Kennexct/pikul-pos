@@ -23,4 +23,5 @@ Status: M1–M14 shipped on device (M6 item-level discount, M9 receipt-as-image 
 
 - vercel-neon-launch (v0.18) — ADR-022, ADR-023 → `vercel-neon-launch.md`
 
-- device-sync (v0.19) — ADR-024, ADR-025 → `device-sync.md`
+- device-sync (v0.19) — ADR-025, ADR-026 → `device-sync.md`
+- `admin-click-to-edit` — read-only-first landing + plan editors (ADR-024) → `admin-click-to-edit.md`

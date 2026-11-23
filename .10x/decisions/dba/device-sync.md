@@ -1,4 +1,4 @@
-# DBA — device-sync (v0.19, ADR-024)
+# DBA — device-sync (v0.19, ADR-025)
 
 Migration `db/migrations/005_device_sync.sql` (also in `db/neon-setup.sql`, idempotent, verified twice on Postgres 17 via PGlite):
 - `account_store(account_id pk → accounts on delete cascade, store_id uuid, bound_at, replaced_at)`: one store per account.

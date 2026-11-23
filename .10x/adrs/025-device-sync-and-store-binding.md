@@ -1,4 +1,4 @@
-# ADR-024: Two-way device sync through Neon, one store per account, last write wins
+# ADR-025: Two-way device sync through Neon, one store per account, last write wins
 
 **Status:** Accepted — Kenny chose "Everything, both ways" and "Ask which store to keep" (2026-11-21)
 **Date:** 2026-11-21

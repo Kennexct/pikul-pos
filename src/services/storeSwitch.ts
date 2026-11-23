@@ -13,7 +13,7 @@ import { clearBinding, enqueueAll, fetchPage, pullChanges, setBinding, syncNow }
 import { version } from '../../package.json';
 import { t } from '../i18n';
 
-/** Downloading a store onto this device, and replacing one store with another (ADR-024, spec §3). */
+/** Downloading a store onto this device, and replacing one store with another (ADR-025, spec §3). */
 
 /** Clears every store table and store-scoped setting; keeps this device's id, receipt code and receipt counters. */
 export async function wipeStoreData(): Promise<void> {

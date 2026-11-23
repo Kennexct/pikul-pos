@@ -12,7 +12,7 @@ import { t } from '../i18n';
 
 const openingKey = (storeId: Id, date: BusinessDate) => `openingCash:${storeId}:${date}`;
 
-/** This device's live closing of the day (ADR-025: each device closes its own drawer). */
+/** This device's live closing of the day (ADR-026: each device closes its own drawer). */
 export async function getClosing(storeId: Id, date: BusinessDate): Promise<DayClosing | undefined> {
   const here = await getDeviceId();
   return localDb.dayClosings
@@ -57,7 +57,7 @@ export async function setOpeningCash(storeId: Id, date: BusinessDate, amount: nu
   if (!previous) emitAppEvent(APP_EVENTS.registerOpened, { businessDate: date }); // register pop-up (ADR-020)
 }
 
-/** Everything this device's drawer maths needs for one business day (ADR-025). Also used inside live queries. */
+/** Everything this device's drawer maths needs for one business day (ADR-026). Also used inside live queries. */
 export async function loadDrawerInput(storeId: Id, date: BusinessDate): Promise<DrawerInput> {
   const key = [storeId, date];
   const here = await getDeviceId();

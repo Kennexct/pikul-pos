@@ -10,7 +10,7 @@ import { getDeviceId, getReceiptCode } from './device';
 import { t } from '../i18n';
 
 /**
- * Device sync (ADR-024). Every write goes through `saveAndQueue` (record + outbox row in one transaction);
+ * Device sync (ADR-025). Every write goes through `saveAndQueue` (record + outbox row in one transaction);
  * `syncNow` pushes the outbox to the Pikul server, then pulls what other devices wrote. Never on the sell path.
  */
 

@@ -5,7 +5,7 @@ import type { SyncDevice, SyncRecord, SyncTableName } from './syncTypes';
 import type { Account, ApiResponse, Deps, RequestCtx } from './types';
 
 /**
- * Device sync API (ADR-024). Bearer = the merchant's refresh token (not rotated), like daily totals.
+ * Device sync API (ADR-025). Bearer = the merchant's refresh token (not rotated), like daily totals.
  * Every call that reads or writes records names the store it expects; a different store gets 409 store_mismatch.
  */
 

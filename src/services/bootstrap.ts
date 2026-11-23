@@ -64,7 +64,7 @@ async function createOnce(setup: StoreSetup): Promise<BootstrapResult> {
   return { store: seed.store, owner: seed.owner };
 }
 
-/** Saves store settings; queued so every device gets them (ADR-024). */
+/** Saves store settings; queued so every device gets them (ADR-025). */
 export async function updateStore(store: Store): Promise<void> {
   await saveAndQueue('stores', { ...store, updatedAt: nowIso() });
 }

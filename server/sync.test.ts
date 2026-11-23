@@ -47,7 +47,7 @@ const push = (token: string, deviceId: string, records: unknown[], storeId = STO
 const pull = (token: string, deviceId: string, after = 0, storeId = STORE) => call('GET', '/api/sync/pull', token, undefined, `storeId=${storeId}&deviceId=${deviceId}&after=${after}`);
 const pulled = (r: { body: unknown }) => r.body as { records: Array<{ table: string; id: string; data: Record<string, unknown> }>; cursor: number; more: boolean };
 
-describe('sync API (ADR-024)', () => {
+describe('sync API (ADR-025)', () => {
   it('needs a signed-in merchant', async () => {
     expect((await call('GET', '/api/sync/store', null)).status).toBe(401);
     expect((await push('0'.repeat(64), DEV_A, [])).status).toBe(401);

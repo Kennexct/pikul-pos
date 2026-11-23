@@ -71,7 +71,7 @@ export default function App() {
     />
   );
 
-  // ADR-024: the account's store is downloaded, or the merchant chooses which store this device keeps.
+  // ADR-025: the account's store is downloaded, or the merchant chooses which store this device keeps.
   const syncScreen =
     boot.status === 'downloading' ? <DownloadingScreen received={boot.received} />
     : boot.status === 'needOnline' ? <NeedOnlineScreen onRetry={boot.retry} onNewStore={boot.startNewStore} />

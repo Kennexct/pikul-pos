@@ -69,7 +69,7 @@ export function useExpenses(storeId: Id | null, range: DateRange): Expense[] | u
   }, [storeId, range.from, range.to]);
 }
 
-/** This device's recent closings, newest day first (ADR-025). */
+/** This device's recent closings, newest day first (ADR-026). */
 export function useClosings(storeId: Id | null): DayClosing[] | undefined {
   return useLiveQuery(async () => {
     if (!storeId) return [];

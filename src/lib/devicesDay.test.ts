@@ -5,7 +5,7 @@ import { devicesDay } from './devicesDay';
 const order = (id: string, deviceId: string | undefined, amount: number, methodType: 'cash' | 'qris' = 'cash'): Order =>
   ({ id, deviceId, status: 'paid', totals: { grandTotal: amount }, payments: [{ amount, methodType }] }) as unknown as Order;
 
-describe('devicesDay (ADR-025)', () => {
+describe('devicesDay (ADR-026)', () => {
   it('splits sales, cash refunds and closings per device, legacy records count as this device', () => {
     const sales = [order('o1', 'A', 10_000), order('o2', undefined, 5_000), order('o3', 'B', 20_000, 'qris'), order('o4', 'B', 8_000)];
     const refunds = [{ id: 'r1', orderId: 'o4', deviceId: 'B', amount: 8_000, kind: 'refund' } as Refund];

@@ -18,7 +18,7 @@ const LAST_STEP = STEP_TITLES.length - 1;
 interface OnboardingPageProps {
   /** Creates the store and enters the app. Without a setup: an empty store with the default name ("Lewati"). */
   onComplete: (setup?: StoreSetup) => Promise<void>;
-  /** The store name from the account's sign-up profile, on any device (ADR-024). */
+  /** The store name from the account's sign-up profile, on any device (ADR-025). */
   defaultStoreName?: string;
 }
 

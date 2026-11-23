@@ -1,4 +1,4 @@
-# SDE — device-sync (v0.19, ADR-024 / ADR-025)
+# SDE — device-sync (v0.19, ADR-025 / ADR-026)
 
 What was built:
 - Server: `server/sync.ts` (handlers), `syncCheck.ts` (limits, validation, LWW + final-status guard), `syncTypes.ts`, `memorySyncRepo.ts`, `neonSyncRepo.ts`; routes `/api/sync/{store,claim,push,pull,replace,devices,devices/name}` in `router.ts`; request body cap 4.1 MB in `vercel.ts` (push only; other routes keep their own limits via `bodyLimit()`).

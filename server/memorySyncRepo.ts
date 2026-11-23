@@ -7,7 +7,7 @@ interface MemRow extends StoredSyncRecord {
   changedAt: number;
 }
 
-/** In-memory SyncRepo for tests and local dev (ADR-024). Mirrors the Neon semantics, including the settle window. */
+/** In-memory SyncRepo for tests and local dev (ADR-025). Mirrors the Neon semantics, including the settle window. */
 export function memorySyncRepo(): SyncRepo & { rows: Map<string, MemRow> } {
   const stores = new Map<string, string>();
   const rows = new Map<string, MemRow>();

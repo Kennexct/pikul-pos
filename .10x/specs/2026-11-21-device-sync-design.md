@@ -51,7 +51,7 @@ The backup files use the existing backup format (ADR-008), so they can be restor
 
 If the device is offline at sign-in with no store, it shows "Perlu internet untuk mengunduh toko" with a retry button, plus "Buat toko baru" as an escape hatch.
 
-## 4. Cash register per device (ADR-025)
+## 4. Cash register per device (ADR-026)
 - Each device gets a stable device id (the existing device code) stamped on new orders (at payment), refunds, expenses and day closings, and on the `register_opened` audit event.
 - The Kas page, the register gate before the first sale, the opening count, drawer expenses and the closing all use **this device's** records only.
 - Records made before v0.19 have no device id: a one-time upgrade stamps them with this device's code, since they were all made here.

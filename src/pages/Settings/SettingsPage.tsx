@@ -26,7 +26,7 @@ const ALL_TABS = [
   { value: 'backup', label: t('Cadangan'), help: 'cadangan' },
 ] as const;
 type TabId = (typeof ALL_TABS)[number]['value'];
-// ADR-013, ADR-024: subscription and sync exist only in builds with the Pikul server.
+// ADR-013, ADR-025: subscription and sync exist only in builds with the Pikul server.
 const TABS = ALL_TABS.filter((tab) => BILLING_ENABLED || (tab.value !== 'subscription' && tab.value !== 'sync'));
 
 export function SettingsPage() {

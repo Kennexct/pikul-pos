@@ -1,4 +1,4 @@
-# Architect — device-sync (v0.19) — ADR-024, ADR-025
+# Architect — device-sync (v0.19) — ADR-025, ADR-026
 Components:
 - Server `server/sync.ts` (handlers: store, claim, push, pull, replace, devices, device name), `server/syncCheck.ts` (validation, LWW decision), `SyncRepo` in `server/syncTypes.ts`, implemented by `memorySyncRepo.ts` and `neonSyncRepo.ts`. Router body limit 4 MB for `/api/sync/push`.
 - DB `db/migrations/005_device_sync.sql`: `account_store`, `sync_records`, `sync_devices`, `sync_seq`.

@@ -19,7 +19,7 @@ export interface BackupFile {
 
 /** Tables keyed by something other than `id`. */
 const KEY_FIELD: Record<string, string> = { meta: 'key' };
-/** This device's identity and sync position (ADR-024, ADR-025): never copied to or from a file. */
+/** This device's identity and sync position (ADR-025, ADR-026): never copied to or from a file. */
 export const isDeviceMetaKey = (key: string): boolean => key === 'deviceId' || key === 'deviceCode' || key.startsWith('sync.');
 /** Device-local state that must not travel: PIN lockout counters, device identity, sync position. */
 export const isPortableMetaKey = (key: string): boolean => !key.startsWith('pinlock:') && !isDeviceMetaKey(key);

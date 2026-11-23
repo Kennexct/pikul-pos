@@ -47,13 +47,13 @@ export interface SyncMeta {
   createdAt: IsoDateTime;
   updatedAt: IsoDateTime;
   deletedAt?: IsoDateTime | null;
-  /** Cash records only (orders, refunds, expenses, closings): the device whose drawer they belong to (ADR-025). */
+  /** Cash records only (orders, refunds, expenses, closings): the device whose drawer they belong to (ADR-026). */
   deviceId?: Id;
 }
 
 export interface Store {
   id: Id;
-  /** Set on every save since v0.19 so device sync can pick the latest (ADR-024). */
+  /** Set on every save since v0.19 so device sync can pick the latest (ADR-025). */
   updatedAt?: IsoDateTime;
   name: string;
   address: string;

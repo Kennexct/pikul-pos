@@ -17,7 +17,7 @@ import { claimStore } from './syncBinding';
 
 /**
  * Two devices against the real server router (in memory): device A uploads its store, device B downloads it,
- * edits flow both ways with last write wins (ADR-024). One IndexedDB stands in for each device in turn.
+ * edits flow both ways with last write wins (ADR-025). One IndexedDB stands in for each device in turn.
  */
 
 let account = '';
@@ -82,7 +82,7 @@ async function deviceAWithMenu() {
   return found;
 }
 
-describe('device sync (ADR-024)', () => {
+describe('device sync (ADR-025)', () => {
   it('a second device downloads the store: name, owner and menu, without re-queuing them', async () => {
     const a = await deviceAWithMenu();
     settle();

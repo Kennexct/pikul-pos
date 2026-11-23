@@ -1,4 +1,4 @@
-"""v0.19 device sync (ADR-024, ADR-025) against the Vercel output served by scripts/vercel-local.mjs (DEV_MODE=1).
+"""v0.19 device sync (ADR-025, ADR-026) against the Vercel output served by scripts/vercel-local.mjs (DEV_MODE=1).
 Two browser contexts are two devices on one account:
 A signs up, sets up the store, adds a menu, opens its register and sells → syncs.
 B signs in → "Mengunduh data toko…" → lands on the cashier with A's menu and sale; B's own register is not open;

@@ -15,7 +15,7 @@ const device = (r: Row): SyncDevice => ({
   appVersion: r.app_version as string,
 });
 
-/** Neon implementation of device sync storage (ADR-024, migration 005). */
+/** Neon implementation of device sync storage (ADR-025, migration 005). */
 export function neonSyncRepo(sql: Sql): SyncRepo {
   const rows = async (q: Promise<unknown>) => (await q) as Row[];
   return {

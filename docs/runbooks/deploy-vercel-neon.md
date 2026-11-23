@@ -1,4 +1,4 @@
-# Runbook — deploy Pikul on Vercel + Neon (v0.18–v0.19, ADR-022 / ADR-023 / ADR-024)
+# Runbook — deploy Pikul on Vercel + Neon (v0.18–v0.19, ADR-022 / ADR-023 / ADR-025)
 
 One Vercel project serves everything: the landing page `/`, the cashier app `/app/` (PWA), the admin console `/admin/` and the API `/api/*`. The database is Neon Postgres. Email (Resend) is **optional**: merchants sign up and sign in with email + password.
 
@@ -104,7 +104,7 @@ Vercel → project → **Settings → Domains** → add `pikul.id` (or yours) an
 - **Landing / plans / campaign edits** show on the public site within 60 seconds (CDN cache).
 - **Cleanup (monthly, optional):** in Neon SQL Editor: `delete from rate_events where at < now() - interval '7 days';`
 
-## Device sync (v0.19, ADR-024 / ADR-025)
+## Device sync (v0.19, ADR-025 / ADR-026)
 
 Every device signed in to the same account shares one store: menu, sales, customers, expenses, settings. Each device keeps its **own cash drawer** (open / close register); the owner sees all drawers in Kas → **Semua perangkat**.
 

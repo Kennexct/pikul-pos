@@ -19,4 +19,4 @@ Two schemas: `db/migrations/` (Neon, live target for accounts + billing) and `su
 - admin-console-revamp.md — v0.17 business console (ADR-020)
 
 - vercel-neon-launch (v0.18) — ADR-022, ADR-023 → `vercel-neon-launch.md`
-- device-sync (v0.19) — ADR-024, ADR-025 → `device-sync.md`
+- device-sync (v0.19) — ADR-025, ADR-026 → `device-sync.md`

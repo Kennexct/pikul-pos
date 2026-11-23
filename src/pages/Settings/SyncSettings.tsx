@@ -19,7 +19,7 @@ function statusLine(status: SyncStatus, pending: number, lastAt: string | null):
   return lastAt ? t('Tersinkron {0}.', dateTime.format(new Date(lastAt))) : t('Belum pernah tersinkron.');
 }
 
-/** Settings → Sinkronisasi (ADR-024): status, "Sinkronkan sekarang", and the devices on this account. */
+/** Settings → Sinkronisasi (ADR-025): status, "Sinkronkan sekarang", and the devices on this account. */
 export function SyncSettings() {
   const status = useSessionStore((s) => s.syncStatus);
   const setSyncStatus = useSessionStore((s) => s.setSyncStatus);

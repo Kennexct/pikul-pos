@@ -4,7 +4,7 @@ import { uuidv7 } from '../lib/id';
 import type { Id } from '../types';
 
 /**
- * This device's identity (ADR-024, ADR-025). Never synced.
+ * This device's identity (ADR-025, ADR-026). Never synced.
  * - deviceId: random UUID; owns this device's cash register records and identifies it to the sync server.
  * - receipt code: 2 characters inside receipt numbers so offline devices never print the same number.
  */

@@ -1,7 +1,7 @@
 import type { DayClosing, Id, Order, Refund } from '../types';
 import { isCountedSale } from './reports';
 
-/** Kas → "Semua perangkat" (ADR-025): each device's sales and closing for one business day, plus the store total. Pure. */
+/** Kas → "Semua perangkat" (ADR-026): each device's sales and closing for one business day, plus the store total. Pure. */
 
 export interface DeviceDayRow {
   deviceId: Id;

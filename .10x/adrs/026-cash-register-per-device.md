@@ -1,4 +1,4 @@
-# ADR-025: Each device keeps its own cash register
+# ADR-026: Each device keeps its own cash register
 
 **Status:** Accepted — Kenny chose "Each device has its own" (2026-11-21)
 **Date:** 2026-11-21
@@ -6,7 +6,7 @@
 **Author:** 10x-Team (Architect + PM)
 
 ## Context
-With sync (ADR-024) every device sees every sale. The register gate, opening cash, drawer maths and "Tutup kasir" (ADR-007, ADR-017) were written for one device per store, so device B would see A's sales and closing and think its own drawer is open or closed.
+With sync (ADR-025) every device sees every sale. The register gate, opening cash, drawer maths and "Tutup kasir" (ADR-007, ADR-017) were written for one device per store, so device B would see A's sales and closing and think its own drawer is open or closed.
 
 ## Decision
 - Every device has a random `deviceId` (UUID, `meta: deviceId`), separate from the 2-character receipt code.
