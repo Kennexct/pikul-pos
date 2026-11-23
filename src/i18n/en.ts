@@ -1531,6 +1531,6 @@ export const EN = {
   "{0} produk ditambahkan": "{0} {0|product|products} added",
   "{0} varian": "{0} {0|variant|variants}",
   "Menu {0}": "{0} menu",
-  "Keuangan": "Money",
+  "Transaksi::menu": "Sales",
   "Kelola": "Manage",
 } as const;

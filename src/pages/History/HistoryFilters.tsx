@@ -39,8 +39,8 @@ export function HistoryFilters(props: HistoryFiltersProps) {
     <div className="flex flex-col gap-3 pb-3">
       <DateRangeControl state={dateRange} today={today} />
 
-      <div className="flex flex-col gap-2 lg:flex-row lg:items-center">
-        <div className="lg:max-w-xs lg:flex-1">
+      <div className="flex flex-col gap-2 @4xl/page:flex-row @4xl/page:items-center">
+        <div className="@4xl/page:max-w-xs @4xl/page:flex-1">
           <SearchInput value={filter.query} onChange={(query) => set({ query })} placeholder={t('No. struk, label, pelanggan…')} label={t('Cari transaksi')} />
         </div>
         <div className="scroll-x -mx-4 flex gap-2 px-4 md:mx-0 md:px-0">

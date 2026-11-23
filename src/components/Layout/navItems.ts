@@ -13,7 +13,7 @@ export interface NavItem {
 
 /** One entry of the main menu (rail + phone bar). A group with several pages shows them as sub-menu tabs. */
 export interface NavGroup {
-  id: 'pos' | 'sales' | 'money' | 'manage';
+  id: 'pos' | 'sales' | 'manage' | 'reports' | 'settings';
   label: string;
   icon: LucideIcon;
   items: readonly NavItem[];
@@ -32,13 +32,17 @@ export const NAV_ITEMS = {
   help: { to: ROUTES.help, label: t('Bantuan'), icon: CircleHelp },
 } as const satisfies Record<string, NavItem>;
 
-/** Main menu: four groups instead of nine items (Bantuan sits apart, at the foot of the rail / in Akun on a phone). */
+/** Main menu (Kenny, v0.19.1): Kasir · Transaksi · Kelola · Laporan · Pengaturan. Bantuan sits apart (rail foot / Akun on a phone). */
 export const NAV_GROUPS: readonly NavGroup[] = [
   { id: 'pos', label: t('Kasir'), icon: Store, items: [NAV_ITEMS.pos] },
-  { id: 'sales', label: t('Transaksi'), icon: ReceiptText, items: [NAV_ITEMS.openOrders, NAV_ITEMS.history] },
-  { id: 'money', label: t('Keuangan'), icon: Wallet, items: [NAV_ITEMS.cash, NAV_ITEMS.reports] },
-  { id: 'manage', label: t('Kelola'), icon: LayoutGrid, items: [NAV_ITEMS.products, NAV_ITEMS.customers, NAV_ITEMS.settings] },
+  { id: 'sales', label: t('Transaksi::menu'), icon: ReceiptText, items: [NAV_ITEMS.openOrders, NAV_ITEMS.history, NAV_ITEMS.cash] },
+  { id: 'manage', label: t('Kelola'), icon: LayoutGrid, items: [NAV_ITEMS.products, NAV_ITEMS.customers] },
+  { id: 'reports', label: t('Laporan'), icon: BarChart3, items: [NAV_ITEMS.reports] },
+  { id: 'settings', label: t('Pengaturan'), icon: Settings, items: [NAV_ITEMS.settings] },
 ];
+
+/** Phone bottom bar: the first four groups; Pengaturan and Bantuan sit in the Akun tab. */
+export const PHONE_GROUP_IDS: readonly NavGroup['id'][] = ['pos', 'sales', 'manage', 'reports'];
 
 /** The group whose pages include this path (exact match; "/" only matches the cashier). */
 export const groupOf = (pathname: string): NavGroup | undefined =>

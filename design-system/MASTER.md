@@ -91,8 +91,9 @@ Motion confirms what just happened; nothing loops. Tokens and keyframes live in 
 
 ## Layout
 
-- **Main menu = 4 groups** (`navItems.ts`): Kasir · Transaksi (Pesanan, Riwayat) · Keuangan (Kas, Laporan) · Kelola (Produk, Pelanggan, Pengaturan). A group with several pages shows a `SubNav` (underline tabs with 16px icons) above the page; tapping a group reopens its last visited page. Nav icons are 20px.
-- **Phone (< 768px):** bottom tab bar (4 groups + Akun: seller, sync, lock, Bantuan), floating dark "Lihat pesanan" bar above it, 3-column product grid.
+- **Main menu** (`navItems.ts`): Kasir · Transaksi (Pesanan, Riwayat, Kas) · Kelola (Produk, Pelanggan) · Laporan · Pengaturan. A group with several pages shows its sub-menu as a list column (`SubNavList`, 208px) left of the page on tablet and as underline tabs (`SubNavTabs`) on a phone; tapping a group reopens its last visited page. Nav icons are 20px.
+- List pages switch to their table layout by the space they get, not the screen: the page pane is `@container/page` and tables use `@4xl/page:` (not `lg:`).
+- **Phone (< 768px):** bottom tab bar (Kasir, Transaksi, Kelola, Laporan + Akun: seller, sync, lock, Pengaturan, Bantuan), floating dark "Lihat pesanan" bar above it, 3-column product grid.
 - **Tablet (≥ 768px):** 84px side rail (logomark, groups with 3px active indicator, Bantuan "?" at the foot, sync status, cashier avatar); POS = product grid + 340–420px cart column.
 
 ## Anti-patterns (reject in review)

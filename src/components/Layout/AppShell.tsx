@@ -9,14 +9,14 @@ import { useSessionStore } from '../../store/useSessionStore';
 import { LogoMark } from '../Brand/Logo';
 import { AccountSheet } from '../Pin/AccountSheet';
 import { initialsOf } from '../Pin/SellerSwitcher';
-import { RailGroupLink, SubNav, TabBarLink } from './GroupNav';
-import { groupOf, NAV_GROUPS, NAV_ITEMS, type NavGroup, type NavItem } from './navItems';
+import { RailGroupLink, SubNavList, SubNavTabs, TabBarLink } from './GroupNav';
+import { groupOf, NAV_GROUPS, NAV_ITEMS, PHONE_GROUP_IDS, type NavGroup, type NavItem } from './navItems';
 import { SyncBadge } from './SyncBadge';
 import { t } from '../../i18n';
 
 /**
- * Main menu = four groups (Kasir, Transaksi, Keuangan, Kelola); a group with several pages shows them as a sub-menu above the page.
- * Phone (< md): content + bottom tab bar (the four groups + Akun).
+ * Main menu = Kasir, Transaksi, Kelola, Laporan, Pengaturan; a group with several pages shows them as a sub-menu (list on tablet, tabs on phone).
+ * Phone (< md): content + bottom tab bar (Kasir, Transaksi, Kelola, Laporan + Akun, which holds Pengaturan and Bantuan).
  * Tablet/desktop (>= md): 84px side rail with logomark, groups, Bantuan, sync status, owner-mode lock and the seller.
  */
 export function AppShell() {
@@ -28,6 +28,7 @@ export function AppShell() {
   const { pathname } = useLocation();
   const current = groupOf(pathname);
   /** Last page opened in each group, so tapping the group returns there. */
+  const hasSubNav = current !== undefined && current.items.length > 1;
   const lastVisited = useRef<Partial<Record<NavGroup['id'], string>>>({});
   const [, rerender] = useState(0);
   useOwnerAutoLock();
@@ -89,18 +90,24 @@ export function AppShell() {
 
       <main className="page-pane relative flex min-w-0 flex-1 flex-col pb-[calc(64px+env(safe-area-inset-bottom))] md:pb-0">
         <SubscriptionBanner />
-        {current && current.items.length > 1 && <SubNav group={current} badgeFor={badgeFor} isLocked={isLocked} />}
-        <Outlet />
+        {hasSubNav && <SubNavTabs group={current} badgeFor={badgeFor} isLocked={isLocked} />}
+        <div className="flex min-h-0 flex-1">
+          {hasSubNav && <SubNavList group={current} badgeFor={badgeFor} isLocked={isLocked} />}
+          {/* Named container: list/table pages switch to their table layout by the space left, not the screen width. */}
+          <div className="@container/page flex min-w-0 flex-1 flex-col">
+            <Outlet />
+          </div>
+        </div>
       </main>
 
       <nav
         aria-label={t('Navigasi bawah')}
         className="fixed inset-x-0 bottom-0 z-30 grid h-[calc(64px+env(safe-area-inset-bottom))] auto-cols-fr grid-flow-col border-t border-line bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden"
       >
-        {NAV_GROUPS.map((group) => (
+        {NAV_GROUPS.filter((group) => PHONE_GROUP_IDS.includes(group.id)).map((group) => (
           <TabBarLink key={group.id} label={group.label} icon={group.icon} {...groupProps(group)} />
         ))}
-        <TabBarLink to={ROUTES.more} label={t('Akun')} icon={CircleUserRound} isActive={pathname === ROUTES.more || pathname === ROUTES.help} />
+        <TabBarLink to={ROUTES.more} label={t('Akun')} icon={CircleUserRound} isActive={pathname === ROUTES.more || pathname === ROUTES.help || pathname === ROUTES.settings} />
       </nav>
 
       {isAccountOpen && <AccountSheet onClose={() => setIsAccountOpen(false)} />}

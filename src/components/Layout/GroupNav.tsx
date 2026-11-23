@@ -78,10 +78,10 @@ interface SubNavProps {
   isLocked: (item: NavItem) => boolean;
 }
 
-/** Sub-menu of the open group (e.g. Transaksi → Pesanan · Riwayat), as underline tabs above the page. */
-export function SubNav({ group, badgeFor, isLocked }: SubNavProps) {
+/** Phone: the open group's pages as underline tabs above the page (e.g. Transaksi → Pesanan · Riwayat · Kas). */
+export function SubNavTabs({ group, badgeFor, isLocked }: SubNavProps) {
   return (
-    <nav aria-label={t('Menu {0}', group.label)} className="shrink-0 border-b border-line bg-surface px-2 md:px-6">
+    <nav aria-label={t('Menu {0}', group.label)} className="shrink-0 border-b border-line bg-surface px-2 md:hidden">
       <div className="scroll-x -mb-px flex gap-1">
         {group.items.map((item) => (
           <NavLink
@@ -104,6 +104,30 @@ export function SubNav({ group, badgeFor, isLocked }: SubNavProps) {
           </NavLink>
         ))}
       </div>
+    </nav>
+  );
+}
+
+/** Tablet: the open group's pages as a list in a second column left of the page. */
+export function SubNavList({ group, badgeFor, isLocked }: SubNavProps) {
+  return (
+    <nav aria-label={t('Menu {0}', group.label)} className="hidden w-52 shrink-0 flex-col gap-1 overflow-y-auto border-r border-line bg-surface px-3 py-5 md:flex">
+      <p className="mb-2 px-3 text-[12px] font-semibold uppercase tracking-[0.06em] text-muted">{group.label}</p>
+      {group.items.map((item) => (
+        <NavLink
+          key={item.to}
+          to={item.to}
+          viewTransition
+          className={({ isActive }) =>
+            `flex h-11 items-center gap-3 rounded-lg px-3 text-[14px] font-semibold transition-colors ${isActive ? 'bg-brand-50 text-brand-700' : 'text-ink-soft hover:bg-subtle hover:text-ink'}`
+          }
+        >
+          <item.icon aria-hidden size={18} />
+          <span className="min-w-0 flex-1 truncate">{item.label}</span>
+          <CountBadge count={badgeFor(item)} className="static ring-0" />
+          <LockMark isShown={isLocked(item)} className="static" />
+        </NavLink>
+      ))}
     </nav>
   );
 }

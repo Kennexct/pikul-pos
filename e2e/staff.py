@@ -122,7 +122,6 @@ def run(p, name, viewport, is_mobile):
     db = page.evaluate(READ_DB)
 
     # 6. The approval did not unlock owner screens: Reports still asks for the PIN.
-    page.get_by_role('link', name=re.compile('^Keuangan')).first.click()  # v0.19.1: Laporan is a sub-menu of Keuangan
     page.get_by_role('link', name=re.compile('^Laporan')).first.click()
     page.get_by_text('Khusus pemilik').wait_for()
     shot(page, f'{name}-s5-gate')
@@ -133,7 +132,6 @@ def run(p, name, viewport, is_mobile):
     if is_mobile:
         page.get_by_role('link', name='Akun', exact=True).click()  # v0.19.1: phone tab Akun replaces Lainnya
     page.get_by_role('button', name='Kunci').click()
-    page.get_by_role('link', name=re.compile('^Keuangan')).first.click()  # v0.19.1: Laporan is a sub-menu of Keuangan
     page.get_by_role('link', name=re.compile('^Laporan')).first.click()
     page.get_by_text('Khusus pemilik').wait_for()
 
