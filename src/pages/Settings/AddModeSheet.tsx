@@ -52,7 +52,7 @@ export function AddModeSheet({ storeId, onClose }: { storeId: Id; onClose: () =>
           <p className={helperText}>{PRICE_RULE_HELP[priceRule]}</p>
         </div>
         {priceRule === 'markup' && (
-          <div className="max-w-[180px]">
+          <div>
             <label htmlFor="mode-markup" className={labelBase}>{t('Markup (%)')}</label>
             <NumberInput id="mode-markup" max={100} value={markupPct} onChange={setMarkupPct} />
           </div>

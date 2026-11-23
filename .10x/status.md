@@ -1,12 +1,20 @@
 # Status
 
-## Round 4 polish: number fields, unit buttons, weigh-out callout, trial days, desktop width (v0.19.3) — In review (2026-11-23)
+## Round 5: consistent field sizes in Settings (v0.19.4) — In review (2026-11-23)
+Branch `claude/project-thread-5a5zxj` from `main` `49f04a9`. Kenny: field widths differ between Settings pages; two-column cards leave uneven gaps. No ADR (UI only). Next ADR: 027.
+- [x] Settings is one column of full-width cards again (no card masonry)
+- [x] `fieldGrid` (styles.ts): inside a card every field is one equal cell, two per row from @xl/card; used in Profil toko, Struk, Pajak, PIN pemilik, Tambah kasir, Aturan kasir, payment reference label, mode markup, Ganti kata sandi
+- [x] Removed ad-hoc widths (max-w-sm, max-w-[12rem], max-w-[180px], max-w-[160px], sm:grid-cols-3, 150px PIN column)
+- [x] Checks: typecheck, i18n, 264 tests, build; e2e v12, flow, manage, staff, v08, v13, v16, v09, v11 pass
+- [ ] Kenny: try on the Vercel preview, merge
+
+## Round 4 polish: number fields, unit buttons, weigh-out callout, trial days, desktop width (v0.19.3) — Delivered, merged as PR #10 (2026-11-23)
 Branch `claude/project-thread-5a5zxj` from `main` `6ddf96e`. Kenny's round-4 feedback. No ADR (UI only). Next ADR: 027.
 - [x] `NumberInput` (%, days, counts): 0 is a grey placeholder, focus selects; used for tax, service, markup, cashier rules, add-on max. `RupiahInput` blanks a 0 when its placeholder is "0"
 - [x] "Dijual per" unit buttons: 3 columns, name + short hint on two lines
 - [x] Sell by amount: "Timbang sebanyak 0,543 kg" in a large brand callout
 - [x] English trial/subscription text was missing the day count (`{0|day|days}` without `{0}`); i18n test now guards it
-- [x] Settings on wide screens: section cards in two columns (`@container/settings`), payment/mode cards too
+- [x] Settings on wide screens: section cards in two columns (replaced in v0.19.4 by one column + fieldGrid)
 - [x] Checks: typecheck, i18n, 264 tests, build; e2e v12, flow, manage, staff, v08, v13, v16, v09, v11 pass
 - [ ] Kenny: try on the Vercel preview, merge
 

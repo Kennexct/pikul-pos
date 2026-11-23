@@ -2,7 +2,7 @@ import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { PinInput } from '../../../components/Pin/PinInput';
 import { RecoveryCodeNotice } from '../../../components/Pin/RecoveryCodeNotice';
-import { badgeBrand, badgeNeutral, btnPrimary, helperText, labelBase } from '../../../components/ui/styles';
+import { badgeBrand, badgeNeutral, btnPrimary, fieldGrid, helperText, labelBase } from '../../../components/ui/styles';
 import { isValidPin } from '../../../lib/pin';
 import { setOwnerPin } from '../../../services/staff';
 import { useSessionStore } from '../../../store/useSessionStore';
@@ -56,7 +56,7 @@ export function OwnerPinSection({ storeId }: { storeId: Id }) {
           <p>
             <span className={hasOwnerPin ? badgeBrand : badgeNeutral}>{hasOwnerPin ? t('PIN aktif') : t('Belum diatur')}</span>
           </p>
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className={fieldGrid}>
             {hasOwnerPin && (
               <div>
                 <label htmlFor="owner-pin-current" className={labelBase}>{t('PIN saat ini')}</label>

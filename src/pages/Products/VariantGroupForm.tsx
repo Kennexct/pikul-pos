@@ -89,7 +89,7 @@ export function VariantGroupForm({ group, storeId, onClose }: VariantGroupFormPr
         </div>
 
         {draft.selectType === 'multi' && (
-          <div className="max-w-[160px]">
+          <div>
             <label htmlFor="group-max" className={labelBase}>{t('Maksimal pilihan')}</label>
             <NumberInput id="group-max" isInteger min={1} max={99} value={draft.max} onChange={(max) => update({ max })} />
           </div>

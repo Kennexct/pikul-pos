@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { SegmentedControl } from '../../../components/ui/SegmentedControl';
-import { btnPrimary, helperText, labelBase } from '../../../components/ui/styles';
+import { btnPrimary, fieldGrid, helperText, labelBase } from '../../../components/ui/styles';
 import { PERCENT_MAX } from '../../../constants';
 import { updateStore } from '../../../services/bootstrap';
 import type { PermissionLevel, Store, StoreRules } from '../../../types';
@@ -54,7 +54,7 @@ export function RulesSection({ store }: { store: Store }) {
           <p className={labelBase}>{t('Refund')}</p>
           <SegmentedControl label={t('Aturan refund')} options={RULE_OPTIONS} value={toChoice(rules.refundPermission)} onChange={(c) => update({ refundPermission: toLevel(c) })} />
         </div>
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className={fieldGrid}>
           <div>
             <label htmlFor="rule-discount" className={labelBase}>{t('Batas diskon kasir (%)')}</label>
             <NumberInput id="rule-discount" isInteger max={PERCENT_MAX} value={rules.cashierMaxDiscountPct} onChange={(cashierMaxDiscountPct) => update({ cashierMaxDiscountPct })} />
