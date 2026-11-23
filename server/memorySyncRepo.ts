@@ -61,6 +61,13 @@ export function memorySyncRepo(): SyncRepo & { rows: Map<string, MemRow> } {
       const last = orders.map((o) => String(o.data.createdAt ?? '')).sort().at(-1) ?? null;
       return { name: typeof store?.data.name === 'string' ? store.data.name : '', products: live(accountId, 'products').length, orders: orders.length, lastSaleAt: last };
     },
+    async storeProfiles() {
+      const str = (v: unknown) => (typeof v === 'string' ? v : '');
+      return [...stores].flatMap(([accountId, storeId]) => {
+        const d = rows.get(key(accountId, 'stores', storeId))?.data;
+        return d ? [{ accountId, name: str(d.name), phone: str(d.phone), address: str(d.address) }] : [];
+      });
+    },
     async touchDevice(accountId, hello, now) {
       const k = `${accountId}|${hello.deviceId}`;
       const d = devices.get(k);

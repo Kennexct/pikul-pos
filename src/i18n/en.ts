@@ -1350,7 +1350,6 @@ export const EN = {
   'Daftar akun Pikul': 'Create a Pikul account',
   'Daftar dan mulai 14 hari gratis': 'Sign up and start 14 free days',
   'Data ini dipakai tim Pikul untuk menghubungi Anda soal akun dan langganan.': 'The Pikul team uses these details to contact you about your account and subscription.',
-  'Data pendaftaran': 'Sign-up details',
   'Data pendaftaran dan ringkasan. Konsol tidak bisa membuka struk atau menu merchant.': 'Sign-up details and summaries. The console cannot open a merchant\'s receipts or menu.',
   'Email akun': 'Account email',
   'Email atau kata sandi salah.': 'Wrong email or password.',

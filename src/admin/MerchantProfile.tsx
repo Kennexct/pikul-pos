@@ -26,7 +26,7 @@ function Row({ label, value, href }: { label: string; value: string; href?: stri
   );
 }
 
-/** Sign-up details (ADR-023): what the merchant typed when registering, plus a one-time temporary password. */
+/** Shop profile: the latest name, WhatsApp and address the merchant saved in the app (else what they typed at sign-up, ADR-023), plus a one-time temporary password. */
 export function MerchantProfile({ m, onError }: { m: AccountView; onError: (e: unknown) => Promise<void> }) {
   const [password, setPassword] = useState<string | null>(null);
   const [asking, setAsking] = useState(false);
@@ -47,13 +47,14 @@ export function MerchantProfile({ m, onError }: { m: AccountView; onError: (e: u
   };
 
   return (
-    <section aria-label={t('Data pendaftaran')} className="space-y-3">
-      <h3 className="text-[15px] font-bold text-ink">{t('Data pendaftaran')}</h3>
+    <section aria-label={t('Profil toko')} className="space-y-3">
+      <h3 className="text-[15px] font-bold text-ink">{t('Profil toko')}</h3>
       <dl className={`${card} divide-y divide-line`}>
         <Row label={t('Nama toko')} value={m.storeName} />
         <Row label={t('Pemilik')} value={m.ownerName} />
         <Row label={t('Email')} value={m.email} href={`mailto:${m.email}`} />
         <Row label={t('WhatsApp')} value={fmtPhone(m.phone)} href={wa} />
+        <Row label={t('Alamat')} value={m.address} />
         <Row label={t('Kota')} value={m.city} />
       </dl>
       {password ? (

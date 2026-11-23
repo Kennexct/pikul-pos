@@ -1,6 +1,8 @@
 # Handoff — device sync delivered (2026-11-21)
 
-**Latest:** v0.19.4: form fields in Settings cards use `fieldGrid` (equal cells, 2 per row on wide cards; SettingsSection body is `@container/card`). Do not give single fields their own max-w. Next ADR: 027.
+**Latest:** v0.19.5: the admin console's merchant name/WhatsApp/address come from the synced store row (`SyncRepo.storeProfiles()`), falling back to the sign-up fields in `accounts`. Do not show `accounts.store_name/phone` alone in the console.
+
+**Before that:** v0.19.4: form fields in Settings cards use `fieldGrid` (equal cells, 2 per row on wide cards; SettingsSection body is `@container/card`). Do not give single fields their own max-w. Next ADR: 027.
 
 **Earlier:** v0.19.3 on `claude/project-thread-5a5zxj`: round-4 polish. Use `NumberInput` (src/components/ui/NumberInput.tsx) for small number fields so 0 is a placeholder. Settings content is `@container/settings` with two columns from @4xl. Next ADR: 027.
 

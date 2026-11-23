@@ -85,7 +85,7 @@ def admin(browser, name, viewport, is_mobile, email, store):
     shot(page, f'{name}-c1-merchant-list')
     row.click()
     sheet = page.get_by_role('dialog')
-    region = sheet.get_by_role('region', name='Data pendaftaran')
+    region = sheet.get_by_role('region', name='Profil toko')
     region.wait_for()
     for text in (store, 'Siti Aminah', email, '+62 813-1111-2222', 'Yogyakarta'):
         assert text in region.inner_text(), f'sheet shows {text}'
