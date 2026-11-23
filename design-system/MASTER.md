@@ -56,6 +56,8 @@ Components must use semantic tokens only — no raw `slate-*`, `orange-*` or hex
 | Sections / categories | `Tabs` (underline, scrolls horizontally) |
 | Pick one or many from a set (variants, quick cash, presets) | `option()` class — bordered square, check icon when selected |
 | On/off setting | `Switch` (row with label + description) |
+| Sub-menu column (tablet) | `SidePanel` + `sideItem`; folds to an icon strip, choice kept per device |
+| Turning something off for sale (Habis) | `Switch tone="danger"`; sold-out controls and badges use danger-600/50 |
 | Modal / bottom sheet | `Sheet` (grabber on phone, centered on tablet, title + subtitle) |
 | Nothing to show | `EmptyState` (icon in bordered square + title + one line) |
 | Search | `SearchInput` |

@@ -14,11 +14,20 @@ export function getBusinessDate(at: Date, store: Pick<Store, 'timezone' | 'dayCu
   return new Intl.DateTimeFormat('en-CA', { timeZone: store.timezone }).format(shifted);
 }
 
-/** INV-YYYYMMDD-<device 2 chars><seq 4>, e.g. INV-20261118-A10042. */
-export function formatReceiptNo(businessDate: BusinessDate, deviceCode: string, seq: number): string {
+export const RECEIPT_PREFIX_DEFAULT = 'INV';
+export const RECEIPT_PREFIX_MAX = 6;
+
+/** What the seller typed → a safe prefix: A–Z and 0–9 only, upper case, at most 6 characters. Empty = "INV". */
+export function normalizeReceiptPrefix(input: string | undefined): string {
+  const clean = (input ?? '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, RECEIPT_PREFIX_MAX);
+  return clean === '' ? RECEIPT_PREFIX_DEFAULT : clean;
+}
+
+/** <PREFIX>-YYYYMMDD-<device 2 chars><seq 4>, e.g. INV-20261118-A10042; the prefix is set per store (Toko & Struk). */
+export function formatReceiptNo(businessDate: BusinessDate, deviceCode: string, seq: number, prefix?: string): string {
   if (!/^[A-Z0-9]{2}$/.test(deviceCode)) {
     throw new Error(t('Device code must be 2 uppercase alphanumerics, got "{0}"', deviceCode));
   }
   const compactDate = businessDate.replace(/-/g, '');
-  return t('INV-{0}-{1}{2}', compactDate, deviceCode, String(seq).padStart(RECEIPT_SEQ_DIGITS, '0'));
+  return `${normalizeReceiptPrefix(prefix)}-${compactDate}-${deviceCode}${String(seq).padStart(RECEIPT_SEQ_DIGITS, '0')}`;
 }

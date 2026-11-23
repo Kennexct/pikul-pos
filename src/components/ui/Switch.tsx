@@ -4,10 +4,12 @@ interface SwitchProps {
   label: string;
   description?: string;
   disabled?: boolean;
+  /** "danger" paints the "on" state red (e.g. a menu marked sold out). */
+  tone?: 'brand' | 'danger';
 }
 
 /** Toggle row: label + optional description on the left, switch on the right (48px row). */
-export function Switch({ checked, onChange, label, description, disabled = false }: SwitchProps) {
+export function Switch({ checked, onChange, label, description, disabled = false, tone = 'brand' }: SwitchProps) {
   return (
     <label className={`relative flex min-h-12 items-center gap-4 ${disabled ? 'opacity-50' : 'cursor-pointer'}`}>
       <span className="min-w-0 flex-1">
@@ -25,7 +27,7 @@ export function Switch({ checked, onChange, label, description, disabled = false
       <span
         aria-hidden
         className={`relative h-7 w-12 shrink-0 rounded-full transition-colors duration-200 peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-brand-600 ${
-          checked ? 'bg-brand-600' : 'bg-line-strong'
+          checked ? (tone === 'danger' ? 'bg-danger-600' : 'bg-brand-600') : 'bg-line-strong'
         }`}
       >
         <span

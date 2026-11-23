@@ -145,7 +145,7 @@ export const HELP_ID: HelpContent = {
       title: 'Jual per berat dan harga yang bisa diubah',
       summary: 'Untuk pedagang pasar: jual per kilo, ons, liter, atau meter, dan ketik harga hari ini langsung di kasir.',
       steps: [
-        'Buka Pengaturan, tab Toko & Struk, nyalakan "Aktifkan satuan berat dan ukuran", lalu simpan.',
+        'Buka Pengaturan, bagian Mode Penjualan, lalu nyalakan "Aktifkan satuan berat dan ukuran". Langsung tersimpan.',
         'Di Produk, pilih "Dijual per" (misalnya kg) dan isi harga per satuan itu.',
         'Untuk barang yang harganya naik-turun, buka "Pengaturan lain" lalu nyalakan "Harga bisa diubah saat jual".',
         'Di Kasir, ketuk barangnya, lalu ketik beratnya (misalnya 0,75), atau pilih Nominal dan ketik uang pembeli (misalnya Rp10.000).',

@@ -75,6 +75,7 @@ export function ProductMoreOptions({ draft, update, variantGroups }: ProductMore
             />
             {draft.isActive && (
               <Switch
+                tone="danger"
                 checked={draft.isSoldOut === true}
                 onChange={(isSoldOut) => update({ isSoldOut })}
                 label={t('Sedang habis')}

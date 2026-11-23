@@ -63,6 +63,7 @@ export function SoldOutSheet({ products, onClose }: SoldOutSheetProps) {
                     {activeVariants(product).map((variant) => (
                       <div key={variant.id} className="pl-3">
                         <Switch
+                          tone="danger"
                           checked={variant.isSoldOut === true}
                           onChange={(isSoldOut) => void toggleVariant(product, variant.id, isSoldOut)}
                           label={variant.name}
@@ -73,6 +74,7 @@ export function SoldOutSheet({ products, onClose }: SoldOutSheetProps) {
                   </>
                 ) : (
                   <Switch
+                    tone="danger"
                     checked={product.isSoldOut === true}
                     onChange={(isSoldOut) => void toggle(product, isSoldOut)}
                     label={product.name}

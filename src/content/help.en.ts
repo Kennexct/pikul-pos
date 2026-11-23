@@ -146,7 +146,7 @@ export const HELP_EN: HelpContent = {
       title: 'Selling by weight and changing the price',
       summary: 'For market sellers: sell by the kilo, ons, litre or metre, and type today\'s price right in the register.',
       steps: [
-        'Open Settings, Shop & Receipt tab, turn on "Turn on weight and measure units", then save.',
+        'Open Settings, Sales Modes section, and turn on "Turn on weight and measure units". It saves straight away.',
         'In Products, choose "Sold per" (for example kg) and enter the price per that unit.',
         'For goods whose price moves, open "More settings" and turn on "Price can be changed when selling".',
         'In the Register, tap the item, then type the weight (for example 0.75), or choose Amount and type the buyer\'s money (for example Rp10.000).',

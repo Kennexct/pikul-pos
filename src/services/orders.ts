@@ -32,14 +32,14 @@ export interface PaymentInput {
   cashReceived?: number;
 }
 
-async function nextReceiptNo(businessDate: string): Promise<string> {
+async function nextReceiptNo(businessDate: string, prefix: string | undefined): Promise<string> {
   const deviceCode = await getReceiptCode();
   const key = `seq:${businessDate}`;
   return localDb.transaction('rw', localDb.meta, async () => {
     const current = Number((await localDb.meta.get(key))?.value ?? '0');
     const next = current + 1;
     await localDb.meta.put({ key, value: String(next) });
-    return formatReceiptNo(businessDate, deviceCode, next);
+    return formatReceiptNo(businessDate, deviceCode, next, prefix);
   });
 }
 
@@ -64,7 +64,7 @@ async function buildOrder(cart: CartSnapshot, ctx: OrderContext): Promise<Order>
     storeId: ctx.store.id,
     createdAt: existing?.createdAt ?? now,
     updatedAt: now,
-    receiptNo: existing?.receiptNo ?? (await nextReceiptNo(businessDate)),
+    receiptNo: existing?.receiptNo ?? (await nextReceiptNo(businessDate, ctx.store.receiptPrefix)),
     deviceId: await getDeviceId(),
     status: 'open',
     salesModeId: ctx.salesMode.id,

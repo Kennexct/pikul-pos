@@ -3,6 +3,7 @@ import type { LucideIcon } from 'lucide-react';
 import { Link, NavLink } from 'react-router-dom';
 import { t } from '../../i18n';
 import type { NavGroup, NavItem } from './navItems';
+import { SidePanel, sideItem, useSubNavCollapsed } from './SidePanel';
 
 export function CountBadge({ count, className = 'absolute right-2 top-1' }: { count: number; className?: string }) {
   if (count <= 0) return null;
@@ -108,26 +109,26 @@ export function SubNavTabs({ group, badgeFor, isLocked }: SubNavProps) {
   );
 }
 
-/** Tablet: the open group's pages as a list in a second column left of the page. */
+/** Tablet: the open group's pages as a list in a second column left of the page (can fold to icons). */
 export function SubNavList({ group, badgeFor, isLocked }: SubNavProps) {
+  const [isCollapsed, setIsCollapsed] = useSubNavCollapsed();
   return (
-    <nav aria-label={t('Menu {0}', group.label)} className="hidden w-52 shrink-0 flex-col gap-1 overflow-y-auto border-r border-line bg-surface px-3 py-5 md:flex">
-      <p className="mb-2 px-3 text-[12px] font-semibold uppercase tracking-[0.06em] text-muted">{group.label}</p>
+    <SidePanel title={group.label} isCollapsed={isCollapsed} onCollapsedChange={setIsCollapsed}>
       {group.items.map((item) => (
         <NavLink
           key={item.to}
           to={item.to}
           viewTransition
-          className={({ isActive }) =>
-            `flex h-11 items-center gap-3 rounded-lg px-3 text-[14px] font-semibold transition-colors ${isActive ? 'bg-brand-50 text-brand-700' : 'text-ink-soft hover:bg-subtle hover:text-ink'}`
-          }
+          aria-label={isCollapsed ? item.label : undefined}
+          title={isCollapsed ? item.label : undefined}
+          className={({ isActive }) => sideItem(isActive, isCollapsed)}
         >
           <item.icon aria-hidden size={18} />
-          <span className="min-w-0 flex-1 truncate">{item.label}</span>
-          <CountBadge count={badgeFor(item)} className="static ring-0" />
-          <LockMark isShown={isLocked(item)} className="static" />
+          {!isCollapsed && <span className="min-w-0 flex-1 truncate">{item.label}</span>}
+          <CountBadge count={badgeFor(item)} className={isCollapsed ? 'absolute -right-1 -top-1' : 'static ring-0'} />
+          {!isCollapsed && <LockMark isShown={isLocked(item)} className="static" />}
         </NavLink>
       ))}
-    </nav>
+    </SidePanel>
   );
 }
