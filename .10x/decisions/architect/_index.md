@@ -29,3 +29,4 @@
 - `admin-sidebar-nav` — admin console left sidebar (ADR-021)
 
 - vercel-neon-launch (v0.18) — ADR-022, ADR-023 → `vercel-neon-launch.md`
+- `admin-click-to-edit` — read-only-first landing + plan editors (ADR-024) → `admin-click-to-edit.md`

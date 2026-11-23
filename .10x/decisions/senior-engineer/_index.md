@@ -11,3 +11,4 @@
 - admin-console-revamp (v0.17) → `admin-console-revamp.md`
 
 - vercel-neon-launch (v0.18) — ADR-022, ADR-023 → `vercel-neon-launch.md`
+- `admin-click-to-edit` — read-only-first landing + plan editors (ADR-024) → `admin-click-to-edit.md`
