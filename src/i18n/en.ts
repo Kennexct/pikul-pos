@@ -917,7 +917,6 @@ export const EN = {
   '{0} pesanan': '{0} {0|order|orders}',
   '{0} kunjungan': '{0} {0|visit|visits}',
   '{0} pelanggan · {1} pesanan': '{0} {0|customer|customers} · {1} {1|order|orders}',
-  'Lainnya::menu': 'More',
   'Satuan (pcs)': 'Pieces (pcs)',
   'Kilogram (kg)': 'Kilogram (kg)',
   'Ons (100 g)': 'Ons (100 g)',
@@ -1531,4 +1530,7 @@ export const EN = {
   "Tampilan di kasir": "How it looks at the cashier",
   "{0} produk ditambahkan": "{0} {0|product|products} added",
   "{0} varian": "{0} {0|variant|variants}",
+  "Menu {0}": "{0} menu",
+  "Keuangan": "Money",
+  "Kelola": "Manage",
 } as const;

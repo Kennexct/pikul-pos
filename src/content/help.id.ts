@@ -177,7 +177,7 @@ export const HELP_ID: HelpContent = {
       steps: [
         'Buka Pengaturan, tab Staf & PIN, lalu buat PIN pemilik. Catat kode pemulihan yang muncul dan simpan di tempat aman.',
         'Tambah kasir dan beri masing-masing PIN.',
-        'Ganti penjual lewat tombol inisial di pojok kiri bawah (di HP: menu Lainnya).',
+        'Ganti penjual lewat tombol inisial di pojok kiri bawah (di HP: tab Akun).',
         'Atur siapa yang boleh void, refund, dan memberi diskon besar.',
       ],
       notes: [

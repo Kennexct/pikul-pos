@@ -140,8 +140,8 @@ def run(p, name, viewport, is_mobile):
     page.get_by_role('radio', name='Bahasa Indonesia').click()
     page.get_by_role('heading', name='Pengaturan').wait_for()
     page.goto(BASE + '/')
-    page.get_by_role('link', name='Riwayat').first.wait_for()
-    stays_indonesian = page.evaluate("localStorage.getItem('kasirku-lang')") == 'id' and page.get_by_role('link', name='Riwayat').count() > 0
+    page.get_by_role('link', name='Transaksi', exact=True).first.wait_for()
+    stays_indonesian = page.evaluate("localStorage.getItem('kasirku-lang')") == 'id' and page.get_by_role('link', name='Transaksi', exact=True).count() > 0
     browser.close()
     return {
         'english_preselected': english_preselected,

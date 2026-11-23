@@ -65,7 +65,7 @@ Components must use semantic tokens only — no raw `slate-*`, `orange-*` or hex
 ## Icons
 
 - lucide-react only, one stroke weight (1.75, set globally on `.lucide`).
-- Sizes: 22 nav, 18–20 buttons, 15–16 inline with text.
+- Sizes: 20 nav, 18–20 buttons, 15–16 inline with text.
 - Decorative icons get `aria-hidden`; icon-only buttons need `aria-label`.
 - No emoji anywhere in the UI.
 
@@ -91,8 +91,9 @@ Motion confirms what just happened; nothing loops. Tokens and keyframes live in 
 
 ## Layout
 
-- **Phone (< 768px):** bottom tab bar (4 primary + Lainnya), floating dark "Lihat pesanan" bar above it, 3-column product grid.
-- **Tablet (≥ 768px):** 84px side rail (logomark, nav with 3px active indicator, sync status, cashier avatar); POS = product grid + 340–420px cart column.
+- **Main menu = 4 groups** (`navItems.ts`): Kasir · Transaksi (Pesanan, Riwayat) · Keuangan (Kas, Laporan) · Kelola (Produk, Pelanggan, Pengaturan). A group with several pages shows a `SubNav` (underline tabs with 16px icons) above the page; tapping a group reopens its last visited page. Nav icons are 20px.
+- **Phone (< 768px):** bottom tab bar (4 groups + Akun: seller, sync, lock, Bantuan), floating dark "Lihat pesanan" bar above it, 3-column product grid.
+- **Tablet (≥ 768px):** 84px side rail (logomark, groups with 3px active indicator, Bantuan "?" at the foot, sync status, cashier avatar); POS = product grid + 340–420px cart column.
 
 ## Anti-patterns (reject in review)
 

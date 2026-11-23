@@ -178,7 +178,7 @@ export const HELP_EN: HelpContent = {
       steps: [
         'Open Settings, Staff & PIN tab, and create the owner PIN. Write down the recovery code shown and keep it somewhere safe.',
         'Add cashiers and give each a PIN.',
-        'Switch seller with the initials button at the bottom left (on a phone: the More menu).',
+        'Switch seller with the initials button at the bottom left (on a phone: the Account tab).',
         'Set who may void, refund and give large discounts.',
       ],
       notes: [

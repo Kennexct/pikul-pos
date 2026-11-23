@@ -7,7 +7,7 @@ Branch `claude/project-thread-5a5zxj` on `main` `b73980a`. Kenny: new category t
 - [x] Redesign: tablet tile preview, phone photo beside the name, "Satu harga / Ada varian", variant rows with quick fill + Enter-to-next, per-variant extras under Detail, "Pengaturan lain" fold, "Simpan & tambah lagi"
 - [x] Checks: typecheck, i18n, 259 tests, build; e2e v20 (new), v12, v13, manage, v09 phone/tablet
 - [ ] Kenny: try on the Vercel preview, merge
-- [ ] Main menu grouping: proposal sent to Kenny, not built
+- [x] Main menu: Kenny chose 5 groups. Kasir · Transaksi · Keuangan · Kelola + Bantuan (rail foot) / Akun tab (phone); SubNav tabs; 20px icons. e2e staff + v11 follow it; staff, v11, v16, flow, v10 pass
 
 ## Device sync (v0.19) — Delivered, merged to main (2026-11-23)
 Branch `claude/project-thread-zzc5ov` on top of `main` `f376b98`. Spec `specs/2026-11-21-device-sync-design.md`, ADR-025 (sync protocol, store binding), ADR-026 (register per device). Kenny chose: everything both ways, ask which store to keep, register per device; "build it". Next ADR: 027.
