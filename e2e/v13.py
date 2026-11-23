@@ -111,14 +111,15 @@ def run(p, name, viewport, is_mobile):
     tabs = page.get_by_role('tablist').inner_text()
     page.get_by_role('button', name='Produk', exact=True).first.click()
     page.locator('#product-name').fill('Nasi Goreng')
-    dialog.get_by_text('Punya varian').click()
+    dialog.get_by_role('radio', name='Ada varian').click()  # v0.20: Satu harga / Ada varian
     names = dialog.locator('input[id^="variant-name-"]')
     prices = dialog.locator('input[id^="variant-price-"]')
     names.nth(0).fill('Biasa')
     prices.nth(0).fill('15000')
     names.nth(1).fill('Spesial')
     prices.nth(1).fill('22000')
-    dialog.locator('input[id^="variant-"][id*="-"][placeholder="Ikut harga varian"]').nth(1).fill('23000')
+    dialog.get_by_role('button', name='Detail: harga lain, modal, urutan').nth(1).click()  # v0.20: per-variant extras fold away
+    dialog.locator('input[id^="variant-"][id*="-"][placeholder="Ikut harga varian"]').first.fill('23000')
     shot(page, f'{name}-v13-5-form')
     page.get_by_role('button', name='Simpan produk').click()
     page.locator('#product-name').wait_for(state='hidden')

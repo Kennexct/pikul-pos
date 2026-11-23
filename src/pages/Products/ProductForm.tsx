@@ -1,20 +1,18 @@
-import { Check, ImagePlus, Plus } from 'lucide-react';
 import { useRef, useState } from 'react';
 import toast from 'react-hot-toast';
-import { ProductThumb } from '../../components/ui/ProductThumb';
-import { RupiahInput } from '../../components/ui/RupiahInput';
 import { Sheet } from '../../components/ui/Sheet';
-import { formatRupiah } from '../../lib/money';
-import { btnGhost, btnPrimary, btnSecondary, helperText, inputBase, labelBase, option, sectionTitle } from '../../components/ui/styles';
-import { Switch } from '../../components/ui/Switch';
+import { btnPrimary, btnSecondary } from '../../components/ui/styles';
 import type { Catalog } from '../../hooks/useCatalog';
-import { compressProductPhoto } from '../../lib/image';
+import { t } from '../../i18n';
+import { formatRupiah } from '../../lib/money';
+import { isMeasured, perUnit } from '../../lib/quantity';
 import { newMeta, saveProduct } from '../../services/catalog';
 import { createCategory } from '../../services/categories';
-import type { Id, Product } from '../../types';
-import { t } from '../../i18n';
-import { isMeasured, perUnit, SALE_UNITS, UNIT_INFO } from '../../lib/quantity';
-import { newVariant, ProductVariantsEditor } from './ProductVariantsEditor';
+import type { Id, Product, ProductVariant } from '../../types';
+import { ProductBasics, ProductPhotoInput, ProductPreview } from './ProductBasics';
+import { ProductMoreOptions } from './ProductMoreOptions';
+import { ProductPricing, type PriceKind } from './ProductPricing';
+import { newVariant } from './ProductVariantsEditor';
 
 interface ProductFormProps {
   product: Product | null;
@@ -25,9 +23,9 @@ interface ProductFormProps {
   onClose: () => void;
 }
 
-const newProduct = (storeId: Id, sortOrder: number): Product => ({
+const newProduct = (storeId: Id, sortOrder: number, categoryId: Id | null = null): Product => ({
   ...newMeta(storeId),
-  categoryId: null,
+  categoryId,
   name: '',
   basePrice: 0,
   isActive: true,
@@ -36,53 +34,76 @@ const newProduct = (storeId: Id, sortOrder: number): Product => ({
   modePrices: {},
 });
 
-/** M2 + M3: product with category, price or variants (ADR-012), per-mode prices, add-ons and photo. */
+/** A row left untouched (no name, no price, nothing else): dropped on save so Enter-to-add never blocks saving. */
+const isBlankVariant = (v: ProductVariant) => v.name.trim() === '' && v.price === 0 && v.costPrice === undefined && Object.keys(v.modePrices ?? {}).length === 0;
+
+/**
+ * M2 + M3: product with category, price or variants (ADR-012), per-mode prices, add-ons and photo.
+ * Built for speed: name is focused on open, Enter walks the fields, a category typed but not yet added is created on save,
+ * and "Simpan & tambah lagi" starts the next product in the same category.
+ */
 export function ProductForm({ product, catalog, storeId, onClose, isWeightSaleEnabled }: ProductFormProps) {
   const [draft, setDraft] = useState<Product>(() => product ?? newProduct(storeId, catalog.products.length));
-  const [newCategory, setNewCategory] = useState<string | null>(null);
+  const [priceKind, setPriceKind] = useState<PriceKind>(() => ((product?.variants?.length ?? 0) > 0 ? 'variants' : 'single'));
+  const [pendingCategory, setPendingCategory] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
-  const fileInput = useRef<HTMLInputElement>(null);
+  /** Bumps after "Simpan & tambah lagi" so the form remounts fresh (focus back on the name). */
+  const [round, setRound] = useState(0);
+  const [added, setAdded] = useState(0);
+  /** Variants kept while the seller flips to "Satu harga" and back. */
+  const stashedVariants = useRef<ProductVariant[]>([]);
 
   const update = (patch: Partial<Product>) => setDraft((prev) => ({ ...prev, ...patch }));
 
-  const setModePrice = (modeId: Id, price: number | null) =>
-    setDraft((prev) => {
-      const { [modeId]: _removed, ...rest } = prev.modePrices;
-      return { ...prev, modePrices: price === null ? rest : { ...rest, [modeId]: price } };
-    });
+  const changePriceKind = (kind: PriceKind) => {
+    if (kind === priceKind) return;
+    if (kind === 'variants') {
+      const stash = stashedVariants.current;
+      update({ variants: stash.length > 0 ? stash : [newVariant(0), newVariant(1)] });
+    } else {
+      stashedVariants.current = draft.variants ?? [];
+      update({ variants: [] });
+    }
+    setPriceKind(kind);
+  };
 
-  const toggleGroup = (groupId: Id) =>
-    setDraft((prev) => ({
-      ...prev,
-      variantGroupIds: prev.variantGroupIds.includes(groupId)
-        ? prev.variantGroupIds.filter((id) => id !== groupId)
-        : [...prev.variantGroupIds, groupId],
-    }));
-
-  const handlePhoto = async (file: File | undefined) => {
-    if (!file) return;
-    const result = await compressProductPhoto(file);
-    if (result.ok) update({ photoUrl: result.value });
-    else toast.error(result.error);
+  /** Creates the typed category (or picks the existing one with that name) and returns its id. */
+  const resolvePendingCategory = async (): Promise<Id | null | undefined> => {
+    const name = pendingCategory?.trim().replace(/\s+/g, ' ') ?? '';
+    if (name === '') return undefined;
+    const existing = catalog.categories.find((c) => c.name.toLowerCase() === name.toLowerCase());
+    const id = existing ? existing.id : (await createCategory(name, storeId)).id;
+    update({ categoryId: id });
+    setPendingCategory(null);
+    return id;
   };
 
   const handleAddCategory = async () => {
-    if (newCategory === null) return;
     try {
-      const category = await createCategory(newCategory, storeId);
-      update({ categoryId: category.id });
-      setNewCategory(null);
+      if ((await resolvePendingCategory()) === undefined) setPendingCategory(null);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : t('Gagal menambah kategori.'));
     }
   };
 
-  const handleSave = async () => {
+  const handleSave = async (isAddingAnother: boolean) => {
     setIsSaving(true);
     try {
-      await saveProduct(draft);
-      toast.success(t('{0} disimpan', draft.name.trim()));
-      onClose();
+      const categoryId = await resolvePendingCategory();
+      const variants = priceKind === 'variants' ? (draft.variants ?? []).filter((v) => !isBlankVariant(v)) : [];
+      if (priceKind === 'variants' && variants.length === 0) throw new Error(t('Isi nama dan harga minimal satu varian.'));
+      const toSave: Product = { ...draft, variants, ...(categoryId === undefined ? {} : { categoryId }) };
+      await saveProduct(toSave);
+      toast.success(t('{0} disimpan', toSave.name.trim()));
+      if (isAddingAnother) {
+        setAdded((n) => n + 1);
+        setDraft(newProduct(storeId, catalog.products.length + added + 1, toSave.categoryId));
+        setPriceKind('single');
+        stashedVariants.current = [];
+        setRound((r) => r + 1);
+      } else {
+        onClose();
+      }
     } catch (error) {
       toast.error(error instanceof Error ? error.message : t('Gagal menyimpan produk.'));
     } finally {
@@ -91,172 +112,60 @@ export function ProductForm({ product, catalog, storeId, onClose, isWeightSaleEn
   };
 
   const unit = draft.unit ?? 'pcs';
-  /** Shown when the store setting is on — or when this product already uses a unit, so it can be switched back. */
   const showsUnit = isWeightSaleEnabled || isMeasured(draft.unit);
-  const usesVariants = (draft.variants?.length ?? 0) > 0;
-  const priceModes = catalog.salesModes.filter((m) => m.priceRule === 'mode_price');
-  const markupModes = catalog.salesModes.filter((m) => m.priceRule === 'markup');
+  const variantPrices = (draft.variants ?? []).map((v) => v.price).filter((p) => p > 0);
+  const priceLabel =
+    priceKind === 'variants'
+      ? variantPrices.length > 0
+        ? t('Mulai {0}', formatRupiah(Math.min(...variantPrices)))
+        : t('{0} varian', draft.variants?.length ?? 0)
+      : `${formatRupiah(draft.basePrice)}${perUnit(unit)}`;
+
+  const focusPrice = () => {
+    const target = priceKind === 'variants' ? document.querySelector<HTMLInputElement>('[id^="variant-name-"]') : document.getElementById('base-price');
+    target?.focus();
+  };
 
   return (
     <Sheet
       title={product ? t('Ubah produk') : t('Produk baru')}
-      subtitle={product ? product.name : t('Tambahkan menu ke kasir')}
+      subtitle={product ? product.name : added > 0 ? t('{0} produk ditambahkan', added) : t('Tambahkan menu ke kasir')}
       isOpen
       isWide
       onClose={onClose}
       footer={
-        <button type="button" disabled={isSaving} onClick={() => void handleSave()} className={`${btnPrimary} w-full`}>
-          {isSaving ? t('Menyimpan…') : t('Simpan produk')}
-        </button>
+        product ? (
+          <button type="button" disabled={isSaving} onClick={() => void handleSave(false)} className={`${btnPrimary} w-full`}>
+            {isSaving ? t('Menyimpan…') : t('Simpan produk')}
+          </button>
+        ) : (
+          <div className="grid grid-cols-2 gap-2">
+            <button type="button" disabled={isSaving} onClick={() => void handleSave(true)} className={`${btnSecondary} px-2! whitespace-nowrap text-[14px] sm:text-[15px]`}>
+              {t('Simpan & tambah lagi')}
+            </button>
+            <button type="button" disabled={isSaving} onClick={() => void handleSave(false)} className={`${btnPrimary} px-2! whitespace-nowrap text-[14px] sm:text-[15px]`}>
+              {isSaving ? t('Menyimpan…') : t('Simpan produk')}
+            </button>
+          </div>
+        )
       }
     >
-      <div className="grid gap-6 md:grid-cols-[168px_1fr]">
-        <div className="flex flex-row items-center gap-3 md:flex-col md:items-stretch">
-          <ProductThumb name={draft.name || '?'} photoUrl={draft.photoUrl} className="h-28 w-28 shrink-0 rounded-lg border border-line md:h-[168px] md:w-full" />
-          <input ref={fileInput} type="file" accept="image/*" hidden onChange={(e) => void handlePhoto(e.target.files?.[0])} />
-          <div className="flex flex-1 flex-col gap-1">
-            <button type="button" onClick={() => fileInput.current?.click()} className={`${btnSecondary} h-11 w-full text-[14px]`}>
-              <ImagePlus aria-hidden size={18} /> {draft.photoUrl ? t('Ganti foto') : t('Unggah foto')}
-            </button>
-            {draft.photoUrl ? (
-              <button type="button" onClick={() => update({ photoUrl: undefined })} className={`${btnGhost} h-10 text-[13px] text-danger-700!`}>
-                {t('Hapus foto')}
-              </button>
-            ) : (
-              <p className="text-center text-[12px] text-muted">{t('JPG/PNG, otomatis dikompres')}</p>
-            )}
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-5">
-          <div>
-            <label htmlFor="product-name" className={labelBase}>{t('Nama produk')}</label>
-            <input id="product-name" value={draft.name} maxLength={80} onChange={(e) => update({ name: e.target.value })} placeholder={t('Contoh: Bakso Urat')} className={inputBase} />
-          </div>
-
-          <fieldset>
-            <legend className={labelBase}>{t('Kategori')}</legend>
-            <div className="flex flex-wrap gap-2">
-              <button type="button" onClick={() => update({ categoryId: null })} className={option(draft.categoryId === null)}>{t('Tanpa kategori')}</button>
-              {catalog.categories.map((c) => (
-                <button key={c.id} type="button" onClick={() => update({ categoryId: c.id })} className={option(draft.categoryId === c.id)}>{c.name}</button>
-              ))}
-              {newCategory === null && (
-                <button type="button" onClick={() => setNewCategory('')} className={`${option(false)} border-dashed`}>
-                  <Plus aria-hidden size={16} /> {t('Kategori baru')}
-                </button>
-              )}
-            </div>
-            {newCategory !== null && (
-              <div className="mt-2 flex gap-2">
-                <input autoFocus aria-label={t('Nama kategori baru')} value={newCategory} placeholder={t('Nama kategori')} onChange={(e) => setNewCategory(e.target.value)} className={inputBase} />
-                <button type="button" onClick={() => void handleAddCategory()} className={btnPrimary}>{t('Tambah')}</button>
-              </div>
-            )}
-          </fieldset>
-
-          <fieldset className="rounded-lg border border-line p-4">
-            <legend className={`${sectionTitle} px-1`}>{t('Harga')}</legend>
-            {showsUnit && (
-              <div className="mb-4">
-                <p className={labelBase}>{t('Dijual per')}</p>
-                <div role="radiogroup" aria-label={t('Dijual per')} className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                  {SALE_UNITS.map((value) => (
-                    <button key={value} type="button" role="radio" aria-checked={unit === value} onClick={() => update({ unit: value })} className={`${option(unit === value)} h-11 px-2 text-[13px]`}>
-                      {UNIT_INFO[value].label}
-                    </button>
-                  ))}
-                </div>
-                {isMeasured(unit) && <p className={helperText}>{t('Semua harga di bawah ini adalah harga per {0}. Berat diketik di kasir saat menjual.', UNIT_INFO[unit].symbol)}</p>}
-              </div>
-            )}
-            <div className="mb-4 border-b border-line pb-3">
-              <Switch
-                checked={usesVariants}
-                onChange={(isOn) => update({ variants: isOn ? [newVariant(0), newVariant(1)] : [] })}
-                label={t('Punya varian')}
-                description={t('Misalnya Kopi: Latte, Americano, Espresso. Setiap varian punya harga sendiri.')}
-              />
-            </div>
-            {usesVariants ? (
-              <ProductVariantsEditor variants={draft.variants ?? []} priceModes={priceModes} unitSuffix={perUnit(unit)} onChange={(variants) => update({ variants })} />
-            ) : (
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <label htmlFor="base-price" className={labelBase}>{t('Harga dasar (Dine In)')} <span className="num font-normal text-muted">{perUnit(unit)}</span></label>
-                <RupiahInput id="base-price" value={draft.basePrice} onChange={(v) => update({ basePrice: v ?? 0 })} />
-              </div>
-              {priceModes.map((mode) => (
-                <div key={mode.id}>
-                  <label htmlFor={`price-${mode.id}`} className={labelBase}>{t('Harga')} {mode.name}</label>
-                  <RupiahInput id={`price-${mode.id}`} value={draft.modePrices[mode.id] ?? null} onChange={(v) => setModePrice(mode.id, v)} placeholder={t('Ikut harga dasar')} />
-                </div>
-              ))}
-              <div>
-                <label htmlFor="cost-price" className={labelBase}>{t('Harga modal')} <span className="font-normal text-muted">{t('(opsional)')}</span></label>
-                <RupiahInput
-                  id="cost-price"
-                  value={draft.costPrice ?? null}
-                  onChange={(v) => update({ costPrice: v ?? undefined })}
-                  placeholder={t('Belum diisi')}
-                />
-                <p className={helperText}>
-                  {draft.costPrice !== undefined && draft.basePrice > 0
-                    ? isMeasured(unit)
-                      ? t('Untung per {0} {1} (harga dasar).', UNIT_INFO[unit].symbol, formatRupiah(draft.basePrice - draft.costPrice))
-                      : t('Untung per porsi {0} (harga dasar).', formatRupiah(draft.basePrice - draft.costPrice))
-                    : t('Biaya membuat satu porsi. Dipakai untuk menghitung laba di Laporan.')}
-                </p>
-              </div>
-            </div>
-            )}
-            {markupModes.length > 0 && (
-              <p className={helperText}>{markupModes.map((m) => t('{0}: otomatis +{1}% dari harga dasar', m.name, m.markupPct)).join(' · ')}</p>
-            )}
-            <div className="mt-4 border-t border-line pt-3">
-              <Switch
-                checked={draft.isPriceEditable === true}
-                onChange={(isPriceEditable) => update({ isPriceEditable })}
-                label={t('Harga bisa diubah saat jual')}
-                description={t('Kasir bisa mengetik harga lain di kasir. Harga di atas tetap menjadi harga normal dan ikut tercatat.')}
-              />
-            </div>
-          </fieldset>
-
-          <fieldset>
-            <legend className={labelBase}>{t('Add-on')}</legend>
-            {catalog.variantGroups.length === 0 ? (
-              <p className="text-[14px] text-muted">{t('Belum ada grup add-on. Buat di tab Add-on (mis. Es, Gula, Ukuran).')}</p>
-            ) : (
-              <div className="flex flex-wrap gap-2">
-                {catalog.variantGroups.map((g) => {
-                  const isOn = draft.variantGroupIds.includes(g.id);
-                  return (
-                    <button key={g.id} type="button" aria-pressed={isOn} onClick={() => toggleGroup(g.id)} className={option(isOn)}>
-                      {isOn && <Check aria-hidden size={16} />} {g.name}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </fieldset>
-
-          <div className="border-t border-line pt-2">
-            <Switch
-              checked={draft.isActive}
-              onChange={(isActive) => update({ isActive })}
-              label={t('Tampilkan di kasir')}
-              description={t('Produk nonaktif disembunyikan dari kasir, tetapi tetap ada di riwayat.')}
-            />
-            {draft.isActive && (
-              <Switch
-                checked={draft.isSoldOut === true}
-                onChange={(isSoldOut) => update({ isSoldOut })}
-                label={t('Sedang habis')}
-                description={t('Tetap terlihat di kasir dengan tanda Habis, tetapi tidak bisa dijual. Kasir juga bisa mengubahnya.')}
-              />
-            )}
-          </div>
+      <ProductPhotoInput update={update} />
+      <div key={round} className="grid gap-6 md:grid-cols-[176px_1fr]">
+        <ProductPreview draft={draft} update={update} priceLabel={priceLabel} />
+        <div className="flex min-w-0 flex-col gap-5">
+          <ProductBasics
+            draft={draft}
+            categories={catalog.categories}
+            pendingCategory={pendingCategory}
+            onPendingCategory={setPendingCategory}
+            onAddCategory={() => void handleAddCategory()}
+            update={update}
+            isNew={product === null}
+            onNameEnter={focusPrice}
+          />
+          <ProductPricing draft={draft} update={update} priceKind={priceKind} onPriceKind={changePriceKind} salesModes={catalog.salesModes} showsUnit={showsUnit} />
+          <ProductMoreOptions draft={draft} update={update} variantGroups={catalog.variantGroups} />
         </div>
       </div>
     </Sheet>
