@@ -1,6 +1,6 @@
 import { ACTIVE_MEMBER_STORAGE_KEY, BACKUP_APP_ID, BACKUP_FORMAT_VERSION, BACKUP_MAX_BYTES, LAST_BACKUP_KEY, RESTORED_AT_KEY } from '../constants';
 import { localDb } from '../db/localDb';
-import { BackupError, backupFileName, isPortableMetaKey, parseBackup, type BackupFile } from '../lib/backup';
+import { BackupError, backupFileName, isDeviceMetaKey, isPortableMetaKey, parseBackup, type BackupFile } from '../lib/backup';
 import { nowIso } from '../lib/id';
 import { t } from '../i18n';
 
@@ -25,6 +25,11 @@ export async function createBackup(now: Date = new Date()): Promise<BackupResult
       tables[table.name] = table.name === 'meta' ? rows.filter((row) => isPortableMetaKey(String(row.key))) : rows;
     }
   });
+  return backupFromTables(tables, now);
+}
+
+/** Builds a backup file from table rows, e.g. a store downloaded from the server before it is replaced (ADR-025). */
+export function backupFromTables(tables: BackupFile['tables'], now: Date = new Date()): BackupResult {
   const storeName = String(tables.stores?.[0]?.name ?? t('Toko'));
   const counts = Object.fromEntries(Object.entries(tables).map(([name, rows]) => [name, rows.length]));
   const file: BackupFile = {
@@ -59,7 +64,10 @@ export async function readBackupFile(file: Blob): Promise<BackupFile> {
  */
 export async function restoreBackup(backup: BackupFile): Promise<void> {
   await localDb.transaction('rw', localDb.tables, async () => {
+    // This device keeps its own identity; the restored store syncs as if this device were new to it (ADR-025).
+    const device = (await localDb.meta.toArray()).filter((row) => isDeviceMetaKey(row.key) && !row.key.startsWith('sync.'));
     for (const table of localDb.tables) await table.clear();
+    await localDb.meta.bulkPut(device);
     for (const table of backupTables()) await table.bulkPut(backup.tables[table.name] ?? []);
     await localDb.meta.put({ key: RESTORED_AT_KEY, value: nowIso() });
     // The file itself is the latest backup of what is now on the device.

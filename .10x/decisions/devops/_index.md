@@ -17,3 +17,4 @@
 - `admin-sidebar-nav` — admin console left sidebar (ADR-021)
 
 - vercel-neon-launch (v0.18) — ADR-022, ADR-023 → `vercel-neon-launch.md`
+- device-sync (v0.19) — ADR-025, ADR-026 → `device-sync.md`

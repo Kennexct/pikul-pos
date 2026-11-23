@@ -13,6 +13,7 @@ import { SalesModeSettings } from './SalesModeSettings';
 import { StaffSettings } from './StaffSettings';
 import { SettingsSection } from './SettingsSection';
 import { StoreSettings } from './StoreSettings';
+import { SyncSettings } from './SyncSettings';
 import { t } from '../../i18n';
 
 const ALL_TABS = [
@@ -21,11 +22,12 @@ const ALL_TABS = [
   { value: 'payments', label: t('Pembayaran::tab'), help: 'qris' },
   { value: 'modes', label: t('Mode Penjualan'), help: 'varian' },
   { value: 'staff', label: t('Staf & PIN'), help: 'staf' },
+  { value: 'sync', label: t('Sinkronisasi'), help: undefined },
   { value: 'backup', label: t('Cadangan'), help: 'cadangan' },
 ] as const;
 type TabId = (typeof ALL_TABS)[number]['value'];
-// ADR-013: the subscription tab exists only in billed builds.
-const TABS = ALL_TABS.filter((tab) => BILLING_ENABLED || tab.value !== 'subscription');
+// ADR-013, ADR-025: subscription and sync exist only in builds with the Pikul server.
+const TABS = ALL_TABS.filter((tab) => BILLING_ENABLED || (tab.value !== 'subscription' && tab.value !== 'sync'));
 
 export function SettingsPage() {
   const { store, catalog } = useAppData();
@@ -37,7 +39,7 @@ export function SettingsPage() {
 
   return (
     <section className="flex min-h-0 flex-1 flex-col">
-      <PageHeader title={t('Pengaturan')} description={t('Profil toko, struk, pembayaran, mode penjualan, staf, dan cadangan.')} helpTopic={TABS.find((t) => t.value === tab)?.help} isNarrow>
+      <PageHeader title={t('Pengaturan')} description={t('Profil toko, struk, pembayaran, mode penjualan, staf, sinkronisasi, dan cadangan.')} helpTopic={TABS.find((t) => t.value === tab)?.help} isNarrow>
         <Tabs label={t('Bagian pengaturan')} items={TABS} value={tab} onChange={setTab} />
       </PageHeader>
       <div className="min-h-0 flex-1 overflow-y-auto p-4 md:px-8 md:py-6">
@@ -54,6 +56,7 @@ export function SettingsPage() {
           {tab === 'payments' && <PaymentMethodSettings storeId={store.id} methods={catalog.paymentMethods} />}
           {tab === 'modes' && <SalesModeSettings storeId={store.id} modes={catalog.salesModes} />}
           {tab === 'staff' && <StaffSettings store={store} />}
+          {tab === 'sync' && <SyncSettings />}
           {tab === 'backup' && <BackupSettings />}
         </div>
       </div>

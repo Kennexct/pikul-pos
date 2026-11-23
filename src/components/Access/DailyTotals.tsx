@@ -11,7 +11,8 @@ import { Sheet } from '../ui/Sheet';
 
 const FIRST_DELAY_MS = 5_000;
 const EVERY_MS = 30 * 60_000;
-const NOTICE_KEY = 'kk.dailyTotalsNotice';
+// v2 since device sync (ADR-025): the notice now explains that the whole store is backed up, so it shows once more.
+const NOTICE_KEY = 'kk.dailyTotalsNotice.v2';
 
 const noticeSeen = () => {
   try {
@@ -70,7 +71,7 @@ export function DailyTotals() {
         <BarChart3 aria-hidden size={22} className="mt-0.5 shrink-0 text-brand-600" />
         <div className="space-y-2 text-[15px] leading-relaxed text-ink-soft">
           <p>{t('Saat online, Pikul menerima ringkasan total penjualan harian toko Anda: jumlah transaksi, nilai penjualan, refund, jenis pembayaran, mode penjualan, dan jam ramai.')}</p>
-          <p>{t('Isi struk, nama menu, harga, data pelanggan, dan staf tidak pernah dikirim. Ringkasan ini dipakai untuk layanan dan laporan Pikul.')}</p>
+          <p>{t('Data toko (menu, penjualan, pelanggan, staf) juga disinkronkan ke server Pikul supaya bisa dipakai di perangkat lain. Hanya akun Anda yang bisa membukanya. Ringkasan harian dipakai untuk layanan dan laporan Pikul.')}</p>
         </div>
       </div>
     </Sheet>

@@ -4,6 +4,8 @@ import { adminArchiveCampaign, adminCatalog, adminMe, adminSaveCampaign, adminSa
 import { adminLogin, adminLogout } from './adminAuth';
 import { adminMerchantSummary, adminReport } from './analytics';
 import { DAILY_BODY_LIMIT, postDaily } from './daily';
+import { syncClaim, syncDevices, syncPull, syncPush, syncRenameDevice, syncReplace, syncStore } from './sync';
+import { PUSH_BODY_LIMIT } from './syncCheck';
 import { adminTempPassword, authOptions, changePassword, passwordLogin, resetPassword, signUp } from './signup';
 import { adminContent, adminSaveContent } from './siteContent';
 import { adminCancelPayment, adminGrant, adminMerchant, adminMerchants, adminOverview, adminPayments, adminRecordPayment } from './merchants';
@@ -15,8 +17,16 @@ const MAX_BODY = 16_384;
 
 const NO_CTX: RequestCtx = { ip: '', query: new URLSearchParams() };
 
+function bodyLimit(method: string, path: string): number {
+  if (method !== 'POST') return MAX_BODY;
+  if (path === '/api/admin/images') return Math.ceil((MAX_IMAGE_BYTES * 4) / 3) + 1_024;
+  if (path === '/api/merchant/daily') return DAILY_BODY_LIMIT;
+  if (path === '/api/sync/push') return PUSH_BODY_LIMIT;
+  return MAX_BODY;
+}
+
 export async function route(deps: Deps, method: string, path: string, auth: string | null, rawBody: string, ctx: RequestCtx = NO_CTX): Promise<ApiResponse> {
-  const limit = method === 'POST' && path === '/api/admin/images' ? Math.ceil((MAX_IMAGE_BYTES * 4) / 3) + 1_024 : method === 'POST' && path === '/api/merchant/daily' ? DAILY_BODY_LIMIT : MAX_BODY;
+  const limit = bodyLimit(method, path);
   if (rawBody.length > limit) return { status: 413, body: { error: 'too_large' } };
   let body: unknown = null;
   if (rawBody) {
@@ -66,6 +76,20 @@ export async function route(deps: Deps, method: string, path: string, auth: stri
       return adminMerchants(deps, auth, ctx);
     case 'POST /api/merchant/daily':
       return postDaily(deps, auth, body);
+    case 'GET /api/sync/store':
+      return syncStore(deps, auth);
+    case 'POST /api/sync/claim':
+      return syncClaim(deps, auth, body);
+    case 'POST /api/sync/push':
+      return syncPush(deps, auth, body);
+    case 'GET /api/sync/pull':
+      return syncPull(deps, auth, ctx);
+    case 'POST /api/sync/replace':
+      return syncReplace(deps, auth, body);
+    case 'GET /api/sync/devices':
+      return syncDevices(deps, auth);
+    case 'POST /api/sync/devices/name':
+      return syncRenameDevice(deps, auth, body);
     case 'GET /api/admin/report':
       return adminReport(deps, auth, ctx);
     case 'GET /api/admin/content':

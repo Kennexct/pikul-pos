@@ -1,4 +1,5 @@
 import type { AdminRepo } from './adminTypes';
+import type { SyncRepo } from './syncTypes';
 
 /** A plan Kenny sets in the admin console (ADR-014). `id` is a fixed slug; payments point at it. */
 export interface PlanDef {
@@ -90,7 +91,7 @@ export interface RefreshToken {
   expiresAt: number;
 }
 
-export interface Repo extends AdminRepo {
+export interface Repo extends AdminRepo, SyncRepo {
   findAccountByEmail(email: string): Promise<Account | null>;
   findAccountById(id: string): Promise<Account | null>;
   /** Inserts; returns false when the email is taken. */

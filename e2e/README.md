@@ -40,6 +40,7 @@ node scripts/gen-pass-key.mjs > /tmp/keys.env && set -a && . /tmp/keys.env && se
 npm run build:vercel
 DEV_MODE=1 APP_ORIGIN=http://localhost:4173 ADMIN_PASSWORD=admin-kata-sandi-panjang node scripts/vercel-local.mjs 4173 > /tmp/api.log &
 python3 e2e/v18.py http://localhost:4173 ./shots admin-kata-sandi-panjang              # sign-up, sign-in, forgot, admin merchant details, temporary password
+python3 e2e/v19.py http://localhost:4173 ./shots                                       # device sync: A uploads, B downloads + register per device, store choice on C
 python3 e2e/v17.py http://localhost:4173 ./shots /tmp/api.log admin-kata-sandi-panjang # admin console revamp (uses sign_up now)
 ```
 Set `CHROME=/path/to/chrome` to pick the browser. `v14.py` and `v15.py` used email-code sign-in and the old admin email codes; they are superseded by `v18.py` and `v17.py`.

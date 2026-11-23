@@ -72,6 +72,9 @@ async function keep(s: SessionBody): Promise<PassClaims> {
   return claims;
 }
 
+/** Signed-in API call for other services (device sync, ADR-025). */
+export const accountApi = <T>(method: 'GET' | 'POST', path: string, body?: unknown, auth?: boolean): Promise<T> => api<T>(method, path, body, auth);
+
 export async function loadStoredPass(): Promise<PassClaims | null> {
   const p = read(K.pass);
   return p && publicJwk ? verifyPass(p, publicJwk) : null;

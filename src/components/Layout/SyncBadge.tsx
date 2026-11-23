@@ -1,6 +1,6 @@
 import { CloudCheck, CloudOff, HardDrive, RefreshCw } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { isBackendConfigured } from '../../services/supabase';
+import { BILLING_ENABLED } from '../../services/account';
 import { useSessionStore } from '../../store/useSessionStore';
 import { t } from '../../i18n';
 
@@ -14,12 +14,16 @@ interface SyncState {
 function useSyncState(): SyncState {
   const isOnline = useSessionStore((s) => s.isOnline);
   const pending = useSessionStore((s) => s.pendingSyncCount);
+  const status = useSessionStore((s) => s.syncStatus);
 
-  if (!isBackendConfigured()) {
+  if (!BILLING_ENABLED) {
     return { icon: HardDrive, label: t('Lokal'), hint: t('Server belum diatur — data tersimpan di perangkat ini'), tone: 'text-muted' };
   }
   if (!isOnline) {
     return { icon: CloudOff, label: t('Offline'), hint: t('Penjualan tetap tersimpan dan akan dikirim saat online'), tone: 'text-warn-700' };
+  }
+  if (status === 'error' || status === 'mismatch' || status === 'signedOut') {
+    return { icon: CloudOff, label: t('Tertunda'), hint: t('Sinkronisasi tertunda. Data aman di perangkat.'), tone: 'text-warn-700' };
   }
   if (pending > 0) {
     return { icon: RefreshCw, label: t('{0} antre', pending), hint: t('{0} data menunggu dikirim', pending), tone: 'text-muted' };

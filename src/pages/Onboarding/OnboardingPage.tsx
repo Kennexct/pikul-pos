@@ -18,13 +18,15 @@ const LAST_STEP = STEP_TITLES.length - 1;
 interface OnboardingPageProps {
   /** Creates the store and enters the app. Without a setup: an empty store with the default name ("Lewati"). */
   onComplete: (setup?: StoreSetup) => Promise<void>;
+  /** The store name from the account's sign-up profile, on any device (ADR-025). */
+  defaultStoreName?: string;
 }
 
 /** First-time journey (ADR-009): shown only when this device has no store yet. Language, then three short steps; no account. */
-export function OnboardingPage({ onComplete }: OnboardingPageProps) {
+export function OnboardingPage({ onComplete, defaultStoreName = '' }: OnboardingPageProps) {
   const fileInput = useRef<HTMLInputElement>(null);
   const [step, setStep] = useState(0);
-  const [setup, setSetup] = useState<StoreSetup>(() => ({ ...DEFAULT_SETUP, storeName: signupStoreName().slice(0, STORE_NAME_MAX) }));
+  const [setup, setSetup] = useState<StoreSetup>(() => ({ ...DEFAULT_SETUP, storeName: (defaultStoreName || signupStoreName()).slice(0, STORE_NAME_MAX) }));
   const [isBusy, setIsBusy] = useState(false);
   const update = (patch: Partial<StoreSetup>) => setSetup((current) => ({ ...current, ...patch }));
 

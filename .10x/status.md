@@ -1,5 +1,12 @@
 # Status
 
+## Device sync (v0.19) — Delivered, merged to main (2026-11-23)
+Branch `claude/project-thread-zzc5ov` on top of `main` `f376b98`. Spec `specs/2026-11-21-device-sync-design.md`, ADR-025 (sync protocol, store binding), ADR-026 (register per device). Kenny chose: everything both ways, ask which store to keep, register per device; "build it". Next ADR: 027.
+- [x] Spec, ADRs, strategy/design/plan decisions
+- [x] S1 migration 005 · [x] S2 server sync API
+- [x] C1 device id · [x] C2 sync engine · [x] C3 binding on boot · [x] C4 cash per device · [x] C5 Settings → Sinkronisasi · [x] C6 i18n, e2e, runbook
+- [x] Review `reviews/2026-11-21-device-sync-review.md` PASS · runbook `docs/runbooks/deploy-vercel-neon.md` → Device sync
+- [x] Kenny ran 005 on Neon; merged with main (admin click-to-edit). ADRs renumbered 025/026 because main took ADR-024.
 ## Admin click-to-edit: Konten landing + Paket harga (v0.18.1) — Delivered (2026-11-23)
 Branch `claude/project-thread-6ibfvj` on `main` `f376b98`. Spec `specs/2026-11-23-admin-click-to-edit-design.md`, ADR-024. Kenny: forms closed by default, landing sub-sections + preview on the right; chose "one Simpan for all". Next ADR: 025.
 - [x] Spec, ADR-024, PM/architect/staff/EM/senior decisions

@@ -17,3 +17,5 @@ Backend and hosting are now Cloudflare Pages + Functions, Neon Postgres, Resend,
 - admin-console-revamp (v0.17) — business console, daily totals always on, build not buy → `admin-console-revamp.md`
 
 - vercel-neon-launch (v0.18) — ADR-022, ADR-023 → `vercel-neon-launch.md`
+
+- device-sync (v0.19) — ADR-025, ADR-026 → `device-sync.md`

@@ -20,6 +20,7 @@ import { reopenDay } from '../../services/dayClosing';
 import { deleteExpense } from '../../services/expenses';
 import { requestOwnerApproval } from '../../store/usePinPromptStore';
 import type { Expense, Id } from '../../types';
+import { AllDevicesCard } from './AllDevicesCard';
 import { CloseDaySheet } from './CloseDaySheet';
 import { ClosingHistory } from './ClosingHistory';
 import { ExpenseSheet } from './ExpenseSheet';
@@ -139,6 +140,7 @@ export function CashPage() {
               onReopen={() => setDialog({ kind: 'reopen' })}
               onShowExpenses={() => setView('expenses')}
             />
+            {access.kind !== 'locked' && <AllDevicesCard storeId={store.id} date={date} />}
           </div>
         )}
         {view === 'expenses' && (
