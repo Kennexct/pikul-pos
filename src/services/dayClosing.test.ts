@@ -1,12 +1,12 @@
 import 'fake-indexeddb/auto';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { localDb } from '../db/localDb';
 import { getBusinessDate } from '../lib/businessDate';
 import type { OrderItem } from '../types';
 import { ensureLocalStore } from './bootstrap';
 import { seedSampleMenu } from '../test/sampleMenu';
 import { setProductSoldOut } from './catalog';
-import { closeDay, getOpeningCash, hasOpening, reopenDay, setOpeningCash } from './dayClosing';
+import { closeDay, getClosings, getCurrentShiftNo, getOpeningCash, hasOpening, loadDrawerInput, reopenDay, setOpeningCash } from './dayClosing';
 import { addExpense, deleteExpense } from './expenses';
 import { completeOrder } from './orders';
 
@@ -78,9 +78,9 @@ describe('closeDay', () => {
     expect((await localDb.products.get(product.id))?.isSoldOut).toBe(false);
     expect((await localDb.auditEvents.toArray()).map((e) => e.action)).toContain('day_closed');
 
-    // One closing per day; opening cash is frozen while closed.
+    // A closed shift is not closed twice; the next one has to be opened first (ADR-027).
+    expect(closing.shiftNo).toBe(1);
     await expect(closeDay({ ...input, countedCash: 118_000 })).rejects.toThrow(/sudah ditutup/);
-    await expect(setOpeningCash(store.id, today, 0, owner.id)).rejects.toThrow(/sudah ditutup/);
 
     // Reopen (audited), then close again with the right count.
     await reopenDay(closing.id, owner.id, null);
@@ -109,5 +109,65 @@ describe('closeDay', () => {
     expect(events.map((e) => e.action).sort()).toEqual(['opening_cash_changed', 'register_opened']);
     expect(events.find((e) => e.action === 'opening_cash_changed')?.payload).toMatchObject({ from: 0, to: 75_000 });
     expect(await getOpeningCash(store.id, today)).toBe(75_000);
+  });
+});
+
+describe('shifts (ADR-027)', () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+  const at = (time: string) => vi.setSystemTime(new Date(`2026-11-25T${time}:00+07:00`));
+
+  it('opens a new shift after a closing and never continues the closed one', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    at('08:00');
+    const { store, owner, ctx, cart, cash } = await setup();
+    const today = getBusinessDate(new Date(), store);
+    const close = (countedCash: number) => closeDay({ storeId: store.id, businessDate: today, countedCash, note: '', actorId: owner.id, shouldResetSoldOut: false });
+
+    await setOpeningCash(store.id, today, 100_000, owner.id);
+    await completeOrder(cart, ctx, { method: cash, amount: 30_000, cashReceived: 30_000 });
+    at('14:05');
+    const first = await close(130_000);
+    expect(first).toMatchObject({ shiftNo: 1, openingCash: 100_000, cashSales: 30_000, expectedCash: 130_000 });
+
+    // Shift 2: suggested opening = what shift 1 counted; it can be changed.
+    at('15:00');
+    expect(await getCurrentShiftNo(store.id, today)).toBe(2);
+    expect(await hasOpening(store.id, today)).toBe(false);
+    expect(await getOpeningCash(store.id, today)).toBe(130_000);
+    await setOpeningCash(store.id, today, 120_000, owner.id);
+    expect(await hasOpening(store.id, today)).toBe(true);
+    await completeOrder(cart, ctx, { method: cash, amount: 30_000, cashReceived: 30_000 });
+    await addExpense(store.id, { businessDate: today, category: 'ingredients', amount: 5_000, note: '', isFromDrawer: true, actorId: owner.id });
+
+    // Shift 1 keeps its own figures; shift 2 only counts what happened after 14:05.
+    expect((await loadDrawerInput(store.id, today, 1)).sales).toHaveLength(1);
+    // The closed shift cannot be reopened once the next one started.
+    await expect(reopenDay(first.id, owner.id, null)).rejects.toThrow(/Shift berikutnya/);
+
+    at('21:00');
+    const second = await close(145_000);
+    expect(second).toMatchObject({ shiftNo: 2, openingCash: 120_000, cashSales: 30_000, drawerExpenses: 5_000, expectedCash: 145_000, difference: 0, transactions: 1 });
+    expect((await getClosings(store.id, today)).map((c) => c.shiftNo)).toEqual([1, 2]);
+    const opened = (await localDb.auditEvents.filter((e) => e.action === 'register_opened').toArray()).map((e) => e.payload);
+    expect(opened).toEqual([expect.objectContaining({ shiftNo: 1 }), expect.objectContaining({ shiftNo: 2, openingCash: 120_000 })]);
+
+    // The next day starts from the first shift's opening cash.
+    expect(await getOpeningCash(store.id, '2026-11-26')).toBe(100_000);
+  });
+
+  it('lets the owner reopen the last shift while the next one has not started', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    at('08:00');
+    const { store, owner } = await setup();
+    const today = getBusinessDate(new Date(), store);
+    await setOpeningCash(store.id, today, 50_000, owner.id);
+    at('14:00');
+    const first = await closeDay({ storeId: store.id, businessDate: today, countedCash: 50_000, note: '', actorId: owner.id, shouldResetSoldOut: false });
+    at('14:10');
+    await reopenDay(first.id, owner.id, null);
+    expect(await getCurrentShiftNo(store.id, today)).toBe(1);
+    expect(await hasOpening(store.id, today)).toBe(true);
   });
 });

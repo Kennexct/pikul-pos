@@ -1,5 +1,16 @@
 # Status
 
+## A new shift after closing the register (v0.20.0) — In review (2026-11-25)
+Branch `claude/project-thread-kaitud` from `main` `15fe414`. Kenny: closing and then selling again the same day should open a NEW register, never continue the closed one. ADR-027, spec `specs/2026-11-25-open-shift-after-closing.md`. Next ADR: 028.
+- [x] `DayClosing.shiftNo` (absent = 1); `lib/shifts.ts` holds the pure rules (current shift, time window, sale time)
+- [x] Opening the register after a closing opens the next shift; opening cash prefilled from the last count, editable
+- [x] Cashier banner "Shift 1 ditutup 14.05 · Buka shift baru"; the old "Tetap jual" warning is gone
+- [x] Drawer maths per shift (records between the previous closing and this one; a saved order counts when paid)
+- [x] "Buka kembali" only corrects the last closing, and only before the next shift starts
+- [x] Kas: "Kas laci · Shift N", "Semua shift hari ini" card (per shift + day total), history names the shift, WhatsApp summary "· Shift N"
+- [x] Checks: typecheck, i18n, 278 tests, build; e2e v24 (new), v16, v09, flow, manage, staff, v13, v22 pass on phone + tablet
+- [ ] Kenny: try on the Vercel preview, merge
+
 ## Search reaches variants, Transaksi order Riwayat · Kas · Pesanan (v0.19.6) — In review (2026-11-25)
 Branch `claude/project-thread-ani30l` from `main` `a320bba`. Kenny: the search on Kasir and Produk should also find variants; Transaksi sub-menu order History, Cash, Orders. No ADR (UI only, offline Dexie data). Next ADR: 027.
 - [x] `lib/productSearch.ts`: every typed word must appear in the product name or "product + one variant" name; case and accents ignored

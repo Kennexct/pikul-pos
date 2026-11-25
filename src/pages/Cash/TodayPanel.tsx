@@ -1,4 +1,4 @@
-import { ClipboardList, LockOpen, MessageCircle, Pencil, RotateCcw, TriangleAlert } from 'lucide-react';
+import { ClipboardList, LockOpen, MessageCircle, Pencil, Plus, RotateCcw, TriangleAlert } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { METHOD_ICON } from '../../components/ui/paymentIcon';
@@ -6,10 +6,11 @@ import { btnGhost, btnPrimary, btnSecondary, card, sectionTitle } from '../../co
 import { ROUTES } from '../../constants';
 import { buildClosingText, isClosingStale, type Drawer } from '../../lib/cashDrawer';
 import { formatRupiah } from '../../lib/money';
+import { formatClockTime } from '../../lib/shifts';
 import { whatsAppShareUrl } from '../../lib/receiptText';
 import type { DayClosing } from '../../types';
 import { DifferenceBadge } from './DifferenceBadge';
-import { DATE_LOCALE, t } from '../../i18n';
+import { t } from '../../i18n';
 
 interface TodayPanelProps {
   storeName: string;
@@ -19,9 +20,16 @@ interface TodayPanelProps {
   closedByName: string;
   /** False until the opening cash was counted today (ADR-017): the action reads "Buka kasir". */
   isOpened: boolean;
+  /** The shift shown, and how many the day has (ADR-027). The shift is named from the second one on. */
+  shiftNo: number;
+  shiftCount: number;
+  /** Owner correction: only the last closing, before the next shift starts. */
+  canReopen: boolean;
   onEditOpening: () => void;
   onClose: () => void;
   onReopen: () => void;
+  /** Shown on today's last closing: start the next shift. */
+  onOpenShift?: () => void;
   onShowExpenses: () => void;
 }
 
@@ -40,16 +48,18 @@ function Line({ label, value, action, isTotal = false }: { label: string; value:
 const minus = (amount: number) => (amount === 0 ? formatRupiah(0) : `− ${formatRupiah(amount)}`);
 
 /** The day at a glance: the drawer statement (what should be in the drawer) and where the money came from. */
-export function TodayPanel({ storeName, timeZone, drawer, closing, closedByName, isOpened, onEditOpening, onClose, onReopen, onShowExpenses }: TodayPanelProps) {
+export function TodayPanel(props: TodayPanelProps) {
+  const { storeName, timeZone, drawer, closing, closedByName, isOpened, shiftNo, shiftCount, canReopen, onEditOpening, onClose, onReopen, onOpenShift, onShowExpenses } = props;
   // Once closed, show the figures as recorded; the live ones only decide whether the record is out of date.
   const shown = closing ?? drawer;
   const isStale = closing !== null && isClosingStale(closing, drawer);
-  const closedAt = closing ? new Intl.DateTimeFormat(DATE_LOCALE, { hour: '2-digit', minute: '2-digit', timeZone }).format(new Date(closing.closedAt)) : '';
+  const closedAt = closing ? formatClockTime(closing.closedAt, timeZone) : '';
+  const shiftLabel = shiftCount > 1 || shiftNo > 1 ? ` · ${t('Shift {0}', shiftNo)}` : '';
 
   return (
     <div className="grid gap-4 @4xl/page:grid-cols-2 @4xl/page:items-start">
       <section aria-label={t('Kas laci')} className={`${card} p-4 md:p-5`}>
-        <h2 className={`${sectionTitle} mb-3`}>{t('Kas laci')}</h2>
+        <h2 className={`${sectionTitle} mb-3`}>{t('Kas laci')}{shiftLabel}</h2>
         <dl className="flex flex-col gap-2.5">
           <Line
             label={t('Modal awal')}
@@ -84,10 +94,15 @@ export function TodayPanel({ storeName, timeZone, drawer, closing, closedByName,
             {isStale && (
               <p className="mt-3 flex gap-2 rounded-lg border border-warn-200 bg-warn-50 px-3 py-2.5 text-[13px] text-warn-700">
                 <TriangleAlert aria-hidden size={16} className="mt-0.5 shrink-0" />
-                {t('Ada transaksi atau pengeluaran setelah kasir ditutup. Buka kembali, lalu tutup lagi agar angkanya cocok.')}
+                {t('Ada perubahan pada transaksi shift ini setelah ditutup. Angka di atas adalah hasil saat tutup.')}
               </p>
             )}
-            <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+            <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+              {onOpenShift && (
+                <button type="button" onClick={onOpenShift} className={`${btnPrimary} h-11 text-[14px] sm:flex-1`}>
+                  <Plus aria-hidden size={17} /> {t('Buka shift baru')}
+                </button>
+              )}
               <a
                 href={whatsAppShareUrl(buildClosingText({ storeName, closing, closedByName, timeZone }))}
                 target="_blank"
@@ -96,13 +111,15 @@ export function TodayPanel({ storeName, timeZone, drawer, closing, closedByName,
               >
                 <MessageCircle aria-hidden size={17} /> {t('Kirim ringkasan')}
               </a>
-              <button type="button" onClick={onReopen} className={`${btnGhost} text-[14px]`}>
-                <RotateCcw aria-hidden size={16} /> {t('Buka kembali')}
-              </button>
+              {canReopen && (
+                <button type="button" onClick={onReopen} className={`${btnGhost} text-[14px]`}>
+                  <RotateCcw aria-hidden size={16} /> {t('Buka kembali')}
+                </button>
+              )}
             </div>
           </div>
         ) : (
-          <button type="button" onClick={onClose} className={`${btnPrimary} mt-4 w-full`}>{t('Tutup kasir')}</button>
+          <button type="button" onClick={onClose} className={`${btnPrimary} mt-4 w-full`}>{shiftLabel ? t('Tutup shift {0}', shiftNo) : t('Tutup kasir')}</button>
         )}
       </section>
 
@@ -140,7 +157,7 @@ export function TodayPanel({ storeName, timeZone, drawer, closing, closedByName,
             <span className="num font-semibold">{formatRupiah(drawer.openOrderAmount)}</span>
           </Link>
         )}
-        <p className="mt-3 text-[12px] text-faint">{t('Hanya transaksi di perangkat ini.')}</p>
+        <p className="mt-3 text-[12px] text-faint">{shiftLabel ? t('Hanya shift ini, di perangkat ini.') : t('Hanya transaksi di perangkat ini.')}</p>
       </section>
     </div>
   );

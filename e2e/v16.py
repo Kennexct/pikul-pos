@@ -1,5 +1,5 @@
-"""v0.16 (ADR-017): register open before the first sale (counted float), close with counted balance,
-closed-day warning, Kategori tab (add, rename, reorder, delete), variant expand in the product list.
+"""v0.16 (ADR-017) + v0.20 (ADR-027): register open before the first sale (counted float), close with counted balance,
+a new shift after closing (never the closed one), Kategori tab (add, rename, reorder, delete), variant expand in the product list.
 Usage: python3 e2e/v16.py http://localhost:4173/app OUT"""
 import re
 import sys
@@ -78,22 +78,40 @@ def run(p, name, viewport, is_mobile):
     page.get_by_text('Kasir ditutup, selisih kurang Rp5.000').wait_for()
     shot(page, f'{name}-r4-closed')
 
-    # 3. Cashier after closing: banner, one warning, "Tetap jual" goes on; the next tap is not asked again.
+    # 3. Cashier after closing (v0.20, ADR-027): the banner names the closed shift and the next tap opens shift 2.
     page.goto(BASE + '/')
-    page.get_by_text('Kasir hari ini sudah ditutup').wait_for()
+    banner = page.get_by_text(re.compile(r'Shift 1 ditutup \d\d[.:]\d\d'))
+    banner.wait_for()
+    check(name, 'banner_names_closed_shift', True)
+    shot(page, f'{name}-r5-closed-banner')
     page.get_by_role('button', name=re.compile('^Kentang Goreng')).first.click()
-    dialog.get_by_role('heading', name='Kasir sudah ditutup').wait_for()
-    shot(page, f'{name}-r5-closed-warning')
-    dialog.get_by_role('button', name='Tetap jual').click()
+    dialog.get_by_role('heading', name='Buka shift baru').wait_for()
+    check(name, 'new_shift_suggests_counted_cash', dialog.locator('#opening-cash').input_value().replace('.', '') == '110000')
+    check(name, 'new_shift_shows_last_closing', 'dihitung Rp110.000' in dialog.inner_text())
+    shot(page, f'{name}-r6-new-shift-sheet')
+    dialog.get_by_role('button', name='Buka shift 2').click()
+    page.get_by_text('Shift 2 dibuka · modal Rp110.000').wait_for()
     if is_mobile:
         page.get_by_role('button', name='Lihat pesanan').wait_for()
     else:
         page.get_by_label('Keranjang').get_by_text('Kentang Goreng').wait_for()
-    check(name, 'closed_day_does_not_block', True)
+    check(name, 'item_added_after_new_shift', True)
     pay_exact(page, is_mobile)
-    page.get_by_role('button', name=re.compile('^Roti Bakar')).first.click()
-    page.wait_for_timeout(300)
-    check(name, 'closed_warning_once', dialog.count() == 0)
+
+    # Kas: shift 2 is the running one, shift 1 keeps its own figures, and the day adds both up.
+    page.goto(BASE + '/kas')
+    page.get_by_role('heading', name=re.compile('Kas laci · Shift 2')).wait_for()
+    shifts = page.get_by_role('region', name='Semua shift hari ini')
+    shifts.wait_for()
+    shifts_text = shifts.inner_text()
+    check(name, 'shift1_closed_and_shift2_running', 'Shift 1' in shifts_text and 'Sedang berjalan' in shifts_text)
+    check(name, 'day_total_adds_shifts', 'Rp30.000' in shifts_text)  # 15.000 shift 1 + 15.000 shift 2
+    check(name, 'closed_shift_not_reopenable', page.get_by_role('button', name='Buka kembali').count() == 0)
+    shot(page, f'{name}-r7-shifts')
+    shifts.get_by_role('button', name=re.compile('^Shift 1')).click()
+    page.get_by_role('heading', name=re.compile('Kas laci · Shift 1')).wait_for()
+    check(name, 'shift1_keeps_its_figures', 'Rp115.000' in page.get_by_role('region', name='Kas laci').inner_text())
+    shot(page, f'{name}-r8-shift1-selected')
 
     # 4. Kategori tab: add, rename, move up, delete (products move to "Tanpa kategori").
     page.goto(BASE + '/produk')
