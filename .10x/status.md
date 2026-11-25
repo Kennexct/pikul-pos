@@ -8,7 +8,7 @@ Branch `claude/project-thread-kaitud` from `main` `15fe414`. Kenny: closing and 
 - [x] Drawer maths per shift (records between the previous closing and this one; a saved order counts when paid)
 - [x] "Buka kembali" only corrects the last closing, and only before the next shift starts
 - [x] Kas: "Kas laci · Shift N", "Semua shift hari ini" card (per shift + day total), history names the shift, WhatsApp summary "· Shift N"
-- [x] Checks: typecheck, i18n, 278 tests, build; e2e v23 (new), v16, v09, flow, manage, staff, v13, v22 pass on phone + tablet
+- [x] Checks: typecheck, i18n, 278 tests, build; e2e v24 (new), v16, v09, flow, manage, staff, v13, v22 pass on phone + tablet
 - [ ] Kenny: try on the Vercel preview, merge
 
 ## Search reaches variants, Transaksi order Riwayat · Kas · Pesanan (v0.19.6) — In review (2026-11-25)
