@@ -56,3 +56,9 @@ python3 e2e/v20.py http://localhost:4173/app ./shots   # pending category create
 ```bash
 python3 e2e/v21.py http://localhost:4173 ./shots admin-kata-sandi-panjang   # merchant edits Toko & Struk + syncs → console list and sheet show the new name, WhatsApp, address
 ```
+
+## v0.19.7: recognisable devices
+```bash
+python3 e2e/v23.py http://localhost:4173 ./shots   # devices named by browser + system, "Perangkat ini", private-window warning, 7-day inactive flag, rename, remove
+```
+`v19.py` now expects the headless browser's own name ("Chrome · Linux") in Kas → Semua perangkat instead of "Perangkat 1".

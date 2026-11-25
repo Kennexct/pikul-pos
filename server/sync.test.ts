@@ -152,6 +152,41 @@ describe('sync API (ADR-025)', () => {
     expect((renamed.body as typeof list).devices[1]?.name).toBe('HP Kasir');
     expect((await call('POST', '/api/sync/devices/name', token, { deviceId: DEV_B, name: '<b>' })).status).toBe(400);
   });
+
+  it('names devices by browser and system, marks private windows, and keeps last active from pulls', async () => {
+    const token = await tokenFor('siti@warung.id');
+    type List = { devices: Array<{ deviceId: string; name: string; named: boolean; autoName: string; privateMode: boolean; lastSeen: number }> };
+    await call('POST', '/api/sync/claim', token, { storeId: STORE, ...hello(DEV_A), autoName: 'Chrome · Android' });
+    now += 1_000;
+    await call('POST', '/api/sync/push', token, { storeId: STORE, ...hello(DEV_B), records: [], autoName: 'Chrome · Android', privateMode: true });
+    let list = (await call('GET', '/api/sync/devices', token)).body as List;
+    expect(list.devices.map((d) => [d.name, d.privateMode, d.named])).toEqual([['Chrome · Android', false, false], ['Chrome · Android 2', true, false]]);
+
+    now += 60_000;
+    const q = new URLSearchParams({ storeId: STORE, deviceId: DEV_A, after: '0', receiptCode: 'AB', appVersion: '0.19.7', autoName: 'Safari · iPad', privateMode: '0' });
+    expect((await call('GET', '/api/sync/pull', token, undefined, q.toString())).status).toBe(200);
+    list = (await call('GET', '/api/sync/devices', token)).body as List;
+    expect(list.devices[0]).toMatchObject({ name: 'Safari · iPad', lastSeen: now });
+
+    // An app from before v0.19.7 pulls with only its id: its row (and receipt code) stays as it was.
+    await call('GET', '/api/sync/pull', token, undefined, `storeId=${STORE}&deviceId=${DEV_B}&after=0`);
+    expect(((await call('GET', '/api/sync/devices', token)).body as List & { devices: Array<{ receiptCode: string }> }).devices[1]?.receiptCode).toBe('CD');
+  });
+
+  it('removes another device but not the one asking', async () => {
+    const token = await tokenFor('siti@warung.id');
+    await call('POST', '/api/sync/claim', token, { storeId: STORE, ...hello(DEV_A) });
+    await push(token, DEV_B, []);
+    expect((await call('POST', '/api/sync/devices/remove', token, { deviceId: DEV_A, self: DEV_A })).status).toBe(400);
+    const r = await call('POST', '/api/sync/devices/remove', token, { deviceId: DEV_B, self: DEV_A });
+    expect(r.status).toBe(200);
+    expect((r.body as { devices: Array<{ deviceId: string }> }).devices.map((d) => d.deviceId)).toEqual([DEV_A]);
+    expect((await call('POST', '/api/sync/devices/remove', token, { deviceId: DEV_B, self: DEV_A })).status).toBe(404);
+    expect((await call('POST', '/api/sync/devices/remove', null, { deviceId: DEV_A })).status).toBe(401);
+    // A removed device that is still in use shows up again the next time it syncs.
+    await push(token, DEV_B, []);
+    expect(((await call('GET', '/api/sync/devices', token)).body as { devices: unknown[] }).devices).toHaveLength(2);
+  });
 });
 
 describe('checkRecord / shouldApply', () => {

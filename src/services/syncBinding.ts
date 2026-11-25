@@ -3,9 +3,9 @@ import { isCountedSale } from '../lib/reports';
 import type { Id } from '../types';
 import { accountApi, ApiError, BILLING_ENABLED, hasRefreshToken, loadStoredPass } from './account';
 import { findLocalStore, type BootstrapResult } from './bootstrap';
-import { avoidReceiptCodes, getDeviceId, getReceiptCode } from './device';
+import { avoidReceiptCodes, getDeviceId } from './device';
+import { deviceHello } from './deviceHello';
 import { enqueueAll, getBinding, outcomeOf, setBinding, syncNow, type SyncOutcome } from './sync';
-import { version } from '../../package.json';
 
 /** Which store this device uses after sign-in (ADR-025, spec §3). */
 
@@ -32,7 +32,13 @@ export type BootDecision =
 
 export interface SyncDevice {
   deviceId: Id;
+  /** The name to show: the owner's, else browser and system ("Chrome · Android"). */
   name: string;
+  /** The owner gave this name. */
+  named?: boolean;
+  autoName?: string;
+  /** Opened in a private / incognito window: its data goes when the browser closes. */
+  privateMode?: boolean;
   receiptCode: string;
   firstSeen: number;
   lastSeen: number;
@@ -45,7 +51,7 @@ export async function accountId(): Promise<Id | null> {
   return (await loadStoredPass())?.sub ?? null;
 }
 
-const hello = async () => ({ deviceId: await getDeviceId(), receiptCode: await getReceiptCode(), appVersion: version });
+const hello = deviceHello;
 
 export const fetchServerStore = () => accountApi<ServerStore>('GET', '/api/sync/store', undefined, true);
 
@@ -155,6 +161,13 @@ export async function refreshDevices(): Promise<SyncDevice[]> {
 
 export async function renameDevice(deviceId: Id, name: string): Promise<SyncDevice[]> {
   const r = await accountApi<{ devices: SyncDevice[] }>('POST', '/api/sync/devices/name', { deviceId, name }, true);
+  await rememberDevices(r.devices);
+  return r.devices;
+}
+
+/** Takes another device off the account's list (an old phone, a closed incognito window). Store data stays. */
+export async function removeDevice(deviceId: Id): Promise<SyncDevice[]> {
+  const r = await accountApi<{ devices: SyncDevice[] }>('POST', '/api/sync/devices/remove', { deviceId, self: await getDeviceId() }, true);
   await rememberDevices(r.devices);
   return r.devices;
 }

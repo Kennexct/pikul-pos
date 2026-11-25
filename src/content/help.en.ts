@@ -194,15 +194,16 @@ export const HELP_EN: HelpContent = {
       steps: [
         'Sell as usual. There is nothing to do when the internet is down; changes are sent by themselves once online.',
         'On a second device, just sign in with the same account. Menu, staff, customers and sales download automatically.',
-        'See the status and the device list in Settings, Sync tab.',
+        'See the status and the device list in Settings, Sync tab. Each device is named after its browser and system (for example "Chrome · Android"), and the one you are using is marked "This device". Tap the pencil to give it a name such as "Front counter".',
       ],
       notes: [
         'Each device has its own cash drawer: open and close the register on each device. The owner sees them all in Cash, "All devices".',
         'Reports include sales from every device that has synced.',
         'If two devices change the same product while offline, the latest change is kept.',
         'Shop data on the server can only be opened with your account. Keep making backups regularly.',
+        'Do not sell in a private (incognito) window: the device\'s data is erased when the browser closes. If that happens, just sign in again; the shop data downloads from the account. Then remove the old device marked "Inactive" from the list.',
       ],
-      keywords: 'signal online sync wifi data lost internet',
+      keywords: 'signal online sync wifi data lost internet device incognito private',
     },
     cadangan: {
       title: 'Backup and moving to another device',

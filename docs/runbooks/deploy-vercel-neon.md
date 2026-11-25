@@ -27,6 +27,8 @@ Time needed: about 30 minutes. You need: a GitHub account with the `Kennexct/pik
 >
 > **Upgrading to v0.19 (device sync)?** Run `db/migrations/005_device_sync.sql` (or the whole `neon-setup.sql`) **before** deploying v0.19. It only adds three tables (`account_store`, `sync_records`, `sync_devices`) and one sequence.
 
+> **Upgrading to v0.19.7 (recognisable devices)?** Run `db/migrations/006_device_names.sql` (or the whole `neon-setup.sql`) **before** deploying v0.19.7. It adds two columns to `sync_devices` (`auto_name`, `private_mode`). Without it every push and pull fails and the app shows "Sinkronisasi tertunda" (selling keeps working).
+
 ## 2. Make the access-pass keys (2 min)
 
 On your laptop, in the repo folder:
@@ -131,6 +133,7 @@ Every device signed in to the same account shares one store: menu, sales, custom
 | "Sesi berakhir" on every device after a deploy | `PASS_PRIVATE_JWK` changed | Expected after a key change; everyone signs in once |
 | Sign-up says "relation … does not exist" in Logs | `neon-setup.sql` not run | Run step 1.3 |
 | Pengaturan → Sinkronisasi stays "Sinkronisasi tertunda"; Logs show `relation "sync_records" does not exist` | Migration 005 not run | Run `db/migrations/005_device_sync.sql` |
+| Sync stays "Sinkronisasi tertunda" after deploying v0.19.7; Logs show `column "auto_name" ... does not exist` | Migration 006 not run | Run `db/migrations/006_device_names.sql` |
 | "{n} data ditolak server" in Sinkronisasi | A record was too large (>1.5 MB) or malformed | Usually a huge product photo; re-save the product with a smaller photo |
 
 **Rollback:** Vercel → **Deployments** → pick the last good one → **⋯ → Promote to Production**. Database changes in 004 only add columns, so older code keeps working.

@@ -1,5 +1,7 @@
 # Handoff — device sync delivered (2026-11-21)
 
+**Latest:** v0.19.7 recognisable devices on `claude/project-thread-mgy8pd`. Device hello now carries `autoName` + `privateMode` (`src/services/deviceHello.ts`, used by sync.ts and syncBinding.ts, also on the pull query). Server `namedDevices` = owner name, else auto name, else "Perangkat N". Device list UI is `src/pages/Settings/DeviceList.tsx`; private-window banner `src/components/Access/PrivateWindowBanner.tsx`. Migration 006 must run before deploy. e2e `v23.py`. Next ADR: 027.
+
 **Latest:** v0.19.5: the admin console's merchant name/WhatsApp/address come from the synced store row (`SyncRepo.storeProfiles()`), falling back to the sign-up fields in `accounts`. Do not show `accounts.store_name/phone` alone in the console.
 
 **Before that:** v0.19.4: form fields in Settings cards use `fieldGrid` (equal cells, 2 per row on wide cards; SettingsSection body is `@container/card`). Do not give single fields their own max-w. Next ADR: 027.

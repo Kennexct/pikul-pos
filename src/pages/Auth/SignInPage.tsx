@@ -1,3 +1,4 @@
+import { PrivateWindowBanner } from '../../components/Access/PrivateWindowBanner';
 import { LogIn } from 'lucide-react';
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { Logo } from '../../components/Brand/Logo';
@@ -138,6 +139,7 @@ export function SignInPage() {
       <a href="/" className="mb-6" aria-label={t('Pikul, ke halaman utama')}>
         <Logo size={34} />
       </a>
+      <PrivateWindowBanner variant="card" />
       <div className="w-full max-w-[440px] rounded-xl border border-line bg-surface p-6 shadow-xs">
         {view === 'forgot' ? (
           <ForgotPassword emailReset={emailReset} initialEmail={email} onBack={() => setView('signin')} />

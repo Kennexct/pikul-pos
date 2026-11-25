@@ -4,7 +4,7 @@ import { adminArchiveCampaign, adminCatalog, adminMe, adminSaveCampaign, adminSa
 import { adminLogin, adminLogout } from './adminAuth';
 import { adminMerchantSummary, adminReport } from './analytics';
 import { DAILY_BODY_LIMIT, postDaily } from './daily';
-import { syncClaim, syncDevices, syncPull, syncPush, syncRenameDevice, syncReplace, syncStore } from './sync';
+import { syncClaim, syncDevices, syncPull, syncPush, syncRemoveDevice, syncRenameDevice, syncReplace, syncStore } from './sync';
 import { PUSH_BODY_LIMIT } from './syncCheck';
 import { adminTempPassword, authOptions, changePassword, passwordLogin, resetPassword, signUp } from './signup';
 import { adminContent, adminSaveContent } from './siteContent';
@@ -90,6 +90,8 @@ export async function route(deps: Deps, method: string, path: string, auth: stri
       return syncDevices(deps, auth);
     case 'POST /api/sync/devices/name':
       return syncRenameDevice(deps, auth, body);
+    case 'POST /api/sync/devices/remove':
+      return syncRemoveDevice(deps, auth, body);
     case 'GET /api/admin/report':
       return adminReport(deps, auth, ctx);
     case 'GET /api/admin/content':

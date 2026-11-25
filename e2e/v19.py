@@ -107,7 +107,7 @@ def device_b(browser, name, viewport, is_mobile, email):
     page.get_by_role('button', name='Buka kasir').first.wait_for()  # B's drawer is its own: not open yet
     page.get_by_role('heading', name='Semua perangkat').wait_for()
     card = page.locator('section[aria-labelledby="all-devices"]')
-    assert 'Perangkat ini' in card.inner_text() and 'Perangkat 1' in card.inner_text(), card.inner_text()
+    assert 'Perangkat ini' in card.inner_text() and 'Chrome · Linux' in card.inner_text(), card.inner_text()
     card.scroll_into_view_if_needed()
     shot(page, f'{name}-s3-b-all-devices')
     page.goto(APP + '/pengaturan?tab=store')

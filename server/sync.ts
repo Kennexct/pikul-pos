@@ -22,9 +22,20 @@ async function authed(deps: Deps, auth: string | null): Promise<Authed> {
   return account ? { account } : { error: signedOut };
 }
 
-/** Devices get a readable default name by order of first appearance: "Perangkat 1", "Perangkat 2"… */
+/**
+ * The name each device shows: the owner's name, else its browser and system ("Chrome · Android"), else
+ * "Perangkat N" for devices from before v0.19.7. Two devices with the same browser and system get " 2", " 3"…
+ */
 export function namedDevices(devices: SyncDevice[]): SyncDevice[] {
-  return [...devices].sort((a, b) => a.firstSeen - b.firstSeen).map((d, i) => ({ ...d, name: d.name || `Perangkat ${i + 1}` }));
+  const seen = new Map<string, number>();
+  return [...devices]
+    .sort((a, b) => a.firstSeen - b.firstSeen)
+    .map((d, i) => {
+      const auto = d.autoName || `Perangkat ${i + 1}`;
+      const n = (seen.get(auto) ?? 0) + 1;
+      seen.set(auto, n);
+      return { ...d, named: d.name !== '', name: d.name || (n > 1 ? `${auto} ${n}` : auto) };
+    });
 }
 
 /** GET /api/sync/store — what the account has, so a device can decide: download, claim or ask (spec §3). */
@@ -115,6 +126,10 @@ export async function syncPull(deps: Deps, auth: string | null, ctx: RequestCtx)
   const after = Number(q.get('after') ?? '0');
   if (!Number.isSafeInteger(after) || after < 0) return bad('invalid_cursor');
   const now = deps.now();
+  // Pulling counts as being active, so "last active" stays true for a device that only reads.
+  // Apps before v0.19.7 send only the device id: leave their row alone rather than blank its receipt code.
+  const hello = checkHello({ deviceId, receiptCode: q.get('receiptCode'), appVersion: q.get('appVersion'), autoName: q.get('autoName'), privateMode: q.get('privateMode') });
+  if (hello.ok && hello.value.receiptCode) await deps.repo.touchDevice(a.account.id, hello.value, now);
   const rows = await deps.repo.pullSyncRecords(a.account.id, deviceId, after, PULL_PAGE, now - PULL_SETTLE_MS);
   const cursor = rows.length > 0 ? rows[rows.length - 1]!.seq : after;
   return {
@@ -157,5 +172,16 @@ export async function syncRenameDevice(deps: Deps, auth: string | null, body: un
   const name = cleanDeviceName(b.name);
   if (!isUuid(b.deviceId) || !name) return bad('invalid_name');
   if (!(await deps.repo.renameDevice(a.account.id, b.deviceId, name))) return { status: 404, body: { error: 'not_found' } };
+  return { status: 200, body: { devices: namedDevices(await deps.repo.listDevices(a.account.id)) } };
+}
+
+/** POST /api/sync/devices/remove {deviceId, self} — the owner takes an old device (say a closed incognito window) off the list. */
+export async function syncRemoveDevice(deps: Deps, auth: string | null, body: unknown): Promise<ApiResponse> {
+  const a = await authed(deps, auth);
+  if ('error' in a) return a.error;
+  const b = (body ?? {}) as Record<string, unknown>;
+  if (!isUuid(b.deviceId)) return bad('invalid_device');
+  if (b.deviceId === b.self) return bad('this_device');
+  if (!(await deps.repo.removeDevice(a.account.id, b.deviceId))) return { status: 404, body: { error: 'not_found' } };
   return { status: 200, body: { devices: namedDevices(await deps.repo.listDevices(a.account.id)) } };
 }

@@ -1,12 +1,13 @@
 import { useLiveQuery } from 'dexie-react-hooks';
-import { Pencil, RefreshCw } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
-import { badgeBrand, btnPrimary, btnSecondary, helperText, inputBase } from '../../components/ui/styles';
+import { btnPrimary, helperText } from '../../components/ui/styles';
 import { getDeviceId } from '../../services/device';
 import { lastSyncedAt, pendingCount, rejectedCount } from '../../services/sync';
-import { cachedDevices, refreshDevices, renameDevice, syncTick, type SyncDevice } from '../../services/syncBinding';
+import { cachedDevices, refreshDevices, syncTick, type SyncDevice } from '../../services/syncBinding';
 import { useSessionStore, type SyncStatus } from '../../store/useSessionStore';
+import { DeviceList } from './DeviceList';
 import { SettingsSection } from './SettingsSection';
 import { DATE_LOCALE, t } from '../../i18n';
 
@@ -26,8 +27,6 @@ export function SyncSettings() {
   const info = useLiveQuery(async () => ({ pending: await pendingCount(), rejected: await rejectedCount(), lastAt: await lastSyncedAt(), me: await getDeviceId() }), []);
   const [devices, setDevices] = useState<SyncDevice[]>([]);
   const [busy, setBusy] = useState(false);
-  const [editing, setEditing] = useState<string | null>(null);
-  const [name, setName] = useState('');
 
   useEffect(() => {
     void cachedDevices().then(setDevices);
@@ -45,15 +44,6 @@ export function SyncSettings() {
     else toast.error(t('Sinkronisasi tertunda. Data aman di perangkat.'));
   };
 
-  const saveName = async (deviceId: string) => {
-    try {
-      setDevices(await renameDevice(deviceId, name));
-      setEditing(null);
-    } catch {
-      toast.error(t('Nama perangkat 1–30 huruf, dan perlu internet.'));
-    }
-  };
-
   if (!info) return null;
   return (
     <>
@@ -68,44 +58,7 @@ export function SyncSettings() {
       </SettingsSection>
 
       <SettingsSection title={t('Perangkat')} description={t('Setiap perangkat punya laci kas sendiri. Nama perangkat tampil di Kas → Semua perangkat.')}>
-        {devices.length === 0 && <p className={helperText}>{t('Daftar perangkat muncul setelah sinkronisasi pertama.')}</p>}
-        <ul className="flex flex-col divide-y divide-line">
-          {devices.map((d) => (
-            <li key={d.deviceId} className="flex min-h-12 items-center gap-2 py-2">
-              {editing === d.deviceId ? (
-                <form
-                  className="flex flex-1 gap-2"
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    void saveName(d.deviceId);
-                  }}
-                >
-                  <input aria-label={t('Nama perangkat')} autoFocus maxLength={30} value={name} onChange={(e) => setName(e.target.value)} className={inputBase} />
-                  <button type="submit" className={btnSecondary}>
-                    {t('Simpan')}
-                  </button>
-                </form>
-              ) : (
-                <>
-                  <span className="min-w-0 flex-1 truncate text-[15px] font-semibold">{d.name}</span>
-                  {d.deviceId === info.me && <span className={badgeBrand}>{t('Perangkat ini')}</span>}
-                  <span className="num text-[12px] text-muted">{dateTime.format(new Date(d.lastSeen))}</span>
-                  <button
-                    type="button"
-                    aria-label={t('Ganti nama {0}', d.name)}
-                    onClick={() => {
-                      setEditing(d.deviceId);
-                      setName(d.name);
-                    }}
-                    className="flex h-11 w-11 items-center justify-center rounded-lg text-muted hover:bg-subtle"
-                  >
-                    <Pencil aria-hidden size={16} />
-                  </button>
-                </>
-              )}
-            </li>
-          ))}
-        </ul>
+        <DeviceList devices={devices} me={info.me} onChange={setDevices} />
       </SettingsSection>
     </>
   );

@@ -1,5 +1,15 @@
 # Status
 
+## Recognisable devices (v0.19.7) — In review (2026-11-25)
+Branch `claude/project-thread-mgy8pd` from `main` `15fe414`. Kenny: "Perangkat 1, 2" says nothing; incognito sign-ins leave devices nobody can continue. Spec `specs/2026-11-25-device-names-design.md`. No ADR (extends ADR-025). Next ADR: 027.
+- [x] Devices named by browser + system ("Chrome · Android"), rename still possible; duplicates get " 2"
+- [x] "Perangkat ini" listed first; "Aktif 5 menit lalu"; pull refreshes last active (throttled 1/min)
+- [x] "Tidak aktif N hari" from 7 days; remove another device (inline confirm, `POST /api/sync/devices/remove`)
+- [x] Private-window warning on sign-in and app, "Jendela penyamaran" badge on that device
+- [x] Migration `006_device_names.sql` (in `neon-setup.sql`), runbook updated: run before deploy
+- [x] Checks: typecheck, i18n, 283 tests, build:vercel; e2e v23 (new), v19, v18, v21, v16, v22, flow pass on phone + tablet
+- [ ] Kenny: run migration 006 on Neon, try the Vercel preview, merge
+
 ## Search reaches variants, Transaksi order Riwayat · Kas · Pesanan (v0.19.6) — In review (2026-11-25)
 Branch `claude/project-thread-ani30l` from `main` `a320bba`. Kenny: the search on Kasir and Produk should also find variants; Transaksi sub-menu order History, Cash, Orders. No ADR (UI only, offline Dexie data). Next ADR: 027.
 - [x] `lib/productSearch.ts`: every typed word must appear in the product name or "product + one variant" name; case and accents ignored

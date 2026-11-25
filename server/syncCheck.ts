@@ -25,7 +25,9 @@ export function checkHello(b: Record<string, unknown>): Checked<DeviceHello> {
   if (!isUuid(b.deviceId)) return { ok: false, error: 'invalid_device' };
   const receiptCode = typeof b.receiptCode === 'string' && RECEIPT_CODE_RE.test(b.receiptCode) ? b.receiptCode : '';
   const appVersion = typeof b.appVersion === 'string' && VERSION_RE.test(b.appVersion) ? b.appVersion : '';
-  return { ok: true, value: { deviceId: b.deviceId, receiptCode, appVersion } };
+  const autoName = cleanDeviceName(b.autoName, 40) ?? '';
+  const privateMode = b.privateMode === true || b.privateMode === '1';
+  return { ok: true, value: { deviceId: b.deviceId, receiptCode, appVersion, autoName, privateMode } };
 }
 
 /** One pushed record: known table, UUID id, belongs to the account's store, sane updatedAt, not too big. */
@@ -57,8 +59,8 @@ export function shouldApply(existing: SyncHead | undefined, incoming: SyncRecord
 
 export const orderStatus = (data: Record<string, unknown>): string | null => (typeof data.status === 'string' ? data.status : null);
 
-export function cleanDeviceName(v: unknown): string | null {
+export function cleanDeviceName(v: unknown, max = 30): string | null {
   if (typeof v !== 'string') return null;
   const name = v.trim();
-  return name.length >= 1 && name.length <= 30 && !/[\u0000-\u001f\u007f<>]/.test(name) ? name : null;
+  return name.length >= 1 && name.length <= max && !/[\u0000-\u001f\u007f<>]/.test(name) ? name : null;
 }

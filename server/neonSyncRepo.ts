@@ -9,6 +9,8 @@ const iso = (v: number) => new Date(v).toISOString();
 const device = (r: Row): SyncDevice => ({
   deviceId: r.device_id as string,
   name: r.name as string,
+  autoName: (r.auto_name as string | null) ?? '',
+  privateMode: r.private_mode === true,
   receiptCode: r.receipt_code as string,
   firstSeen: ms(r.first_seen),
   lastSeen: ms(r.last_seen),
@@ -79,16 +81,27 @@ export function neonSyncRepo(sql: Sql): SyncRepo {
       return r.map((x) => ({ accountId: x.account_id as string, name: (x.name as string | null) ?? '', phone: (x.phone as string | null) ?? '', address: (x.address as string | null) ?? '' }));
     },
     async touchDevice(accountId, hello, now) {
-      await sql`insert into sync_devices (account_id, device_id, receipt_code, app_version, first_seen, last_seen)
-        values (${accountId}, ${hello.deviceId}, ${hello.receiptCode}, ${hello.appVersion}, ${iso(now)}, ${iso(now)})
+      // Pull calls this every 15 s: only write when something changed or a minute has passed.
+      await sql`insert into sync_devices (account_id, device_id, receipt_code, app_version, auto_name, private_mode, first_seen, last_seen)
+        values (${accountId}, ${hello.deviceId}, ${hello.receiptCode}, ${hello.appVersion}, ${hello.autoName}, ${hello.privateMode}, ${iso(now)}, ${iso(now)})
         on conflict (account_id, device_id) do update
-          set receipt_code = excluded.receipt_code, app_version = excluded.app_version, last_seen = excluded.last_seen`;
+          set receipt_code = excluded.receipt_code, app_version = excluded.app_version, last_seen = excluded.last_seen,
+              auto_name = case when excluded.auto_name <> '' then excluded.auto_name else sync_devices.auto_name end,
+              private_mode = excluded.private_mode
+          where sync_devices.last_seen < excluded.last_seen - interval '1 minute'
+             or sync_devices.receipt_code <> excluded.receipt_code or sync_devices.app_version <> excluded.app_version
+             or (excluded.auto_name <> '' and sync_devices.auto_name <> excluded.auto_name)
+             or sync_devices.private_mode <> excluded.private_mode`;
     },
     async listDevices(accountId) {
       return (await rows(sql`select * from sync_devices where account_id = ${accountId} order by first_seen`)).map(device);
     },
     async renameDevice(accountId, deviceId, name) {
       const r = await rows(sql`update sync_devices set name = ${name} where account_id = ${accountId} and device_id = ${deviceId} returning device_id`);
+      return r.length === 1;
+    },
+    async removeDevice(accountId, deviceId) {
+      const r = await rows(sql`delete from sync_devices where account_id = ${accountId} and device_id = ${deviceId} returning device_id`);
       return r.length === 1;
     },
   };
