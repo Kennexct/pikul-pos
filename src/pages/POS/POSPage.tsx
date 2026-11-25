@@ -33,6 +33,7 @@ import { SaveOrderSheet } from './components/SaveOrderSheet';
 import { SoldOutSheet } from './components/SoldOutSheet';
 import { OptionSheet } from './components/OptionSheet';
 import { t } from '../../i18n';
+import { searchProducts } from '../../lib/productSearch';
 
 /** What the entry sheet needs: a product being added, or a cart line being changed. */
 interface EntryRequest {
@@ -97,15 +98,12 @@ export function POSPage() {
     repriceItems((item) => normalPriceFor(item, mode));
   }, [mode, salesModeId, setSalesMode, repriceItems, openOrderId, productsById]);
 
-  const visibleProducts = useMemo(() => {
-    const query = search.trim().toLowerCase();
-    return (catalog?.products ?? []).filter(
-      (p) =>
-        p.isActive &&
-        (categoryId === ALL_CATEGORIES || p.categoryId === categoryId) &&
-        (query === '' || p.name.toLowerCase().includes(query)),
-    );
-  }, [catalog, categoryId, search]);
+  /** Search matches product and variant names; the map holds the variants that matched (shown on the tile). */
+  const matches = useMemo(() => searchProducts(catalog?.products ?? [], search), [catalog, search]);
+  const visibleProducts = useMemo(
+    () => (catalog?.products ?? []).filter((p) => p.isActive && (categoryId === ALL_CATEGORIES || p.categoryId === categoryId) && matches.has(p.id)),
+    [catalog, categoryId, matches],
+  );
   const checklist = useChecklist(store?.id ?? null);
   const sellableProducts = useMemo(() => catalog?.products.filter((p) => p.isActive) ?? [], [catalog]);
   const soldOutCount = sellableProducts.filter(isProductSoldOut).length;
@@ -258,7 +256,7 @@ export function POSPage() {
         <div className="flex flex-col gap-3 border-b border-line bg-surface px-3 pt-3 md:px-5 md:pt-4">
           <div className="flex flex-col gap-2 md:flex-row md:items-center md:gap-3">
             <div className="flex min-w-0 flex-1 gap-2">
-              <SearchInput value={search} onChange={setSearch} placeholder={t('Cari menu…')} label={t('Cari produk')} />
+              <SearchInput value={search} onChange={setSearch} placeholder={t('Cari menu atau varian…')} label={t('Cari produk')} />
               <button type="button" aria-label={t('Tandai stok habis')} title={t('Tandai stok habis')} onClick={() => setPanel('soldOut')} className={`${btnIcon} relative border-danger-200! bg-danger-50! text-danger-700! hover:bg-danger-200/50!`}>
                 <PackageX aria-hidden size={20} />
                 {soldOutCount > 0 && (
@@ -288,7 +286,7 @@ export function POSPage() {
           />
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto p-3 pb-24 md:p-5">
-          <ProductGrid products={visibleProducts} salesMode={mode} qtyByProduct={qtyByProduct} onSelect={handleSelectProduct} isMenuEmpty={sellableProducts.length === 0} />
+          <ProductGrid products={visibleProducts} salesMode={mode} qtyByProduct={qtyByProduct} matchedVariants={matches} onSelect={handleSelectProduct} isMenuEmpty={sellableProducts.length === 0} />
         </div>
       </section>
 

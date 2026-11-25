@@ -21,6 +21,8 @@ interface ProductRowProps {
   /** Reserve the toggle column (some product in the list has variants) so rows line up. */
   hasToggleColumn: boolean;
   isExpanded: boolean;
+  /** Variant names the search matched: those lines are marked. */
+  matchedVariants?: readonly string[];
   onToggle: () => void;
   onOpen: () => void;
 }
@@ -30,7 +32,7 @@ const statusBadge = (isActive: boolean, isSoldOut: boolean) => (
 );
 
 /** One product in the list; products with variants get a toggle that shows each variant's prices inline (ADR-017). */
-export function ProductRow({ product: p, categoryName, summary, addOnCount, takeawayModeId, takeawayModeName, hasToggleColumn, isExpanded, onToggle, onOpen }: ProductRowProps) {
+export function ProductRow({ product: p, categoryName, summary, addOnCount, takeawayModeId, takeawayModeName, hasToggleColumn, isExpanded, matchedVariants = [], onToggle, onOpen }: ProductRowProps) {
   const variants = activeVariants(p);
   const panelId = `variants-${p.id}`;
   const takeaway = (prices: Record<Id, number> | undefined) =>
@@ -88,10 +90,11 @@ export function ProductRow({ product: p, categoryName, summary, addOnCount, take
               <button
                 type="button"
                 onClick={onOpen}
-                className={`grid w-full grid-cols-[1fr_auto_20px] items-center gap-3 py-2 pl-[108px] pr-4 text-left hover:bg-subtle ${PRODUCT_COLUMNS} @4xl/page:gap-4`}
+                aria-current={matchedVariants.includes(v.name) ? 'true' : undefined}
+                className={`grid w-full grid-cols-[1fr_auto_20px] items-center gap-3 py-2 pl-[108px] pr-4 text-left hover:bg-subtle ${PRODUCT_COLUMNS} @4xl/page:gap-4 ${matchedVariants.includes(v.name) ? 'bg-brand-50' : ''}`}
               >
                 <span className="min-w-0">
-                  <span className="block truncate text-[14px] font-medium">{v.name}</span>
+                  <span className={`block truncate text-[14px] font-medium ${matchedVariants.includes(v.name) ? 'text-brand-700' : ''}`}>{v.name}</span>
                   <span className="block truncate text-[12px] text-muted @4xl/page:hidden">
                     {takeawayModeId && v.modePrices?.[takeawayModeId] !== undefined && `${takeawayModeName} ${takeaway(v.modePrices)}`}
                     {p.isActive && v.isSoldOut && t(' · Habis')}

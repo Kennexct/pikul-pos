@@ -131,7 +131,6 @@ export const EN = {
   'Cari nama atau nomor HP…': 'Search name or phone number…',
   'Cari pelanggan': 'Search customers',
   'Cari produk': 'Search products',
-  'Cari produk…': 'Search products…',
   'Cari topik bantuan': 'Search help topics',
   'Cari transaksi': 'Search transactions',
   'Catat belanja bahan, gas, upah, dan biaya lain supaya untung bisa dihitung.': 'Record ingredients, gas, wages and other costs so profit can be calculated.',
@@ -1537,4 +1536,7 @@ export const EN = {
   "Satuan berat dan ukuran nonaktif": "Weight and measure units off",
   "Awalan nomor struk": "Receipt number prefix",
   "Huruf/angka di depan nomor struk, maks. {0}. Contoh: {1}": "Letters/numbers at the start of the receipt number, max {0}. Example: {1}",
+  "Cari menu atau varian…": "Search items or variants…",
+  "Cari produk atau varian…": "Search products or variants…",
+  "Varian: {0}": "Variant: {0}",
 } as const;

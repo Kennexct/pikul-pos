@@ -9,6 +9,7 @@ import { Tabs } from '../../components/ui/Tabs';
 import { useAppData } from '../../hooks/useAppData';
 import { formatRupiah } from '../../lib/money';
 import { hasVariants } from '../../lib/productVariants';
+import { searchProducts } from '../../lib/productSearch';
 import type { Category, Id, Product, VariantGroup } from '../../types';
 import { CategoriesPanel } from './CategoriesPanel';
 import { CategoryForm } from './CategoryForm';
@@ -43,8 +44,9 @@ export function ProductsPage() {
 
   if (!store || !catalog) return <LoadingScreen />;
 
-  const query = search.trim().toLowerCase();
-  const products = catalog.products.filter((p) => query === '' || p.name.toLowerCase().includes(query));
+  /** Search matches product and variant names; rows found through a variant open with that variant marked. */
+  const matches = searchProducts(catalog.products, search);
+  const products = catalog.products.filter((p) => matches.has(p.id));
   const takeawayMode = catalog.salesModes.find((m) => m.priceRule === 'mode_price');
   const withVariants = products.filter(hasVariants);
   const isAllExpanded = withVariants.length > 0 && withVariants.every((p) => expanded.has(p.id));
@@ -94,7 +96,7 @@ export function ProductsPage() {
           <>
             <div className="mb-3 flex items-center gap-2">
               <div className="min-w-0 max-w-md flex-1">
-                <SearchInput value={search} onChange={setSearch} placeholder={t('Cari produk…')} label={t('Cari produk')} />
+                <SearchInput value={search} onChange={setSearch} placeholder={t('Cari produk atau varian…')} label={t('Cari produk')} />
               </div>
               {withVariants.length > 0 && (
                 <button
@@ -128,7 +130,8 @@ export function ProductsPage() {
                     takeawayModeId={takeawayMode?.id}
                     takeawayModeName={takeawayMode?.name ?? 'Takeaway'}
                     hasToggleColumn={withVariants.length > 0}
-                    isExpanded={expanded.has(p.id)}
+                    isExpanded={expanded.has(p.id) || (matches.get(p.id)?.length ?? 0) > 0}
+                    matchedVariants={matches.get(p.id)}
                     onToggle={() => toggle(p.id)}
                     onOpen={() => setEditingProduct({ item: p })}
                   />

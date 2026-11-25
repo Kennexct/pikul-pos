@@ -15,13 +15,15 @@ interface ProductGridProps {
   products: Product[];
   salesMode: SalesMode;
   qtyByProduct: ReadonlyMap<Id, number>;
+  /** Search hits on variant names, per product: shown under the name so the seller sees why it matched. */
+  matchedVariants?: ReadonlyMap<Id, readonly string[]>;
   /** Called for sold-out products too; the page decides what a tap on one does. */
   onSelect: (product: Product) => void;
   /** The store has no sellable product at all (a new store starts with an empty menu, ADR-018). */
   isMenuEmpty?: boolean;
 }
 
-export function ProductGrid({ products, salesMode, qtyByProduct, onSelect, isMenuEmpty = false }: ProductGridProps) {
+export function ProductGrid({ products, salesMode, qtyByProduct, matchedVariants, onSelect, isMenuEmpty = false }: ProductGridProps) {
   if (isMenuEmpty) {
     return (
       <EmptyState
@@ -43,6 +45,7 @@ export function ProductGrid({ products, salesMode, qtyByProduct, onSelect, isMen
         const isSelected = qty > 0;
         const hasChoices = hasVariants(product) || product.variantGroupIds.length > 0;
         const isSoldOut = isProductSoldOut(product);
+        const variantHits = matchedVariants?.get(product.id) ?? [];
         return (
           <li key={product.id}>
             <button
@@ -56,6 +59,9 @@ export function ProductGrid({ products, salesMode, qtyByProduct, onSelect, isMen
               <ProductThumb name={product.name} photoUrl={product.photoUrl} className={`aspect-[3/2] w-full border-b border-line md:aspect-[4/3] ${isSoldOut ? 'opacity-40 grayscale' : ''}`} />
               <span className="flex flex-1 flex-col gap-1 p-2.5 md:p-3">
                 <span className={`line-clamp-2 text-[13px] font-semibold leading-snug md:text-[14px] ${isSoldOut ? 'text-muted' : 'text-ink'}`}>{product.name}</span>
+                {variantHits.length > 0 && (
+                  <span className="line-clamp-2 text-[12px] font-medium leading-snug text-brand-700 md:text-[13px]">{t('Varian: {0}', variantHits.join(', '))}</span>
+                )}
                 <span className="mt-auto flex items-center gap-1.5">
                   <span className={`num text-[13px] font-semibold md:text-[14px] ${isSoldOut ? 'text-faint' : 'text-ink-soft'}`}>
                     {hasVariants(product) ? t('Mulai {0}', formatRupiah(fromPrice(product, salesMode))) : formatRupiah(resolveModePrice(product, salesMode))}

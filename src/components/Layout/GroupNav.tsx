@@ -79,7 +79,7 @@ interface SubNavProps {
   isLocked: (item: NavItem) => boolean;
 }
 
-/** Phone: the open group's pages as underline tabs above the page (e.g. Transaksi → Pesanan · Riwayat · Kas). */
+/** Phone: the open group's pages as underline tabs above the page (e.g. Transaksi → Riwayat · Kas · Pesanan). */
 export function SubNavTabs({ group, badgeFor, isLocked }: SubNavProps) {
   return (
     <nav aria-label={t('Menu {0}', group.label)} className="shrink-0 border-b border-line bg-surface px-2 md:hidden">

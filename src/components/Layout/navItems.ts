@@ -22,9 +22,9 @@ export interface NavGroup {
 /** Every page reachable from the menu, in menu order. */
 export const NAV_ITEMS = {
   pos: { to: ROUTES.pos, label: t('Kasir'), icon: Store },
-  openOrders: { to: ROUTES.openOrders, label: t('Pesanan'), icon: ClipboardList },
   history: { to: ROUTES.history, label: t('Riwayat'), icon: ReceiptText },
   cash: { to: ROUTES.cash, label: t('Kas'), icon: Wallet },
+  openOrders: { to: ROUTES.openOrders, label: t('Pesanan'), icon: ClipboardList },
   reports: { to: ROUTES.reports, label: t('Laporan'), icon: BarChart3, isOwnerOnly: true },
   products: { to: ROUTES.products, label: t('Produk'), icon: Package, isOwnerOnly: true },
   customers: { to: ROUTES.customers, label: t('Pelanggan'), icon: Users },
@@ -32,10 +32,10 @@ export const NAV_ITEMS = {
   help: { to: ROUTES.help, label: t('Bantuan'), icon: CircleHelp },
 } as const satisfies Record<string, NavItem>;
 
-/** Main menu (Kenny, v0.19.1): Kasir · Transaksi · Kelola · Laporan · Pengaturan. Bantuan sits apart (rail foot / Akun on a phone). */
+/** Main menu (Kenny, v0.19.1; Transaksi order Riwayat · Kas · Pesanan since v0.19.6): Kasir · Transaksi · Kelola · Laporan · Pengaturan. Bantuan sits apart (rail foot / Akun on a phone). */
 export const NAV_GROUPS: readonly NavGroup[] = [
   { id: 'pos', label: t('Kasir'), icon: Store, items: [NAV_ITEMS.pos] },
-  { id: 'sales', label: t('Transaksi::menu'), icon: ReceiptText, items: [NAV_ITEMS.openOrders, NAV_ITEMS.history, NAV_ITEMS.cash] },
+  { id: 'sales', label: t('Transaksi::menu'), icon: ReceiptText, items: [NAV_ITEMS.history, NAV_ITEMS.cash, NAV_ITEMS.openOrders] },
   { id: 'manage', label: t('Kelola'), icon: LayoutGrid, items: [NAV_ITEMS.products, NAV_ITEMS.customers] },
   { id: 'reports', label: t('Laporan'), icon: BarChart3, items: [NAV_ITEMS.reports] },
   { id: 'settings', label: t('Pengaturan'), icon: Settings, items: [NAV_ITEMS.settings] },

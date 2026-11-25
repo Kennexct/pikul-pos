@@ -15,6 +15,7 @@ python3    e2e/v11.py     http://localhost:4173 ./shots              # English d
 python3    e2e/v09.py     http://localhost:4173 ./shots              # cost price -> profit + Excel, expenses, close of day (short, reopen, exact), backup -> restore (needs openpyxl)
 python3    e2e/reports.py http://localhost:4173 ./shots              # sales + refund -> Reports -> download XLSX/PDF/CSV and verify (needs openpyxl)
 python3    e2e/v16.py     http://localhost:4173/app ./shots          # register: open with count before first sale, close with count, closed-day warning; Kategori tab; variant expand
+python3    e2e/v22.py     http://localhost:4173/app ./shots          # search finds variants (Kasir, sold-out sheet, Produk); Transaksi sub-menu Riwayat · Kas · Pesanan
 ```
 Both print `ERRORS: none` when no page errors, console errors or failed requests occurred. Screenshots land in `./shots`.
 Since v0.10 a fresh browser profile opens the first-time journey; every older flow presses "Lewati, pakai contoh toko" first.
