@@ -24,7 +24,7 @@ async function authed(deps: Deps, auth: string | null): Promise<Authed> {
 
 /**
  * The name each device shows: the owner's name, else its browser and system ("Chrome · Android"), else
- * "Perangkat N" for devices from before v0.19.7. Two devices with the same browser and system get " 2", " 3"…
+ * "Perangkat N" for devices from before v0.20.1. Two devices with the same browser and system get " 2", " 3"…
  */
 export function namedDevices(devices: SyncDevice[]): SyncDevice[] {
   const seen = new Map<string, number>();
@@ -127,7 +127,7 @@ export async function syncPull(deps: Deps, auth: string | null, ctx: RequestCtx)
   if (!Number.isSafeInteger(after) || after < 0) return bad('invalid_cursor');
   const now = deps.now();
   // Pulling counts as being active, so "last active" stays true for a device that only reads.
-  // Apps before v0.19.7 send only the device id: leave their row alone rather than blank its receipt code.
+  // Apps before v0.20.1 send only the device id: leave their row alone rather than blank its receipt code.
   const hello = checkHello({ deviceId, receiptCode: q.get('receiptCode'), appVersion: q.get('appVersion'), autoName: q.get('autoName'), privateMode: q.get('privateMode') });
   if (hello.ok && hello.value.receiptCode) await deps.repo.touchDevice(a.account.id, hello.value, now);
   const rows = await deps.repo.pullSyncRecords(a.account.id, deviceId, after, PULL_PAGE, now - PULL_SETTLE_MS);

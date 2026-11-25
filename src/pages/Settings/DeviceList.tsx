@@ -17,7 +17,7 @@ interface Props {
 }
 
 /**
- * Pengaturan → Sinkronisasi → Perangkat (v0.19.7): each device named by browser and system until renamed,
+ * Pengaturan → Sinkronisasi → Perangkat (v0.20.1): each device named by browser and system until renamed,
  * "Perangkat ini" on this one, last active, private-window and 7-day-inactive flags, rename and remove.
  */
 export function DeviceList({ devices, me, onChange }: Props) {

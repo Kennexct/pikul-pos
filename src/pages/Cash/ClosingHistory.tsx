@@ -3,6 +3,7 @@ import { EmptyState } from '../../components/ui/EmptyState';
 import { card } from '../../components/ui/styles';
 import { formatBusinessDate } from '../../lib/dateRange';
 import { formatRupiah } from '../../lib/money';
+import { shiftNoOf } from '../../lib/shifts';
 import type { DayClosing, Id } from '../../types';
 import { DifferenceBadge } from './DifferenceBadge';
 import { t } from '../../i18n';
@@ -16,6 +17,8 @@ const COLUMNS = 'md:grid-cols-[1.4fr_1fr_1fr_1fr_auto]';
 
 /** Past closings, newest first: sales, expected vs counted cash, and the difference. */
 export function ClosingHistory({ closings, memberNames }: ClosingHistoryProps) {
+  // A day with more than one shift names each row's shift (ADR-027).
+  const shiftDays = new Set(closings.filter((c) => shiftNoOf(c) > 1).map((c) => c.businessDate));
   if (closings.length === 0) {
     return <EmptyState icon={CalendarCheck} title={t('Belum pernah tutup kasir')} description={t('Setelah kasir ditutup, hasil hitung uang laci setiap hari tersimpan di sini.')} />;
   }
@@ -32,7 +35,10 @@ export function ClosingHistory({ closings, memberNames }: ClosingHistoryProps) {
         {closings.map((closing) => (
           <li key={closing.id} className={`grid grid-cols-[1fr_auto] items-center gap-x-3 gap-y-1 px-4 py-3 ${COLUMNS}`}>
             <div className="min-w-0">
-              <p className="truncate text-[15px] font-semibold">{formatBusinessDate(closing.businessDate)}</p>
+              <p className="truncate text-[15px] font-semibold">
+                {formatBusinessDate(closing.businessDate)}
+                {shiftDays.has(closing.businessDate) && <span className="font-normal text-muted"> · {t('Shift {0}', shiftNoOf(closing))}</span>}
+              </p>
               <p className="truncate text-[13px] text-muted">
                 {memberNames.get(closing.closedById) ?? t('Kasir::orang')}
                 <span className="num md:hidden"> {t('· jual')} {formatRupiah(closing.netSales)} {t('· laci')} {formatRupiah(closing.countedCash)}</span>

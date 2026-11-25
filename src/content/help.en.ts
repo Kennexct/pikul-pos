@@ -126,7 +126,9 @@ export const HELP_EN: HelpContent = {
       ],
       notes: [
         'Expected cash = opening cash + cash sales − cash refunds − expenses paid from the drawer.',
-        'A sale after closing? The owner can "Reopen" and close again.',
+        'Selling again after closing on the same day? Tap "Open a new shift". The closed shift stays locked; the new shift\'s opening cash is filled in from the counted cash.',
+        'The day\'s report adds up every shift. On Cash, "All shifts today" shows each shift and the total.',
+        'Miscounted? The owner can "Reopen" the last shift until the next shift is opened.',
         'When closing, items marked Sold out can be made available again automatically for tomorrow.',
       ],
       keywords: 'drawer deposit difference short over closing shift cost shopping till open register float',

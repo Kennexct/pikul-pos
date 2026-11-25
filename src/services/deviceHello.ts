@@ -3,7 +3,7 @@ import { isPrivateWindow } from '../lib/privateWindow';
 import { getDeviceId, getReceiptCode } from './device';
 import { version } from '../../package.json';
 
-/** What this device tells the sync server about itself on every push and pull (ADR-025, v0.19.7 names). */
+/** What this device tells the sync server about itself on every push and pull (ADR-025, v0.20.1 names). */
 
 let privateCheck: Promise<boolean> | null = null;
 

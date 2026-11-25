@@ -1,4 +1,4 @@
-# Recognisable devices (v0.19.7) — design
+# Recognisable devices (v0.20.1) — design
 
 **Date:** 2026-11-25 · **Feature slug:** `device-names` · **ADR:** none (extends ADR-025's device list; two columns, one endpoint)
 **Asked by Kenny:** "for sync device, it show up perangkat 1, perangkat 2, etc.. (then how can i know which perangkat im sign in? because some of the account im sign in using incognito web, then i cant continue again when the browser already closed) suggest me for this flow, any better solution?" → proposal in the project chat → "okay, build it".
@@ -19,7 +19,7 @@ The device list in Pengaturan → Sinkronisasi named devices "Perangkat 1, 2…"
 - Migration `006_device_names.sql`: `sync_devices.auto_name text`, `sync_devices.private_mode boolean`. Must run before deploying.
 - Hello (`claim`, `push`, `replace`, and now `pull` query) carries `autoName` (≤40 chars, same character rules as names) and `privateMode`.
 - `POST /api/sync/devices/remove {deviceId, self}` → 200 with the list, 400 `this_device`, 404 `not_found`.
-- Apps before v0.19.7 pull with only `deviceId`: the server does not touch their row, so their receipt code is never blanked.
+- Apps before v0.20.1 pull with only `deviceId`: the server does not touch their row, so their receipt code is never blanked.
 
 ## Testing
 Unit: `deviceLabel`, `privateWindow`, `lastActive`, server sync (auto names + duplicates, private flag, pull keeps last active, old-app pull, remove). e2e `v23.py` phone + tablet; `v19`, `v18`, `v21`, `v16`, `v22`, `flow` re-run.

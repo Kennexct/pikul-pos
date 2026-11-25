@@ -14,7 +14,7 @@ function wasDismissed(): boolean {
 }
 
 /**
- * Warns that this window looks private / incognito (v0.19.7): the browser wipes the device's data when it closes,
+ * Warns that this window looks private / incognito (v0.20.1): the browser wipes the device's data when it closes,
  * so sales not synced yet would be lost and the device leaves an unusable entry in the device list.
  * `card` sits above the sign-in form; `strip` sits on top of the app. Dismissed for this window only.
  */

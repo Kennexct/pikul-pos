@@ -44,7 +44,7 @@ export interface SyncDevice {
   name: string;
   /** The owner gave this name (API only; the repo leaves it out). */
   named?: boolean;
-  /** Browser and system the device reported, e.g. "Chrome · Android" ('' for devices from before v0.19.7). */
+  /** Browser and system the device reported, e.g. "Chrome · Android" ('' for devices from before v0.20.1). */
   autoName: string;
   /** Opened in a private / incognito window: its data goes when the browser closes. */
   privateMode: boolean;

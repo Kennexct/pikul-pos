@@ -25,6 +25,7 @@ import { CloseDaySheet } from './CloseDaySheet';
 import { ClosingHistory } from './ClosingHistory';
 import { ExpenseSheet } from './ExpenseSheet';
 import { ExpensesPanel } from './ExpensesPanel';
+import { ShiftsDayCard } from './ShiftsDayCard';
 import { TodayPanel } from './TodayPanel';
 import { t } from '../../i18n';
 
@@ -41,10 +42,15 @@ export function CashPage() {
   const yesterday = addDays(today, -1);
 
   const [view, setView] = useState<View>('day');
-  const [date, setDate] = useState(today);
+  const [date, setDateState] = useState(today);
+  const [shift, setShift] = useState<number | null>(null);
   const [dialog, setDialog] = useState<Dialog>(null);
+  const setDate = (next: string) => {
+    setDateState(next);
+    setShift(null);
+  };
 
-  const day = useDrawerDay(storeId, date);
+  const day = useDrawerDay(storeId, date, shift);
   const register = useRegister(storeId, date);
   const isYesterdayUnclosed = useIsUnclosed(storeId, yesterday);
   const expenseRange = useDateRange(today);
@@ -56,6 +62,9 @@ export function CashPage() {
   const drawer = buildDrawer(day.input);
   const soldOutCount = catalog.products.filter((p) => p.isActive && p.isSoldOut).length;
   const isToday = date === today;
+  const lastShift = day.shifts.at(-1);
+  // Today's last shift is closed and the next has not started: offer a new shift, never the closed one again (ADR-027).
+  const canOpenShift = isToday && register?.status === 'closed' && day.closing !== null && lastShift?.closing === day.closing;
 
   /** Owner-only actions: returns the approving owner, `null` when no PIN is set, or `undefined` when refused. */
   const ownerApproval = async (reason: string): Promise<Id | null | undefined> => {
@@ -70,6 +79,7 @@ export function CashPage() {
     try {
       await reopenDay(day.closing.id, cashierId, approver);
       toast.success(t('Kasir dibuka kembali'));
+      setShift(null);
       setDialog(null);
     } catch (error) {
       toast.error(errorMessage(error));
@@ -135,11 +145,16 @@ export function CashPage() {
               closing={day.closing}
               closedByName={day.closing ? (memberNames.get(day.closing.closedById) ?? t('Kasir::orang')) : ''}
               isOpened={register?.status !== 'not_open'}
+              shiftNo={day.shiftNo}
+              shiftCount={day.shifts.length}
+              canReopen={day.canReopen}
               onEditOpening={() => setDialog({ kind: 'opening' })}
               onClose={() => setDialog({ kind: 'close' })}
               onReopen={() => setDialog({ kind: 'reopen' })}
+              onOpenShift={canOpenShift ? () => setDialog({ kind: 'opening' }) : undefined}
               onShowExpenses={() => setView('expenses')}
             />
+            {day.shifts.length > 1 && <ShiftsDayCard shifts={day.shifts} selected={day.shiftNo} timeZone={store.timezone} onSelect={setShift} />}
             {access.kind !== 'locked' && <AllDevicesCard storeId={store.id} date={date} />}
           </div>
         )}
@@ -158,17 +173,31 @@ export function CashPage() {
 
       {dialog?.kind === 'expense' && <ExpenseSheet storeId={store.id} actorId={cashierId} businessDate={view === 'day' ? date : today} onClose={() => setDialog(null)} />}
       {dialog?.kind === 'close' && (
-        <CloseDaySheet storeId={store.id} actorId={cashierId} businessDate={date} drawer={drawer} soldOutCount={isToday ? soldOutCount : 0} onClose={() => setDialog(null)} />
+        <CloseDaySheet
+          storeId={store.id}
+          actorId={cashierId}
+          businessDate={date}
+          shiftNo={day.shifts.length > 1 || day.shiftNo > 1 ? day.shiftNo : null}
+          drawer={drawer}
+          soldOutCount={isToday ? soldOutCount : 0}
+          onClose={() => setDialog(null)}
+        />
       )}
       {dialog?.kind === 'opening' && (
         <OpenRegisterSheet
           storeId={store.id}
           actorId={cashierId}
           businessDate={date}
-          suggested={drawer.openingCash}
-          mode={register?.status === 'not_open' ? 'open' : 'edit'}
+          suggested={register?.status === 'open' ? drawer.openingCash : (register?.suggestedOpening ?? 0)}
+          mode={register?.status === 'open' ? 'edit' : 'open'}
+          shiftNo={register?.shiftNo ?? 1}
+          lastClosing={register?.lastClosing ?? null}
+          timeZone={store.timezone}
           isYesterdayUnclosed={isToday && isYesterdayUnclosed}
-          onDone={() => setDialog(null)}
+          onDone={() => {
+            setShift(null);
+            setDialog(null);
+          }}
           onClose={() => setDialog(null)}
         />
       )}
@@ -185,7 +214,7 @@ export function CashPage() {
             </div>
           }
         >
-          <p className="text-[14px] text-ink-soft">{t('Hasil tutup kasir hari ini dihapus dan harus dihitung ulang. Tindakan ini tercatat dan butuh izin pemilik.')}</p>
+          <p className="text-[14px] text-ink-soft">{t('Hasil tutup kasir ini dihapus dan harus dihitung ulang. Bisa selama shift berikutnya belum dibuka. Tindakan ini tercatat dan butuh izin pemilik.')}</p>
         </Sheet>
       )}
       {dialog?.kind === 'deleteExpense' && (

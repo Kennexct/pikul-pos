@@ -163,12 +163,12 @@ describe('sync API (ADR-025)', () => {
     expect(list.devices.map((d) => [d.name, d.privateMode, d.named])).toEqual([['Chrome · Android', false, false], ['Chrome · Android 2', true, false]]);
 
     now += 60_000;
-    const q = new URLSearchParams({ storeId: STORE, deviceId: DEV_A, after: '0', receiptCode: 'AB', appVersion: '0.19.7', autoName: 'Safari · iPad', privateMode: '0' });
+    const q = new URLSearchParams({ storeId: STORE, deviceId: DEV_A, after: '0', receiptCode: 'AB', appVersion: '0.20.1', autoName: 'Safari · iPad', privateMode: '0' });
     expect((await call('GET', '/api/sync/pull', token, undefined, q.toString())).status).toBe(200);
     list = (await call('GET', '/api/sync/devices', token)).body as List;
     expect(list.devices[0]).toMatchObject({ name: 'Safari · iPad', lastSeen: now });
 
-    // An app from before v0.19.7 pulls with only its id: its row (and receipt code) stays as it was.
+    // An app from before v0.20.1 pulls with only its id: its row (and receipt code) stays as it was.
     await call('GET', '/api/sync/pull', token, undefined, `storeId=${STORE}&deviceId=${DEV_B}&after=0`);
     expect(((await call('GET', '/api/sync/devices', token)).body as List & { devices: Array<{ receiptCode: string }> }).devices[1]?.receiptCode).toBe('CD');
   });

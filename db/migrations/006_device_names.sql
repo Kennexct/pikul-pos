@@ -1,4 +1,4 @@
--- v0.19.7 recognisable devices. Neon Postgres. Run after 005.
+-- v0.20.1 recognisable devices. Neon Postgres. Run after 005.
 -- Each device reports its browser and system ("Chrome · Android") and whether it runs in a private window,
 -- so the owner can tell devices apart in Pengaturan → Sinkronisasi and remove old incognito ones.
 

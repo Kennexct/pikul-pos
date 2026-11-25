@@ -1,4 +1,4 @@
-"""v0.19.7 recognisable devices, against the Vercel output served by scripts/vercel-local.mjs (DEV_MODE=1).
+"""v0.20.1 recognisable devices, against the Vercel output served by scripts/vercel-local.mjs (DEV_MODE=1).
 Three browser contexts on one account, each with a real phone/tablet/computer user agent:
 A signs up and syncs. B opens in a (simulated) private window: the sign-in page and the app warn about it; B signs in,
 downloads the store and syncs, then its window closes. C signs in → Pengaturan → Sinkronisasi lists every device by

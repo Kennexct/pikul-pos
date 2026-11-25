@@ -1,5 +1,6 @@
 import type { ClosingMethodTotal, DayClosing, Expense, Id, Order, Refund } from '../types';
 import { formatRupiah } from './money';
+import { formatClockTime, shiftNoOf } from './shifts';
 import { isCountedSale, summarize } from './reports';
 import { DATE_LOCALE, t } from '../i18n';
 
@@ -104,11 +105,12 @@ export function buildClosingText(input: { storeName: string; closing: DayClosing
   const day = new Intl.DateTimeFormat(DATE_LOCALE, { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }).format(
     new Date(`${closing.businessDate}T00:00:00Z`),
   );
-  const time = new Intl.DateTimeFormat(DATE_LOCALE, { hour: '2-digit', minute: '2-digit', timeZone: input.timeZone }).format(new Date(closing.closedAt));
+  const time = formatClockTime(closing.closedAt, input.timeZone);
+  const shift = shiftNoOf(closing);
   const minus = (amount: number) => (amount === 0 ? formatRupiah(0) : `-${formatRupiah(amount)}`);
 
   return [
-    t('Tutup kasir {0}', input.storeName),
+    shift > 1 ? t('Tutup kasir {0} · Shift {1}', input.storeName, shift) : t('Tutup kasir {0}', input.storeName),
     t('{0}, ditutup {1} oleh {2}', day, time, input.closedByName),
     '',
     t('Penjualan bersih: {0} ({1} transaksi)', formatRupiah(closing.netSales), closing.transactions),

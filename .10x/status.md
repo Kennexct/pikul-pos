@@ -1,7 +1,7 @@
 # Status
 
-## Recognisable devices (v0.19.7) — In review (2026-11-25)
-Branch `claude/project-thread-mgy8pd` from `main` `15fe414`. Kenny: "Perangkat 1, 2" says nothing; incognito sign-ins leave devices nobody can continue. Spec `specs/2026-11-25-device-names-design.md`. No ADR (extends ADR-025). Next ADR: 027.
+## Recognisable devices (v0.20.1) — In review (2026-11-25)
+Branch `claude/project-thread-mgy8pd` from `main` `15fe414`, merged with the shift branch (v0.20.0, PR #15). Kenny: "Perangkat 1, 2" says nothing; incognito sign-ins leave devices nobody can continue. Spec `specs/2026-11-25-device-names-design.md`. No ADR (extends ADR-025). Next ADR: 027.
 - [x] Devices named by browser + system ("Chrome · Android"), rename still possible; duplicates get " 2"
 - [x] "Perangkat ini" listed first; "Aktif 5 menit lalu"; pull refreshes last active (throttled 1/min)
 - [x] "Tidak aktif N hari" from 7 days; remove another device (inline confirm, `POST /api/sync/devices/remove`)
@@ -9,6 +9,17 @@ Branch `claude/project-thread-mgy8pd` from `main` `15fe414`. Kenny: "Perangkat 1
 - [x] Migration `006_device_names.sql` (in `neon-setup.sql`), runbook updated: run before deploy
 - [x] Checks: typecheck, i18n, 283 tests, build:vercel; e2e v23 (new), v19, v18, v21, v16, v22, flow pass on phone + tablet
 - [ ] Kenny: run migration 006 on Neon, try the Vercel preview, merge
+
+## A new shift after closing the register (v0.20.0) — In review (2026-11-25)
+Branch `claude/project-thread-kaitud` from `main` `15fe414`. Kenny: closing and then selling again the same day should open a NEW register, never continue the closed one. ADR-027, spec `specs/2026-11-25-open-shift-after-closing.md`. Next ADR: 028.
+- [x] `DayClosing.shiftNo` (absent = 1); `lib/shifts.ts` holds the pure rules (current shift, time window, sale time)
+- [x] Opening the register after a closing opens the next shift; opening cash prefilled from the last count, editable
+- [x] Cashier banner "Shift 1 ditutup 14.05 · Buka shift baru"; the old "Tetap jual" warning is gone
+- [x] Drawer maths per shift (records between the previous closing and this one; a saved order counts when paid)
+- [x] "Buka kembali" only corrects the last closing, and only before the next shift starts
+- [x] Kas: "Kas laci · Shift N", "Semua shift hari ini" card (per shift + day total), history names the shift, WhatsApp summary "· Shift N"
+- [x] Checks: typecheck, i18n, 278 tests, build; e2e v24 (new), v16, v09, flow, manage, staff, v13, v22 pass on phone + tablet
+- [ ] Kenny: try on the Vercel preview, merge
 
 ## Search reaches variants, Transaksi order Riwayat · Kas · Pesanan (v0.19.6) — In review (2026-11-25)
 Branch `claude/project-thread-ani30l` from `main` `a320bba`. Kenny: the search on Kasir and Produk should also find variants; Transaksi sub-menu order History, Cash, Orders. No ADR (UI only, offline Dexie data). Next ADR: 027.

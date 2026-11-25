@@ -125,7 +125,9 @@ export const HELP_ID: HelpContent = {
       ],
       notes: [
         'Uang seharusnya = modal awal + penjualan tunai − refund tunai − pengeluaran dari laci.',
-        'Ada penjualan setelah kasir ditutup? Pemilik bisa "Buka kembali" lalu menutup lagi.',
+        'Mau jualan lagi setelah tutup kasir di hari yang sama? Ketuk "Buka shift baru". Shift yang sudah ditutup tetap terkunci, modal awal shift baru terisi dari uang yang dihitung.',
+        'Laporan hari itu menjumlahkan semua shift. Di Kas, "Semua shift hari ini" menampilkan tiap shift dan totalnya.',
+        'Salah hitung? Pemilik bisa "Buka kembali" shift terakhir selama shift berikutnya belum dibuka.',
         'Saat menutup, menu bertanda Habis bisa dikembalikan otomatis untuk besok.',
       ],
       keywords: 'laci setoran selisih kurang lebih closing shift biaya belanja buka kasir modal',

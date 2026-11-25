@@ -46,12 +46,14 @@ export function AllDevicesCard({ storeId, date }: { storeId: Id; date: BusinessD
             <Smartphone aria-hidden size={17} className="shrink-0 text-muted" />
             <span className="min-w-0 flex-1 font-semibold">{(i === 0 ? t('Perangkat ini') : r.name) || t('Perangkat lain')}</span>
             <span className="num text-[14px]">{t('Tunai {0}', formatRupiah(r.cash))}</span>
-            <span className={`text-[13px] ${r.closing ? (r.closing.difference === 0 ? 'text-brand-700' : 'text-warn-700') : 'text-muted'}`}>
-              {r.closing
-                ? r.closing.difference === 0
-                  ? t('Sudah tutup, pas')
-                  : t('Sudah tutup, selisih {0}', formatRupiah(r.closing.difference))
-                : t('Belum tutup')}
+            <span className={`text-[13px] ${r.closing && !r.isRunning ? (r.closing.difference === 0 ? 'text-brand-700' : 'text-warn-700') : 'text-muted'}`}>
+              {!r.closing
+                ? t('Belum tutup')
+                : r.isRunning
+                  ? t('Shift {0} berjalan', r.closing.shifts + 1)
+                  : r.closing.difference === 0
+                    ? t('Sudah tutup, pas')
+                    : t('Sudah tutup, selisih {0}', formatRupiah(r.closing.difference))}
             </span>
           </li>
         ))}
