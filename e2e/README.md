@@ -60,3 +60,9 @@ python3 e2e/v21.py http://localhost:4173 ./shots admin-kata-sandi-panjang   # me
 
 ## v0.20: a new shift after closing (ADR-027)
 Closing the register and selling again the same day opens the NEXT shift, never the closed one. Flows that sell after a closing press "Buka shift N" in the sheet (the pending item is added right after) instead of the old "Tetap jual".
+
+## v0.20.1: recognisable devices
+```bash
+python3 e2e/v23.py http://localhost:4173 ./shots   # devices named by browser + system, "Perangkat ini", private-window warning, 7-day inactive flag, rename, remove
+```
+`v19.py` now expects the headless browser's own name ("Chrome · Linux") in Kas → Semua perangkat instead of "Perangkat 1".

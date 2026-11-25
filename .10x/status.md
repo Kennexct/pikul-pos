@@ -1,5 +1,15 @@
 # Status
 
+## Recognisable devices (v0.20.1) — In review (2026-11-25)
+Branch `claude/project-thread-mgy8pd` from `main` `15fe414`, merged with the shift branch (v0.20.0, PR #15). Kenny: "Perangkat 1, 2" says nothing; incognito sign-ins leave devices nobody can continue. Spec `specs/2026-11-25-device-names-design.md`. No ADR (extends ADR-025). Next ADR: 028.
+- [x] Devices named by browser + system ("Chrome · Android"), rename still possible; duplicates get " 2"
+- [x] "Perangkat ini" listed first; "Aktif 5 menit lalu"; pull refreshes last active (throttled 1/min)
+- [x] "Tidak aktif N hari" from 7 days; remove another device (inline confirm, `POST /api/sync/devices/remove`)
+- [x] Private-window warning on sign-in and app, "Jendela penyamaran" badge on that device
+- [x] Migration `006_device_names.sql` (in `neon-setup.sql`), runbook updated: run before deploy
+- [x] Checks: typecheck, i18n, 283 tests, build:vercel; e2e v23 (new), v19, v18, v21, v16, v22, flow pass on phone + tablet
+- [ ] Kenny: run migration 006 on Neon, try the Vercel preview, merge
+
 ## A new shift after closing the register (v0.20.0) — In review (2026-11-25)
 Branch `claude/project-thread-kaitud` from `main` `15fe414`. Kenny: closing and then selling again the same day should open a NEW register, never continue the closed one. ADR-027, spec `specs/2026-11-25-open-shift-after-closing.md`. Next ADR: 028.
 - [x] `DayClosing.shiftNo` (absent = 1); `lib/shifts.ts` holds the pure rules (current shift, time window, sale time)

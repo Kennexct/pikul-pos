@@ -71,7 +71,17 @@ export function memorySyncRepo(): SyncRepo & { rows: Map<string, MemRow> } {
     async touchDevice(accountId, hello, now) {
       const k = `${accountId}|${hello.deviceId}`;
       const d = devices.get(k);
-      devices.set(k, { accountId, deviceId: hello.deviceId, name: d?.name ?? '', receiptCode: hello.receiptCode, appVersion: hello.appVersion, firstSeen: d?.firstSeen ?? now, lastSeen: now });
+      devices.set(k, {
+        accountId,
+        deviceId: hello.deviceId,
+        name: d?.name ?? '',
+        autoName: hello.autoName || (d?.autoName ?? ''),
+        privateMode: hello.privateMode,
+        receiptCode: hello.receiptCode,
+        appVersion: hello.appVersion,
+        firstSeen: d?.firstSeen ?? now,
+        lastSeen: now,
+      });
     },
     async listDevices(accountId) {
       return [...devices.values()].filter((d) => d.accountId === accountId).map(({ accountId: _a, ...d }) => ({ ...d }));
@@ -81,6 +91,9 @@ export function memorySyncRepo(): SyncRepo & { rows: Map<string, MemRow> } {
       if (!d) return false;
       d.name = name;
       return true;
+    },
+    async removeDevice(accountId, deviceId) {
+      return devices.delete(`${accountId}|${deviceId}`);
     },
   };
 }

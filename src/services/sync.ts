@@ -1,12 +1,11 @@
 import Dexie from 'dexie';
-import { version } from '../../package.json';
 import { SYNC_BATCH_SIZE, SYNC_MAX_ATTEMPTS } from '../constants';
 import { localDb } from '../db/localDb';
 import { nowIso } from '../lib/id';
 import type { Id, OutboxEntry, Result, SyncTable } from '../types';
 import { SYNC_TABLES } from '../types';
 import { ApiError, accountApi } from './account';
-import { getDeviceId, getReceiptCode } from './device';
+import { deviceHello } from './deviceHello';
 import { t } from '../i18n';
 
 /**
@@ -68,9 +67,7 @@ export async function enqueueAll(): Promise<number> {
   return count;
 }
 
-async function hello() {
-  return { deviceId: await getDeviceId(), receiptCode: await getReceiptCode(), appVersion: version };
-}
+const hello = deviceHello;
 
 interface PushReply {
   saved: number;
@@ -162,7 +159,8 @@ interface PullPage {
 }
 
 export async function fetchPage(binding: Binding, after: number): Promise<PullPage> {
-  const q = new URLSearchParams({ storeId: binding.storeId, deviceId: await getDeviceId(), after: String(after) });
+  const h = await deviceHello();
+  const q = new URLSearchParams({ ...h, privateMode: h.privateMode ? '1' : '0', storeId: binding.storeId, after: String(after) });
   return accountApi<PullPage>('GET', `/api/sync/pull?${q.toString()}`, undefined, true);
 }
 

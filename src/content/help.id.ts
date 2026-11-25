@@ -195,15 +195,16 @@ export const HELP_ID: HelpContent = {
       steps: [
         'Jualan seperti biasa. Tidak ada yang perlu dilakukan saat internet mati; perubahan terkirim sendiri saat online lagi.',
         'Di perangkat kedua, cukup masuk dengan akun yang sama. Menu, staf, pelanggan, dan penjualan diunduh otomatis.',
-        'Lihat status dan daftar perangkat di Pengaturan, tab Sinkronisasi.',
+        'Lihat status dan daftar perangkat di Pengaturan, tab Sinkronisasi. Tiap perangkat dinamai menurut browser dan sistemnya (misalnya "Chrome · Android"), dan perangkat yang sedang Anda pakai bertanda "Perangkat ini". Ketuk pensil untuk memberi nama seperti "Kasir depan".',
       ],
       notes: [
         'Setiap perangkat punya laci kas sendiri: buka dan tutup kasir di masing-masing perangkat. Pemilik melihat semuanya di Kas, bagian "Semua perangkat".',
         'Laporan memuat penjualan dari semua perangkat yang sudah tersinkron.',
         'Kalau dua perangkat mengubah produk yang sama saat offline, perubahan yang terakhir yang dipakai.',
         'Data toko di server hanya bisa dibuka dengan akun Anda. Tetap buat cadangan secara rutin.',
+        'Jangan berjualan di jendela penyamaran (incognito): data di perangkat hilang saat browser ditutup. Kalau itu terjadi, cukup masuk lagi; data toko diunduh dari akun, lalu hapus perangkat lama yang bertanda "Tidak aktif" dari daftar.',
       ],
-      keywords: 'sinyal online sinkron sync wifi kuota hilang',
+      keywords: 'sinyal online sinkron sync wifi kuota hilang perangkat incognito penyamaran',
     },
     cadangan: {
       title: 'Cadangan dan pindah perangkat',

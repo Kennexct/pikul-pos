@@ -40,7 +40,14 @@ export interface SyncHead {
 
 export interface SyncDevice {
   deviceId: string;
+  /** From the repo: the owner's name ('' = none). From the API: the name to show. */
   name: string;
+  /** The owner gave this name (API only; the repo leaves it out). */
+  named?: boolean;
+  /** Browser and system the device reported, e.g. "Chrome · Android" ('' for devices from before v0.20.1). */
+  autoName: string;
+  /** Opened in a private / incognito window: its data goes when the browser closes. */
+  privateMode: boolean;
   receiptCode: string;
   firstSeen: number;
   lastSeen: number;
@@ -51,6 +58,8 @@ export interface DeviceHello {
   deviceId: string;
   receiptCode: string;
   appVersion: string;
+  autoName: string;
+  privateMode: boolean;
 }
 
 export interface StoreSummary {
@@ -86,4 +95,6 @@ export interface SyncRepo {
   touchDevice(accountId: string, hello: DeviceHello, now: number): Promise<void>;
   listDevices(accountId: string): Promise<SyncDevice[]>;
   renameDevice(accountId: string, deviceId: string, name: string): Promise<boolean>;
+  /** Takes a device off the account's list. It comes back if it syncs again. */
+  removeDevice(accountId: string, deviceId: string): Promise<boolean>;
 }

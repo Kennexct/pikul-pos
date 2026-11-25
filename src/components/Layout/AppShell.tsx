@@ -1,5 +1,6 @@
 import { CircleUserRound, LockOpen } from 'lucide-react';
 import { SubscriptionBanner } from '../Access/SubscriptionBanner';
+import { PrivateWindowBanner } from '../Access/PrivateWindowBanner';
 import { useEffect, useRef, useState } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { ROUTES } from '../../constants';
@@ -89,6 +90,7 @@ export function AppShell() {
       </nav>
 
       <main className="page-pane relative flex min-w-0 flex-1 flex-col pb-[calc(64px+env(safe-area-inset-bottom))] md:pb-0">
+        <PrivateWindowBanner />
         <SubscriptionBanner />
         {hasSubNav && <SubNavTabs group={current} badgeFor={badgeFor} isLocked={isLocked} />}
         <div className="flex min-h-0 flex-1">
