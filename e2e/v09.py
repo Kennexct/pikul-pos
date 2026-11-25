@@ -60,9 +60,9 @@ def sell(page, is_mobile, product, method):
     page.goto(BASE + '/')
     page.get_by_role('button', name=product).first.click()
     page.wait_for_timeout(300)  # products with variants open a sheet first
-    if page.get_by_role('button', name='Tetap jual').count():  # v0.16: selling after closing warns once
-        page.get_by_role('button', name='Tetap jual').click()
-        page.wait_for_timeout(300)
+    if page.get_by_role('button', name=re.compile('^Buka shift [0-9]')).count():  # v0.20 (ADR-027): a new shift after closing
+        page.get_by_role('button', name=re.compile('^Buka shift [0-9]')).click()  # the pending item is added right after
+        page.wait_for_timeout(400)
     if page.get_by_role('button', name='Tambah ke pesanan').count():
         page.get_by_role('button', name='Tambah ke pesanan').click()
     if is_mobile:
@@ -145,17 +145,22 @@ def run(p, name, viewport, is_mobile):
     shot(page, f'{name}-w5-kas-closed')
     after_close = page.evaluate(READ_DB)
 
-    sell(page, is_mobile, 'Kerupuk', 'cash')
-    page.goto(BASE + '/kas')
-    page.get_by_text('Ada transaksi atau pengeluaran setelah kasir ditutup').wait_for()
+    # v0.20 (ADR-027): the owner corrects the count while the next shift has not started.
     page.get_by_role('button', name='Buka kembali').click()
     dialog.get_by_role('button', name='Buka kembali').click()
     page.get_by_text('Kasir dibuka kembali').wait_for()
     page.get_by_role('button', name='Tutup kasir', exact=True).click()
-    page.locator('#counted-cash').fill('103500')
+    page.locator('#counted-cash').fill('101500')
     dialog.get_by_text('Pas, tidak ada selisih.').wait_for()
     dialog.get_by_role('button', name='Tutup kasir', exact=True).click()
     page.get_by_text('Kasir ditutup, uang laci pas').wait_for()
+
+    # Selling again the same day opens shift 2; shift 1 stays closed and is no longer reopenable.
+    sell(page, is_mobile, 'Kerupuk', 'cash')
+    page.goto(BASE + '/kas')
+    page.get_by_role('heading', name='Semua shift hari ini').wait_for()
+    shifts_text = page.get_by_role('region', name='Semua shift hari ini').inner_text()
+    shot(page, f'{name}-w5b-shifts')
     toasts_gone(page)
     page.get_by_role('tab', name='Riwayat tutup').click()
     page.get_by_text('Pas', exact=True).wait_for()
@@ -220,6 +225,7 @@ def run(p, name, viewport, is_mobile):
         'drawer_ok': all(t in drawer_text for t in ['Rp100.000', '+ Rp2.000', '− Rp500', 'Rp101.500', 'QRIS']),
         'first_closing': after_close['live_closing'],
         'sold_out_after_close': after_close['sold_out'],
+        'shifts_ok': 'Shift 1' in shifts_text and 'Shift 2' in shifts_text and 'Sedang berjalan' in shifts_text,
         'summary_ok': 'Seharusnya: Rp101.500' in summary and 'Selisih: kurang Rp1.000' in summary and summary.startswith('https://wa.me/?text=Tutup kasir'),
         'closing_history_rows': history_rows,
         'profit_ok': all(t in profit_text for t in ['Harga modal (HPP)', '− Rp2.400', 'Biaya operasional', '− Rp20.000', 'Belanja bahan', 'Rp500', 'Es Teh']),

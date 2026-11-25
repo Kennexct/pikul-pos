@@ -15,6 +15,7 @@ python3    e2e/v11.py     http://localhost:4173 ./shots              # English d
 python3    e2e/v09.py     http://localhost:4173 ./shots              # cost price -> profit + Excel, expenses, close of day (short, reopen, exact), backup -> restore (needs openpyxl)
 python3    e2e/reports.py http://localhost:4173 ./shots              # sales + refund -> Reports -> download XLSX/PDF/CSV and verify (needs openpyxl)
 python3    e2e/v16.py     http://localhost:4173/app ./shots          # register: open with count before first sale, close with count, closed-day warning; Kategori tab; variant expand
+python3    e2e/v23.py     http://localhost:4173/app ./shots          # a new shift after closing: banner, prefilled float, per-shift drawer, day total, history
 python3    e2e/v22.py     http://localhost:4173/app ./shots          # search finds variants (Kasir, sold-out sheet, Produk); Transaksi sub-menu Riwayat · Kas · Pesanan
 ```
 Both print `ERRORS: none` when no page errors, console errors or failed requests occurred. Screenshots land in `./shots`.
@@ -56,3 +57,6 @@ python3 e2e/v20.py http://localhost:4173/app ./shots   # pending category create
 ```bash
 python3 e2e/v21.py http://localhost:4173 ./shots admin-kata-sandi-panjang   # merchant edits Toko & Struk + syncs → console list and sheet show the new name, WhatsApp, address
 ```
+
+## v0.20: a new shift after closing (ADR-027)
+Closing the register and selling again the same day opens the NEXT shift, never the closed one. Flows that sell after a closing press "Buka shift N" in the sheet (the pending item is added right after) instead of the old "Tetap jual".

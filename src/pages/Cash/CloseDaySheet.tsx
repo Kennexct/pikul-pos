@@ -16,13 +16,15 @@ interface CloseDaySheetProps {
   storeId: Id;
   actorId: Id;
   businessDate: BusinessDate;
+  /** Named once the day has more than one shift (ADR-027); null for a single shift. */
+  shiftNo?: number | null;
   drawer: Drawer;
   soldOutCount: number;
   onClose: () => void;
 }
 
 /** "Tutup kasir": type the counted cash, see the difference before confirming (ADR-007). */
-export function CloseDaySheet({ storeId, actorId, businessDate, drawer, soldOutCount, onClose }: CloseDaySheetProps) {
+export function CloseDaySheet({ storeId, actorId, businessDate, shiftNo = null, drawer, soldOutCount, onClose }: CloseDaySheetProps) {
   const [counted, setCounted] = useState<number | null>(null);
   const [note, setNote] = useState('');
   const [shouldResetSoldOut, setShouldResetSoldOut] = useState(true);
@@ -43,13 +45,13 @@ export function CloseDaySheet({ storeId, actorId, businessDate, drawer, soldOutC
 
   return (
     <Sheet
-      title={t('Tutup kasir')}
+      title={shiftNo ? t('Tutup shift {0}', shiftNo) : t('Tutup kasir')}
       subtitle={formatBusinessDate(businessDate)}
       isOpen
       onClose={onClose}
       footer={
         <button type="button" disabled={isSaving || counted === null} onClick={() => void submit()} className={`${btnPrimary} w-full`}>
-          {t('Tutup kasir')}
+          {shiftNo ? t('Tutup shift {0}', shiftNo) : t('Tutup kasir')}
         </button>
       }
     >

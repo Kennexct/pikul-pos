@@ -1,3 +1,7 @@
+# Handoff — a new shift after closing (2026-11-25)
+
+**Latest:** v0.20.0 on `claude/project-thread-kaitud` (ADR-027). A business day on one device now holds shifts: `DayClosing.shiftNo` (absent = 1), rules in `src/lib/shifts.ts`, drawer input filtered by the shift's time window in `services/dayClosing.ts` (`getClosings`, `getCurrentShiftNo`, `loadDrawerInput(storeId, date, shiftNo?)`). Do not add a "sell past the closing" path again: closing then selling opens the next shift. `reopenDay` refuses once the next shift started. Kas shows `ShiftsDayCard` from the second shift on. e2e `e2e/v23.py`. Next ADR: 028.
+
 # Handoff — device sync delivered (2026-11-21)
 
 **Latest:** v0.19.5: the admin console's merchant name/WhatsApp/address come from the synced store row (`SyncRepo.storeProfiles()`), falling back to the sign-up fields in `accounts`. Do not show `accounts.store_name/phone` alone in the console.

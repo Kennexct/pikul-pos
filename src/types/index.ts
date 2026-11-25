@@ -316,6 +316,8 @@ export interface ClosingMethodTotal {
 /** "Tutup kasir": the drawer figures at closing time plus the counted cash. Immutable (ADR-007). */
 export interface DayClosing extends SyncMeta {
   businessDate: BusinessDate;
+  /** Shift of the day on this device, from 1 (ADR-027). Absent on closings made before shifts = 1. */
+  shiftNo?: number;
   openingCash: Rupiah;
   cashSales: Rupiah;
   cashRefunds: Rupiah;
