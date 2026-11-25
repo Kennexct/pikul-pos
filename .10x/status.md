@@ -1,5 +1,14 @@
 # Status
 
+## Search reaches variants, Transaksi order Riwayat · Kas · Pesanan (v0.19.6) — In review (2026-11-25)
+Branch `claude/project-thread-ani30l` from `main` `a320bba`. Kenny: the search on Kasir and Produk should also find variants; Transaksi sub-menu order History, Cash, Orders. No ADR (UI only, offline Dexie data). Next ADR: 027.
+- [x] `lib/productSearch.ts`: every typed word must appear in the product name or "product + one variant" name; case and accents ignored
+- [x] Kasir grid, sold-out sheet and Produk list use it; tile shows "Varian: Latte", Produk list opens and marks the matching variant
+- [x] Placeholders "Cari menu atau varian…" / "Cari produk atau varian…"
+- [x] Transaksi sub-menu Riwayat · Kas · Pesanan; tapping Transaksi now opens Riwayat first
+- [x] Checks: typecheck, i18n, 271 tests, build; e2e v22 (new), v16, v13, flow, v08 pass on phone + tablet (history.py already fails on main, unchanged)
+- [ ] Kenny: try on the Vercel preview, merge
+
 ## Admin shows the latest shop profile (v0.19.5) — In review (2026-11-23)
 Branch `claude/project-thread-m0f9ao` from `main` `f874b2e`. Kenny: after a merchant edits Pengaturan > Toko & Struk, the console still showed the sign-up details. Cause: the console read only `accounts` (sign-up form); the edited store row lives in `sync_records` (tbl `stores`). No DB change, no ADR. Next ADR: 027.
 - [x] `SyncRepo.storeProfiles()` (Neon: `account_store` join `sync_records` on the bound store) feeds `loadAll` in `server/merchants.ts`

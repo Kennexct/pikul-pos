@@ -6,6 +6,7 @@ import { SearchInput } from '../../../components/ui/SearchInput';
 import { Sheet } from '../../../components/ui/Sheet';
 import { Switch } from '../../../components/ui/Switch';
 import { activeVariants, hasVariants, isProductSoldOut } from '../../../lib/productVariants';
+import { matchProduct } from '../../../lib/productSearch';
 import { setProductSoldOut, setVariantSoldOut } from '../../../services/catalog';
 import type { Product } from '../../../types';
 import { t } from '../../../i18n';
@@ -24,8 +25,7 @@ export function SoldOutSheet({ products, onClose }: SoldOutSheetProps) {
   /** Items that were sold out when the sheet opened go first; the order then stays put so rows do not jump under the finger. */
   const [pinnedIds] = useState(() => new Set(products.filter((p) => p.isSoldOut || (p.variants ?? []).some((v) => v.isSoldOut)).map((p) => p.id)));
   const rows = useMemo(() => {
-    const text = query.trim().toLowerCase();
-    const matches = products.filter((p) => text === '' || p.name.toLowerCase().includes(text));
+    const matches = products.filter((p) => matchProduct(p, query) !== null);
     return [...matches.filter((p) => pinnedIds.has(p.id)), ...matches.filter((p) => !pinnedIds.has(p.id))];
   }, [products, query, pinnedIds]);
 
