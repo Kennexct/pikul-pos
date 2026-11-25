@@ -1,5 +1,11 @@
 # Status
 
+## Cup labels for drink orders (v0.21) — Spec, waiting for Kenny (2026-11-25)
+Branch `claude/project-thread-fjnpv9` from `main` `9ccb30d`. Kenny: a sticker per cup for F&B orders; printers Blueprint ECO 80BT and iware MP-581RL; one label per cup; Pro plan first. Spec `specs/2026-11-25-cup-labels-design.md`, ADR-028 (proposed). Not built. Next ADR: 029.
+- [x] Printer research: ECO 80BT = TSPL/CPCL gap label printer; MP-581RL = ESC/POS 58 mm receipt printer with sticker rolls; BLE vs Classic unknown for both
+- [x] Spec: label content, one per cup, category filter, settings, auto print + reprint, bitmap over Web Bluetooth, print-dialog fallback, plan entitlement
+- [ ] Kenny: answer the open questions, run the nRF Connect test on both printers, approve the spec
+
 ## Recognisable devices (v0.20.1) — In review (2026-11-25)
 Branch `claude/project-thread-mgy8pd` from `main` `15fe414`, merged with the shift branch (v0.20.0, PR #15). Kenny: "Perangkat 1, 2" says nothing; incognito sign-ins leave devices nobody can continue. Spec `specs/2026-11-25-device-names-design.md`. No ADR (extends ADR-025). Next ADR: 028.
 - [x] Devices named by browser + system ("Chrome · Android"), rename still possible; duplicates get " 2"

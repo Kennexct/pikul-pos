@@ -1,3 +1,7 @@
+# Handoff — cup labels spec (2026-11-25)
+
+**Latest:** spec only, nothing built. `specs/2026-11-25-cup-labels-design.md` + ADR-028 (proposed): labels built offline from the order, drawn as a 1-bit bitmap, sent as TSPL (Blueprint ECO 80BT) or ESC/POS raster (iware MP-581RL) over Web Bluetooth (BLE, Chrome Android); `window.print()` fallback; Pro via `PlanDef.entitlements` + pass claim `ent`. Blocker before build: confirm each printer exposes BLE (nRF Connect). Next ADR: 029.
+
 # Handoff — a new shift after closing (2026-11-25)
 
 **Latest:** v0.20.0 on `claude/project-thread-kaitud` (ADR-027). A business day on one device now holds shifts: `DayClosing.shiftNo` (absent = 1), rules in `src/lib/shifts.ts`, drawer input filtered by the shift's time window in `services/dayClosing.ts` (`getClosings`, `getCurrentShiftNo`, `loadDrawerInput(storeId, date, shiftNo?)`). Do not add a "sell past the closing" path again: closing then selling opens the next shift. `reopenDay` refuses once the next shift started. Kas shows `ShiftsDayCard` from the second shift on. e2e `e2e/v24.py`. Next ADR: 028.
