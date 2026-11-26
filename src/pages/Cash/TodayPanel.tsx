@@ -2,7 +2,7 @@ import { ClipboardList, LockOpen, MessageCircle, Pencil, Plus, RotateCcw, Triang
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { METHOD_ICON } from '../../components/ui/paymentIcon';
-import { btnGhost, btnPrimary, btnSecondary, card, sectionTitle } from '../../components/ui/styles';
+import { btnGhost, btnPrimary, btnSecondary, card, receiptRule, sectionTitle } from '../../components/ui/styles';
 import { ROUTES } from '../../constants';
 import { buildClosingText, isClosingStale, type Drawer } from '../../lib/cashDrawer';
 import { formatRupiah } from '../../lib/money';
@@ -35,12 +35,12 @@ interface TodayPanelProps {
 
 function Line({ label, value, action, isTotal = false }: { label: string; value: string; action?: ReactNode; isTotal?: boolean }) {
   return (
-    <div className={`flex items-center gap-3 ${isTotal ? 'border-t border-line pt-3' : ''}`}>
+    <div className={`flex items-center gap-3 ${isTotal ? `border-t ${receiptRule} pt-3` : ''}`}>
       <dt className={`min-w-0 flex-1 ${isTotal ? 'text-[15px] font-semibold text-ink' : 'text-[14px] text-ink-soft'}`}>
         {label}
         {action}
       </dt>
-      <dd className={`num ${isTotal ? 'text-[24px] font-extrabold leading-none tracking-[-0.02em]' : 'text-[15px] font-semibold'}`}>{value}</dd>
+      <dd className={`num ${isTotal ? 'text-[24px] font-semibold leading-none tracking-[-0.02em]' : 'text-[15px] font-semibold'}`}>{value}</dd>
     </div>
   );
 }
@@ -83,7 +83,7 @@ export function TodayPanel(props: TodayPanelProps) {
             <div className="flex items-center gap-3">
               <div className="min-w-0 flex-1">
                 <p className="text-[14px] text-ink-soft">{t('Dihitung')}</p>
-                <p className="num text-[18px] font-bold">{formatRupiah(closing.countedCash)}</p>
+                <p className="num text-[18px] font-semibold">{formatRupiah(closing.countedCash)}</p>
               </div>
               <DifferenceBadge difference={closing.difference} />
             </div>
@@ -130,7 +130,7 @@ export function TodayPanel(props: TodayPanelProps) {
             <p className="text-[14px] text-ink-soft">{t('Penjualan bersih')}</p>
             <p className="num text-[13px] text-muted">{t('{0} transaksi', drawer.transactions)}</p>
           </div>
-          <p className="num text-[20px] font-bold tracking-[-0.02em]">{formatRupiah(drawer.netSales)}</p>
+          <p className="num text-[20px] font-semibold tracking-[-0.02em]">{formatRupiah(drawer.netSales)}</p>
         </div>
         {drawer.byMethod.length > 0 && (
           <ul className="mt-3 divide-y divide-line border-y border-line">

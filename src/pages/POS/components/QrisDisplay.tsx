@@ -41,11 +41,11 @@ export function QrisDisplay({ method, storeName, amount, reference, onReferenceC
         <div className="w-full max-w-sm overflow-hidden rounded-xl border border-line bg-surface shadow-pop">
           <div className="flex items-center justify-between border-b border-line px-5 py-3">
             <span className="truncate text-[14px] font-semibold">{storeName}</span>
-            <span className="rounded bg-ink px-1.5 py-0.5 text-[11px] font-extrabold tracking-[0.08em] text-white">{t('QRIS')}</span>
+            <span className="rounded bg-ink px-1.5 py-0.5 text-[11px] font-semibold tracking-[0.08em] text-white">{t('QRIS')}</span>
           </div>
           <div className="px-5 pt-4 text-center">
             <p className="text-[13px] font-medium text-muted">{t('Total yang harus dibayar')}</p>
-            <p className="num text-[36px] font-extrabold leading-tight tracking-[-0.03em]">{formatRupiah(amount)}</p>
+            <p className="num text-[36px] font-semibold leading-tight tracking-[-0.03em]">{formatRupiah(amount)}</p>
           </div>
           <div className="p-5 pt-3">
             {method.qrisImageUrl ? (

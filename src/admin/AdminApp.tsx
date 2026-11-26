@@ -138,7 +138,7 @@ export function AdminApp() {
         >
           <Menu aria-hidden size={22} />
         </button>
-        <p className="min-w-0 flex-1 truncate text-[17px] font-bold tracking-[-0.01em] text-ink">{sectionLabel(tab)}</p>
+        <p className="min-w-0 flex-1 truncate text-[17px] font-semibold tracking-[-0.01em] text-ink">{sectionLabel(tab)}</p>
         <button
           type="button"
           aria-label={t('Keluar')}

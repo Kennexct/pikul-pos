@@ -23,7 +23,7 @@ export function TopProducts({ products }: { products: ProductRow[] }) {
     <section className={`${card} p-4 md:p-5`}>
       <div className="mb-3 flex items-start justify-between gap-3">
         <div>
-          <h2 className="text-[15px] font-bold tracking-[-0.01em]">{t('Produk terlaris')}</h2>
+          <h2 className="text-[15px] font-semibold tracking-[-0.01em]">{t('Produk terlaris')}</h2>
           <p className="text-[13px] text-muted">{t('Top')} {TOP_N} {t('· pendapatan sebelum diskon pesanan')}</p>
         </div>
         <SegmentedControl label={t('Urutkan produk')} options={METRIC_OPTIONS} value={metric} onChange={setMetric} />

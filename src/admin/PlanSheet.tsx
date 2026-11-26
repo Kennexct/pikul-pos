@@ -166,7 +166,7 @@ export function PlanSheet({ isOpen, isNew, start, otherIds, busy, onClose, onSav
           <Switch checked={d.active} onChange={(v) => set('active', v)} label={t('Dijual')} description={t('Tampil di halaman depan dan aplikasi.')} />
         </div>
         <aside className="min-w-0 md:sticky md:top-0 md:self-start" aria-label={t('Contoh di halaman depan')}>
-          <p className="mb-2 text-[12px] font-semibold uppercase tracking-[0.06em] text-muted">{t('Contoh di halaman depan')}</p>
+          <p className="mb-2 text-[12px] font-semibold text-muted">{t('Contoh di halaman depan')}</p>
           <div className="rounded-xl border border-line bg-surface p-4 shadow-xs">
             <PlanFace plan={{ ...d, amount: d.amount ?? 0, days: planDays(d) }} isCompact />
           </div>

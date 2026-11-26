@@ -33,7 +33,7 @@ function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="min-w-0 rounded-lg border border-line px-3 py-2.5">
       <dt className="truncate text-[12px] text-muted">{label}</dt>
-      <dd className="num truncate text-[16px] font-bold">{value}</dd>
+      <dd className="num truncate text-[16px] font-semibold">{value}</dd>
     </div>
   );
 }
@@ -80,7 +80,7 @@ export function CustomerDetailSheet({ customer, stats, storeName, timeZone, onEd
               <h3 className="text-[13px] font-semibold text-warn-700">{t('Belum dibayar')}</h3>
               <p className="num text-[13px] text-warn-700">{t('{0} pesanan', unpaid.length)}</p>
             </div>
-            <p className="num text-[20px] font-extrabold leading-none tracking-[-0.02em] text-ink">{formatRupiah(stats.openAmount)}</p>
+            <p className="num text-[20px] font-semibold leading-none tracking-[-0.02em] text-ink">{formatRupiah(stats.openAmount)}</p>
           </header>
           <ul className="divide-y divide-line">
             {unpaid.map((order) => (

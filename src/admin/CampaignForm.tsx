@@ -175,7 +175,7 @@ export function CampaignForm({ campaign, plans, now, onClose, onSaved, onError }
           <div className="mx-auto max-w-[360px] overflow-hidden rounded-xl border border-line bg-surface shadow-pop">
             {d.imageUrl && <img src={d.imageUrl} alt={d.title} className="block h-auto w-full" />}
             <div className="p-4">
-              <p className="text-[16px] font-bold text-ink">{d.title || t('Judul')}</p>
+              <p className="text-[16px] font-semibold text-ink">{d.title || t('Judul')}</p>
               {d.body && <p className="mt-1 whitespace-pre-line text-[14px] text-ink-soft">{d.body}</p>}
               {d.linkUrl && <span className={`${btnPrimary} mt-3 h-11 w-full`}>{d.ctaLabel || t('Lihat promo')}</span>}
             </div>

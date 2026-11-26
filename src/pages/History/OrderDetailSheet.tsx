@@ -80,7 +80,7 @@ export function OrderDetailSheet(props: OrderDetailSheetProps) {
         </div>
         <div className="text-right">
           <dt className="text-[13px] text-muted">{t('Total')}</dt>
-          <dd className={`num text-[20px] font-bold tracking-[-0.02em] ${order.status === 'void' ? 'text-muted line-through' : ''}`}>
+          <dd className={`num text-[20px] font-semibold tracking-[-0.02em] ${order.status === 'void' ? 'text-muted line-through' : ''}`}>
             {formatRupiah(order.totals.grandTotal)}
           </dd>
         </div>

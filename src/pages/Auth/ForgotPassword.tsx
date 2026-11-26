@@ -46,7 +46,7 @@ export function ForgotPassword({ emailReset, initialEmail, onBack }: { emailRese
         <ArrowLeft aria-hidden size={18} />
         {t('Kembali ke masuk')}
       </button>
-      <h1 className="text-[22px] font-bold tracking-[-0.02em]">{t('Lupa kata sandi')}</h1>
+      <h1 className="text-[22px] font-semibold tracking-[-0.02em]">{t('Lupa kata sandi')}</h1>
       {!emailReset ? (
         <p className="mt-2 text-[15px] leading-relaxed text-ink-soft">{t('Hubungi admin Pikul lewat WhatsApp atau email dengan menyebut email akun Anda. Admin akan mengirim kata sandi sementara; setelah masuk, ganti di Pengaturan → Langganan & akun.')}</p>
       ) : step === 'email' ? (
@@ -67,7 +67,7 @@ export function ForgotPassword({ emailReset, initialEmail, onBack }: { emailRese
             <label htmlFor="forgot-code" className={labelBase}>
               {t('Kode')}
             </label>
-            <input id="forgot-code" inputMode="numeric" autoComplete="one-time-code" maxLength={6} className={`${inputBase} text-center text-[24px] font-bold tracking-[0.4em]`} value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))} />
+            <input id="forgot-code" inputMode="numeric" autoComplete="one-time-code" maxLength={6} className={`${inputBase} text-center text-[24px] font-semibold tracking-[0.4em]`} value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))} />
             <p className={helperText}>{t('Tidak ada di kotak masuk? Periksa folder spam.')}</p>
           </div>
           <div>

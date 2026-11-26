@@ -17,7 +17,7 @@ export function RecoveryCodeNotice({ code, onDone }: RecoveryCodeNoticeProps) {
       <p className="mt-1 text-[13px] text-ink-soft">
         {t('Hanya ditampilkan sekali. Kode ini satu-satunya cara mengatur ulang PIN pemilik jika lupa.')}
       </p>
-      <p data-testid="recovery-code" className="my-3 select-all rounded-md bg-surface py-3 text-center font-mono text-[24px] font-bold tracking-[0.15em] text-ink ring-1 ring-warn-200">
+      <p data-testid="recovery-code" className="my-3 select-all rounded-md bg-surface py-3 text-center font-mono text-[24px] font-semibold tracking-[0.15em] text-ink ring-1 ring-warn-200">
         {code}
       </p>
       <button type="button" onClick={onDone} className={`${btnPrimary} w-full`}>

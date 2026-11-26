@@ -110,7 +110,7 @@ export function ProductsPage() {
             </div>
             <div className={`${card} overflow-hidden`}>
               <div
-                className={`hidden items-center gap-4 border-b border-line bg-subtle py-2.5 pr-4 text-[12px] font-semibold uppercase tracking-[0.05em] text-muted @4xl/page:grid ${PRODUCT_COLUMNS} ${withVariants.length > 0 ? 'pl-[52px]' : 'pl-4'}`}
+                className={`hidden items-center gap-4 border-b border-line bg-subtle py-2.5 pr-4 text-[12px] font-semibold text-muted @4xl/page:grid ${PRODUCT_COLUMNS} ${withVariants.length > 0 ? 'pl-[52px]' : 'pl-4'}`}
               >
                 <span>{t('Produk')}</span>
                 <span>{t('Varian & add-on')}</span>

@@ -20,7 +20,7 @@ const PROFILE_FIELDS: ReadonlyArray<{ key: TextField; label: string; placeholder
 ];
 const RECEIPT_FIELDS: ReadonlyArray<{ key: TextField; label: string; placeholder: string }> = [
   { key: 'receiptHeader', label: t('Teks atas struk'), placeholder: t('Buka 10.00–22.00') },
-  { key: 'receiptFooter', label: t('Teks bawah struk'), placeholder: t('Terima kasih!') },
+  { key: 'receiptFooter', label: t('Teks bawah struk'), placeholder: t('Terima kasih, sampai jumpa lagi') },
 ];
 const PAPER_OPTIONS = [
   { value: '58', label: t('58 mm') },

@@ -114,7 +114,7 @@ export function BackupSettings() {
         >
           <table className="w-full text-[14px]">
             <thead>
-              <tr className="text-left text-[12px] font-semibold uppercase tracking-[0.06em] text-muted">
+              <tr className="text-left text-[12px] font-semibold text-muted">
                 <th className="pb-2 font-semibold">{t('Isi')}</th>
                 <th className="pb-2 text-right font-semibold">{t('Perangkat ini')}</th>
                 <th className="pb-2 text-right font-semibold">{t('Cadangan')}</th>

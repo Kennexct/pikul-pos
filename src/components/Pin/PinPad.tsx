@@ -105,7 +105,7 @@ export function PinPad({ label, verify, onSuccess }: PinPadProps) {
           aria-label={t('OK')}
           disabled={!canSubmit}
           onClick={() => void submit()}
-          className="flex h-16 items-center justify-center rounded-lg bg-brand-600 text-[17px] font-bold text-white shadow-xs transition-colors hover:bg-brand-700 disabled:opacity-40"
+          className="flex h-16 items-center justify-center rounded-lg bg-brand-600 text-[17px] font-semibold text-white shadow-xs transition-colors hover:bg-brand-700 disabled:opacity-40"
         >
           {isBusy ? '…' : t('OK')}
         </button>

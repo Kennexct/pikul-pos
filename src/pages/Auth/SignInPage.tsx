@@ -155,7 +155,7 @@ export function SignInPage() {
                 { value: 'signup', label: t('Daftar') },
               ]}
             />
-            <h1 className="mt-5 text-[22px] font-bold tracking-[-0.02em]">{view === 'signup' ? t('Daftar akun Pikul') : t('Masuk ke Pikul')}</h1>
+            <h1 className="mt-5 text-[22px] font-semibold tracking-[-0.02em]">{view === 'signup' ? t('Daftar akun Pikul') : t('Masuk ke Pikul')}</h1>
             <p className="mb-5 mt-1.5 text-[15px] text-ink-soft">{view === 'signup' ? t('Akun baru langsung dapat 14 hari gratis. Tanpa kartu kredit.') : t('Masuk dengan email dan kata sandi akun toko Anda.')}</p>
             {view === 'signup' ? <SignUpForm /> : <SignInForm email={email} setEmail={setEmail} onForgot={() => setView('forgot')} />}
           </>

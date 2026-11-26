@@ -12,11 +12,11 @@ export function PlanFace({ plan, isCompact = false }: { plan: Shown; isCompact?:
   return (
     <div className={`flex min-w-0 flex-col ${isCompact ? 'gap-2.5' : 'gap-3'}`}>
       <div className="flex items-center justify-between gap-2">
-        <p className={`min-w-0 truncate font-extrabold text-ink ${isCompact ? 'text-[16px]' : 'text-[18px]'}`}>{plan.name || t('(Nama paket)')}</p>
-        {plan.badge && <span className="shrink-0 rounded-full bg-subtle px-2.5 py-0.5 text-[12px] font-bold text-ink-soft">{plan.badge}</span>}
+        <p className={`min-w-0 truncate font-semibold text-ink ${isCompact ? 'text-[16px]' : 'text-[18px]'}`}>{plan.name || t('(Nama paket)')}</p>
+        {plan.badge && <span className="shrink-0 rounded-full bg-subtle px-2.5 py-0.5 text-[12px] font-semibold text-ink-soft">{plan.badge}</span>}
       </div>
       <p className="flex flex-wrap items-baseline gap-x-2">
-        <span className={`num font-extrabold tracking-[-0.03em] text-ink ${isCompact ? 'text-[24px]' : 'text-[30px]'}`}>{formatRupiah(plan.amount)}</span>
+        <span className={`num font-semibold tracking-[-0.03em] text-ink ${isCompact ? 'text-[24px]' : 'text-[30px]'}`}>{formatRupiah(plan.amount)}</span>
         <span className="num text-[14px] text-muted">{t('/ {0} hari', plan.days)}</span>
       </p>
       {plan.note && <p className="text-[14px] leading-relaxed break-words text-ink-soft">{plan.note}</p>}

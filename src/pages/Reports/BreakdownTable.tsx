@@ -16,7 +16,7 @@ export function BreakdownTable({ title, description, rows }: BreakdownTableProps
   return (
     <section className={`${card} overflow-hidden`}>
       <header className="px-4 pb-2 pt-4 md:px-5">
-        <h2 className="text-[15px] font-bold tracking-[-0.01em]">{title}</h2>
+        <h2 className="text-[15px] font-semibold tracking-[-0.01em]">{title}</h2>
         {description && <p className="text-[13px] text-muted">{description}</p>}
       </header>
       {rows.length === 0 ? (
@@ -24,7 +24,7 @@ export function BreakdownTable({ title, description, rows }: BreakdownTableProps
       ) : (
         <table className="w-full text-[14px]">
           <thead>
-            <tr className="border-y border-line bg-subtle text-[12px] font-semibold uppercase tracking-[0.05em] text-muted">
+            <tr className="border-y border-line bg-subtle text-[12px] font-semibold text-muted">
               <th scope="col" className="px-4 py-2 text-left md:px-5">{t('Nama')}</th>
               <th scope="col" className="hidden px-2 py-2 text-right sm:table-cell">{t('Trx')}</th>
               <th scope="col" className="hidden px-2 py-2 text-right sm:table-cell">{t('Refund')}</th>

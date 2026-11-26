@@ -24,9 +24,9 @@ export const labelBase = 'mb-1.5 block text-[13px] font-semibold text-ink-soft';
 export const fieldGrid = 'grid gap-4 @xl/card:grid-cols-2';
 
 export const helperText = 'mt-1.5 text-[13px] text-muted';
-export const sectionTitle = 'text-[13px] font-semibold uppercase tracking-[0.06em] text-muted';
+export const sectionTitle = 'text-[13px] font-semibold text-muted';
 export const card = 'rounded-lg border border-line bg-surface';
-export const pageTitle = 'text-[22px] font-bold tracking-[-0.02em] text-ink';
+export const pageTitle = 'text-[22px] font-semibold tracking-[-0.02em] text-ink';
 
 /** Selectable option (variants, quick amounts, presets): square-ish, not pills. */
 export const option = (isSelected: boolean): string =>
@@ -42,3 +42,6 @@ export const chip = option;
 export const badgeNeutral = 'inline-flex h-6 items-center rounded-md bg-subtle px-2 text-[12px] font-semibold text-ink-soft';
 export const badgeWarn = 'inline-flex h-6 items-center rounded-md bg-warn-50 px-2 text-[12px] font-semibold text-warn-700';
 export const badgeBrand = 'inline-flex h-6 items-center rounded-md bg-brand-50 px-2 text-[12px] font-semibold text-brand-700';
+
+/** Pikul's signature: the dashed thermal-receipt rule, drawn only above (or under) a money total. Add a side, e.g. `border-t`. */
+export const receiptRule = 'border-dashed border-line-strong';

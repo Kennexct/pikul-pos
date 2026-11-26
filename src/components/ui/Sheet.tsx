@@ -189,7 +189,7 @@ export function Sheet({ title, subtitle, isOpen, onClose, children, footer, isWi
           <div aria-hidden className="mx-auto mt-2 h-1 w-9 rounded-full bg-line-strong md:hidden" />
           <header className="flex items-start gap-3 px-5 pb-3 pt-3 md:pt-4">
             <div className="min-w-0 flex-1">
-              <h2 className="truncate text-[17px] font-bold tracking-[-0.01em] text-ink">{title}</h2>
+              <h2 className="truncate text-[17px] font-semibold tracking-[-0.01em] text-ink">{title}</h2>
               {subtitle && <p className="num truncate text-[13px] text-muted">{subtitle}</p>}
             </div>
             <button

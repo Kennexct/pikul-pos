@@ -46,7 +46,7 @@ export function BarChartCard({ title, subtitle, data, summary }: BarChartCardPro
   const ticks = niceTicks(Math.max(0, ...data.map((d) => d.value)));
   return (
     <section className={`${card} p-4 md:p-5`}>
-      <h2 className="text-[15px] font-bold tracking-[-0.01em]">{title}</h2>
+      <h2 className="text-[15px] font-semibold tracking-[-0.01em]">{title}</h2>
       <p className="mb-3 min-h-[1px] text-[13px] text-muted">{subtitle}</p>
       <div role="img" aria-label={summary} className="h-[220px] w-full">
         <ResponsiveContainer width="100%" height="100%">

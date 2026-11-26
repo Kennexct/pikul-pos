@@ -19,14 +19,14 @@ export function Sidebar({ value, onSelect, counts, onSignOut }: SidebarProps) {
       <div className="flex items-center gap-2.5 px-5 pb-4 pt-5">
         <LogoMark size={30} />
         <div className="min-w-0">
-          <p className="truncate text-[16px] font-bold tracking-[-0.02em] text-ink">Pikul</p>
+          <p className="truncate text-[16px] font-semibold tracking-[-0.02em] text-ink">Pikul</p>
           <p className="truncate text-[12px] font-semibold text-muted">{t('Konsol admin')}</p>
         </div>
       </div>
       <nav aria-label={t('Menu konsol')} className="flex-1 overflow-y-auto px-3 pb-4">
         {navGroups().map((group) => (
           <div key={group.label} className="mt-3 first:mt-0">
-            <p className="px-3 pb-1.5 pt-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-faint">{group.label}</p>
+            <p className="px-3 pb-2 pt-3 text-[12px] font-medium text-muted">{group.label}</p>
             <ul className="flex flex-col gap-0.5">
               {group.items.map(({ id, label, icon: Icon }) => {
                 const isActive = id === value;

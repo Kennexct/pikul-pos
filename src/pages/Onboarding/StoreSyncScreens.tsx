@@ -21,7 +21,7 @@ function Frame({ icon, title, children }: { icon: ReactNode; title: string; chil
           <span aria-hidden className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand-50 text-brand-700">
             {icon}
           </span>
-          <h1 className="text-[20px] font-bold tracking-[-0.02em]">{title}</h1>
+          <h1 className="text-[20px] font-semibold tracking-[-0.02em]">{title}</h1>
         </div>
         <div className="mt-4 flex flex-col gap-4">{children}</div>
       </section>
@@ -98,8 +98,8 @@ export function StoreChoiceScreen({ local, remote, onAccount, onDevice }: Choice
     <Frame icon={<StoreIcon size={22} />} title={t('Toko mana yang dipakai di perangkat ini?')}>
       <p className="text-[15px]">{t('Akun Anda sudah punya toko, dan perangkat ini juga punya toko lain. Pilih satu. Toko yang tidak dipakai disimpan dulu sebagai berkas cadangan.')}</p>
       <div className={`${card} p-4`}>
-        <p className="text-[13px] font-semibold uppercase tracking-[0.06em] text-muted">{t('Toko dari akun')}</p>
-        <p className="mt-1 text-[17px] font-bold">{remote.name || t('Toko')}</p>
+        <p className="text-[13px] font-semibold text-muted">{t('Toko dari akun')}</p>
+        <p className="mt-1 text-[17px] font-semibold">{remote.name || t('Toko')}</p>
         <Facts facts={remote} />
         <button type="button" disabled={busy} onClick={() => void run(onAccount)} className={`${recommendAccount ? btnPrimary : btnSecondary} mt-3 w-full`}>
           {t('Pakai toko dari akun')}
@@ -107,10 +107,10 @@ export function StoreChoiceScreen({ local, remote, onAccount, onDevice }: Choice
         <p className={helperText}>{t('Toko di perangkat ini disimpan sebagai berkas cadangan, lalu dihapus dari perangkat ini.')}</p>
       </div>
       <div className={`${card} p-4`}>
-        <p className="flex items-center gap-1.5 text-[13px] font-semibold uppercase tracking-[0.06em] text-muted">
+        <p className="flex items-center gap-1.5 text-[13px] font-semibold text-muted">
           <Smartphone aria-hidden size={14} /> {t('Toko di perangkat ini')}
         </p>
-        <p className="mt-1 text-[17px] font-bold">{local.name || t('Toko')}</p>
+        <p className="mt-1 text-[17px] font-semibold">{local.name || t('Toko')}</p>
         <Facts facts={local} />
         {!askPassword ? (
           <button type="button" disabled={busy} onClick={() => setAskPassword(true)} className={`${recommendAccount ? btnSecondary : btnPrimary} mt-3 w-full`}>

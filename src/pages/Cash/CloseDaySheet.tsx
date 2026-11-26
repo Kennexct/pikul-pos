@@ -58,7 +58,7 @@ export function CloseDaySheet({ storeId, actorId, businessDate, shiftNo = null, 
       <div className="flex flex-col gap-5">
         <div className="flex items-baseline justify-between gap-3 rounded-lg bg-subtle px-3.5 py-3">
           <span className="text-[14px] text-ink-soft">{t('Uang di laci seharusnya')}</span>
-          <span className="num text-[18px] font-bold">{formatRupiah(drawer.expectedCash)}</span>
+          <span className="num text-[18px] font-semibold">{formatRupiah(drawer.expectedCash)}</span>
         </div>
         <div>
           <label htmlFor="counted-cash" className={labelBase}>{t('Uang yang dihitung di laci')}</label>

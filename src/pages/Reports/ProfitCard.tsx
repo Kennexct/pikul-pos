@@ -34,7 +34,7 @@ export function ProfitCard({ profit }: { profit: Profit }) {
           {profitLines(profit).map((line) => (
             <div key={line.label} className={`flex items-baseline justify-between gap-3 ${line.kind === 'plain' ? '' : 'border-t border-line pt-2'}`}>
               <dt className={line.kind === 'plain' ? 'text-[14px] text-ink-soft' : 'text-[14px] font-semibold text-ink'}>{line.label}</dt>
-              <dd className={`num ${line.kind === 'total' ? 'text-[22px] font-extrabold tracking-[-0.02em]' : line.kind === 'subtotal' ? 'text-[15px] font-bold' : 'text-[15px] font-semibold'} ${line.kind !== 'plain' && line.amount < 0 ? 'text-danger-700' : ''}`}>
+              <dd className={`num ${line.kind === 'total' ? 'text-[22px] font-semibold tracking-[-0.02em]' : line.kind === 'subtotal' ? 'text-[15px] font-semibold' : 'text-[15px] font-semibold'} ${line.kind !== 'plain' && line.amount < 0 ? 'text-danger-700' : ''}`}>
                 {signed(line.amount)}
               </dd>
             </div>

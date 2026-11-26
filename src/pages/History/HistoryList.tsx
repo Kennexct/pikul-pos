@@ -31,7 +31,7 @@ export function HistoryList({ orders, onSelect }: HistoryListProps) {
 
   return (
     <div className={`${card} overflow-hidden`}>
-      <div className={`hidden items-center gap-4 border-b border-line bg-subtle px-4 py-2.5 text-[12px] font-semibold uppercase tracking-[0.05em] text-muted @4xl/page:grid ${COLUMNS}`}>
+      <div className={`hidden items-center gap-4 border-b border-line bg-subtle px-4 py-2.5 text-[12px] font-semibold text-muted @4xl/page:grid ${COLUMNS}`}>
         <span>{t('Jam')}</span>
         <span>{t('No. struk')}</span>
         <span>{t('Pesanan::label')}</span>

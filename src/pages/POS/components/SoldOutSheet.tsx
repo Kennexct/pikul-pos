@@ -59,7 +59,7 @@ export function SoldOutSheet({ products, onClose }: SoldOutSheetProps) {
               <li key={product.id} className="py-1">
                 {hasVariants(product) ? (
                   <>
-                    <p className="pt-2 text-[13px] font-semibold uppercase tracking-[0.06em] text-muted">{product.name}</p>
+                    <p className="pt-2 text-[13px] font-semibold text-muted">{product.name}</p>
                     {activeVariants(product).map((variant) => (
                       <div key={variant.id} className="pl-3">
                         <Switch

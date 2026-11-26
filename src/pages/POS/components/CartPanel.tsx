@@ -1,7 +1,7 @@
 import { Minus, Pencil, Percent, Plus, ShoppingBasket, StickyNote, Trash2, UserRound } from 'lucide-react';
 import { useState } from 'react';
 import { EmptyState } from '../../../components/ui/EmptyState';
-import { btnGhost, btnIcon, btnPrimary, btnSecondary, inputBase } from '../../../components/ui/styles';
+import { btnGhost, btnIcon, btnPrimary, btnSecondary, inputBase, receiptRule } from '../../../components/ui/styles';
 import { formatRupiah } from '../../../lib/money';
 import { lineTotal } from '../../../lib/pricing';
 import { countUnits, formatQuantity, hasPriceChange, isMeasured, perUnit } from '../../../lib/quantity';
@@ -42,7 +42,7 @@ export function CartPanel({ totals, modeName, hasTitle = true, customerName, onO
     <div className="flex h-full min-h-0 flex-col bg-surface">
       <div className="flex items-center gap-2 px-5 py-3">
         <div className="min-w-0 flex-1">
-          {hasTitle && <h2 className="truncate text-[17px] font-bold tracking-[-0.01em]">{openOrderId ? label : t('Pesanan baru')}</h2>}
+          {hasTitle && <h2 className="truncate text-[17px] font-semibold tracking-[-0.01em]">{openOrderId ? label : t('Pesanan baru')}</h2>}
           <p className="num text-[13px] text-muted">
             {!hasTitle && openOrderId ? `${label} · ` : ''}
             {modeName} · {t('{0} item', itemCount)}
@@ -134,7 +134,7 @@ export function CartPanel({ totals, modeName, hasTitle = true, customerName, onO
                     <button type="button" aria-label={t('Kurangi {0}', item.nameSnapshot)} onClick={() => setQty(item.id, item.qty - 1)} className={btnIcon}>
                       {item.qty === 1 ? <Trash2 aria-hidden size={17} className="text-danger-600" /> : <Minus aria-hidden size={17} />}
                     </button>
-                    <span className="num w-9 text-center text-[15px] font-bold">{item.qty}</span>
+                    <span className="num w-9 text-center text-[15px] font-semibold">{item.qty}</span>
                     <button type="button" aria-label={t('Tambah {0}', item.nameSnapshot)} onClick={() => setQty(item.id, item.qty + 1)} className={btnIcon}>
                       <Plus aria-hidden size={17} />
                     </button>
@@ -159,9 +159,9 @@ export function CartPanel({ totals, modeName, hasTitle = true, customerName, onO
         </div>
         {totals.serviceTotal > 0 && <SummaryRow label={t('Service')} value={formatRupiah(totals.serviceTotal)} />}
         {totals.taxTotal > 0 && <SummaryRow label={t('Pajak')} value={formatRupiah(totals.taxTotal)} />}
-        <div className="mt-1 flex items-baseline justify-between border-t border-dashed border-line-strong pt-2.5">
+        <div className={`mt-1 flex items-baseline justify-between border-t ${receiptRule} pt-2.5`}>
           <dt className="text-[15px] font-semibold">{t('Total')}</dt>
-          <dd className="num text-[20px] font-bold tracking-[-0.02em]">{formatRupiah(totals.grandTotal)}</dd>
+          <dd className="num text-[20px] font-semibold tracking-[-0.02em]">{formatRupiah(totals.grandTotal)}</dd>
         </div>
       </dl>
 

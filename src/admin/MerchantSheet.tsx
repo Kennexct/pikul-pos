@@ -87,7 +87,7 @@ function Detail({ data, onPay, onGrant, onChanged, onError }: { data: MerchantDe
       <MerchantProfile m={m} onError={onError} />
       <MerchantSummary id={m.id} onError={onError} />
       <section aria-label={t('Riwayat pembayaran')}>
-        <h3 className="mb-2 text-[15px] font-bold text-ink">{t('Riwayat pembayaran')}</h3>
+        <h3 className="mb-2 text-[15px] font-semibold text-ink">{t('Riwayat pembayaran')}</h3>
         {data.payments.length === 0 ? (
           <p className="text-[14px] text-muted">{t('Belum ada pembayaran.')}</p>
         ) : (
@@ -100,7 +100,7 @@ function Detail({ data, onPay, onGrant, onChanged, onError }: { data: MerchantDe
       </section>
       {data.grants.length > 0 && (
         <section aria-label={t('Hari coba tambahan')}>
-          <h3 className="mb-2 text-[15px] font-bold text-ink">{t('Hari coba tambahan')}</h3>
+          <h3 className="mb-2 text-[15px] font-semibold text-ink">{t('Hari coba tambahan')}</h3>
           <ul className={`${card} divide-y divide-line`}>
             {data.grants.map((g) => (
               <li key={g.id} className="px-4 py-3 text-[14px]">
