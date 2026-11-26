@@ -12,3 +12,6 @@ supabase/.temp
 .wrangler
 __pycache__/
 .vercel
+
+# graphify knowledge graph (rebuild with `graphify update src`)
+graphify-out/

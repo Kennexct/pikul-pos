@@ -1,0 +1,148 @@
+<title>Pikul design system map</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;800&display=swap" rel="stylesheet">
+<style>
+/* VOICE work: an engineering reference for Kenny and for AI agents editing Pikul
+   IDEA the app's own layering: rules -> tokens -> shared pieces -> screens, drawn as stacked tiers like the code
+   PICTURE the four-tier stack with every token and shared piece, then a usage grid (piece x screen)
+   COLOUR Pikul's own: canvas ground, ink text, pandan brand-600 as the one accent, danger/warn only for drift
+   TYPE Plus Jakarta Sans (the app's face), weights up to 600, logo 800 only
+   LAYOUT laptop: title row, tier stack full width, grid full width, two columns for edit map + drift; phone: stacked */
+:root{color-scheme:light dark;--bg:light-dark(#f7f9f8,#0f1513);--surface:light-dark(#fff,#161e1b);--subtle:light-dark(#f2f5f3,#1c2622);--line:light-dark(#e2e7e4,#2a3531);--line2:light-dark(#c9d1cd,#3a4741);--ink:light-dark(#14201b,#e8efec);--soft:light-dark(#36423d,#c3cdc8);--muted:light-dark(#5e6a65,#93a09a);--b6:light-dark(#0b7a5a,#2fb48a);--b7:light-dark(#08654a,#5fd0aa);--b50:light-dark(#ebf7f2,#12302a);--b100:light-dark(#cfede1,#184236);--d7:light-dark(#a31f16,#ff8a80);--d50:light-dark(#fef3f2,#3a1714);--w7:light-dark(#9a5b05,#f2b45a);--w50:light-dark(#fff8eb,#33260e)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.55 'Plus Jakarta Sans',system-ui,sans-serif;margin:0;overflow-x:clip}
+.band{padding-block:clamp(24px,3.5vw,48px);padding-left:max(5vw,16px,env(safe-area-inset-left,0px));padding-right:max(5vw,16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1240px;margin:0 auto}
+h1{font-size:clamp(30px,4vw,44px);line-height:1.05;letter-spacing:-.02em;font-weight:600;margin:0}
+h2{font-size:20px;letter-spacing:-.01em;font-weight:600;margin:0 0 4px}
+p{margin:0}
+.lede{color:var(--soft);max-width:68ch;margin-top:10px}
+.head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:20px;align-items:end}
+.mark{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:-.03em;font-size:20px;margin-bottom:14px}
+.figs{display:flex;gap:24px;flex-wrap:wrap}
+.fig1 b{display:block;font-size:28px;font-weight:600;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.fig1 span{font-size:13px;color:var(--muted)}
+.tiers{margin-top:28px;display:grid;gap:0}
+.tier{display:grid;grid-template-columns:200px minmax(0,1fr);gap:20px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+.tier.t0{background:var(--b6);border-color:var(--b6);color:#fff}
+.tier.t0 .path,.tier.t0 .note{color:#d9f2e8}
+.tname{font-weight:600;font-size:15px}
+.path{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.note{font-size:13px;color:var(--muted);margin-top:6px}
+.row{display:flex;flex-wrap:wrap;gap:6px}
+.grp{margin-bottom:10px}.grp:last-child{margin-bottom:0}
+.gl{font-size:13px;font-weight:600;color:var(--muted);margin-bottom:5px}
+.t0 .gl{color:#d9f2e8}
+.c{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 9px;border-radius:6px;border:1px solid var(--line2);background:var(--surface);font-size:13px;font-weight:500;white-space:nowrap}
+.t0 .c{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.35);color:#fff}
+.c i{width:12px;height:12px;border-radius:3px;border:1px solid rgba(0,0,0,.12);display:inline-block}
+.c em{font-style:normal;color:var(--b7);font-weight:600;font-variant-numeric:tabular-nums}
+.c.hot{border-color:var(--b6);background:var(--b50)}
+.arrow{height:26px;display:flex;justify-content:center}
+.arrow svg{width:22px;height:26px}
+.arrow path{stroke:var(--line2);fill:none;stroke-width:2}
+.grid{overflow-x:auto;margin-top:16px;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:5px 6px;text-align:center;border-bottom:1px solid var(--line)}
+thead th{font-weight:600;color:var(--muted);white-space:nowrap;vertical-align:bottom;height:96px}
+thead th span{writing-mode:vertical-rl;transform:rotate(180deg)}
+tbody th{text-align:left;font-weight:500;white-space:nowrap;padding-left:12px;position:sticky;left:0;background:var(--surface)}
+tbody th small{color:var(--muted);font-weight:500;margin-left:4px}
+td.y::after{content:"";display:block;width:16px;height:16px;margin:auto;border-radius:4px;background:var(--b6)}
+td.n::after{content:"";display:block;width:16px;height:16px;margin:auto;border-radius:4px;background:var(--subtle)}
+td.cnt{font-variant-numeric:tabular-nums;font-weight:600;color:var(--b7)}
+.two{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:24px;margin-top:8px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+.edit{width:100%;font-size:14px}
+.edit td{text-align:left;vertical-align:top;padding:8px 6px}
+.edit td:first-child{font-weight:600;white-space:nowrap;padding-left:0}
+code{font:12.5px ui-monospace,Menlo,monospace;background:var(--subtle);padding:1px 4px;border-radius:4px;overflow-wrap:anywhere}
+.drift{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:10px}
+.drift li{border-left:3px solid var(--w7);background:var(--w50);padding:10px 12px;border-radius:0 8px 8px 0;font-size:14px}
+.drift li.d{border-color:var(--d7);background:var(--d50)}
+.sw{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;border:1px solid var(--line2)}
+.foot{font-size:13px;color:var(--muted);margin-top:18px}
+@media(max-width:760px){.tier{grid-template-columns:minmax(0,1fr);gap:10px}.two{grid-template-columns:minmax(0,1fr)}.head{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:600px){.edit td:first-child{white-space:normal}}
+</style>
+
+<section class="band"><div class="wrap">
+  <div class="mark"><svg width="30" height="30" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14.4" fill="#0b7a5a"/><g transform="translate(7.86 10.13) scale(0.7543)"><circle cx="32" cy="14" r="6.5" fill="#f2a93b"/><path d="M7 32Q32 22 57 32" fill="none" stroke="#f6f1e7" stroke-width="6" stroke-linecap="round"/><rect x="13" y="29" width="4" height="11" fill="#f6f1e7"/><rect x="47" y="29" width="4" height="11" fill="#f6f1e7"/><path d="M4 39.5h22a11 11 0 0 1-22 0z" fill="#f6f1e7"/><path d="M38 39.5h22a11 11 0 0 1-22 0z" fill="#f6f1e7"/></g></svg>Pikul</div>
+  <div class="head">
+    <div>
+      <h1>Design system map</h1>
+      <p class="lede">Every screen gets its look through four layers. Change the highest layer that covers your ask and the screens below follow. Mapped from <code>main</code> at v0.20.2, 26 Nov 2026.</p>
+    </div>
+    <div class="figs">
+      <div class="fig1"><b>28</b><span>colour tokens</span></div>
+      <div class="fig1"><b>18</b><span>shared classes</span></div>
+      <div class="fig1"><b>21</b><span>shared components</span></div>
+      <div class="fig1"><b>15</b><span>areas use Sheet</span></div>
+    </div>
+  </div>
+
+  <div class="tiers" id="tiers"></div>
+</div></section>
+
+<section class="band" style="padding-top:0"><div class="wrap">
+  <h2>Who uses what</h2>
+  <p class="lede" style="margin-top:0">Each row is a shared piece, each column a screen area. A filled square means that area imports it, so a change to the row reaches every filled square.</p>
+  <div class="grid"><table id="mx"></table></div>
+</div></section>
+
+<section class="band" style="padding-top:0"><div class="wrap two">
+  <div class="card">
+    <h2>Where to edit</h2>
+    <table class="edit" id="edit"></table>
+  </div>
+  <div class="card">
+    <h2>Drift to know about</h2>
+    <p class="note">Places that copy token values by hand. They do not update when <code>index.css</code> changes.</p>
+    <ul class="drift">
+      <li class="d"><b>Landing page</b> uses an older palette: <span class="sw" style="background:#0f1a16"></span> <code>#0f1a16</code> for ink (app: <code>#14201b</code>), <code>#3d4a44</code>, <code>#f6f8f7</code>, weights 700 and 800, and a pill-shaped eyebrow tag. Files: <code>landing/index.dc.html</code>, <code>src/landing/live.ts</code>.</li>
+      <li><b>Hex mirrors</b> for libraries that cannot read CSS variables: toasts in <code>App.tsx</code>, the bar chart in <code>Reports/BarChartCard.tsx</code>, PDF export in <code>lib/export/pdf.ts</code>.</li>
+      <li><b>MASTER.md</b> lists Transaksi as Pesanan, Riwayat, Kas. The menu has been Riwayat, Kas, Pesanan since v0.19.6.</li>
+    </ul>
+  </div>
+</div>
+<div class="wrap"><p class="foot">AI agents read <code>design-system/MEMORY.md</code> (the text version of this page) before touching UI. The full code graph, 1,950 nodes in 73 clusters, was built with graphify and sits in the project files.</p></div>
+</section>
+
+<script>
+{
+const T=[
+ {n:'Rules',p:'design-system/MASTER.md',note:'Principles, type scale, layout, motion, anti-patterns',t0:1,g:[
+  ['Principles',['Speed over decoration','Borders = structure','One accent','Photo is the only tile colour','Receipt rule on totals','num on every amount']],
+  ['Also defines',['Typography','Motion table','Layout','Page width','Brand + legacy ids','Anti-patterns']]]},
+ {n:'Tokens',p:'src/index.css  @theme',note:'Tailwind v4 names: bg-brand-600, text-muted, rounded-lg, shadow-pop',g:[
+  ['Brand',[['brand-50','#ebf7f2'],['brand-100','#cfede1'],['brand-600','#0b7a5a'],['brand-700','#08654a'],['brand-800','#06503b']]],
+  ['Neutrals',[['canvas','#f7f9f8'],['surface','#ffffff'],['subtle','#f2f5f3'],['line','#e2e7e4'],['line-strong','#c9d1cd'],['line-input','#8a9590'],['ink','#14201b'],['ink-soft','#36423d'],['muted','#5e6a65'],['faint','#8a9590']]],
+  ['Status and logo',[['danger-600','#c2281d'],['danger-50','#fef3f2'],['warn-700','#9a5b05'],['warn-50','#fff8eb'],['kunyit','#f2a93b'],['santan','#f6f1e7']]],
+  ['Shape, depth, motion',['radius sm 6','md 8','lg 10','xl 14','shadow-xs','shadow-pop','shadow-bar','ease-out-quart','ease-in-quart','@utility num','animate-sheet-in/out','scroll-x']]]},
+ {n:'Shared pieces',p:'src/components/ui · Layout · Brand',note:'Number = screen areas that use it',g:[
+  ['Classes in styles.ts',[['btnPrimary',12],['btnSecondary',12],['card',12],['labelBase',10],['inputBase',9],['btnGhost',8],['option()',8],['helperText',7],['btnDanger',6],['btnDangerSolid',6],['sectionTitle',6],['btnIcon',5],['badgeNeutral',4],['badgeWarn',4],['badgeBrand',4],['receiptRule',2],['fieldGrid',1],['pageTitle',1]]],
+  ['Components',[['Sheet',15],['EmptyState',10],['LoadingScreen',9],['SegmentedControl',7],['Tabs',6],['Switch',6],['SearchInput',6],['RupiahInput',5],['StatTile',3],['DateRangeControl',3],['NumberInput',2],['ProductThumb',2],['StatusBadge',2],['Select',1]]],
+  ['Layout and brand',[['PageHeader',9],['AppShell',1],['GroupNav',1],['SidePanel',2],['SyncBadge',2],['OwnerGate',3],['Logo',4],['LogoMark',3]]]]},
+ {n:'Screens',p:'src/pages/* · src/admin/*',note:'Admin adds its own ui.tsx: PanelHead, Section, StatusChip, LoadError, ShareBars',g:[
+  ['Main menu (navItems.ts)',['Kasir','Transaksi: Riwayat · Kas · Pesanan','Kelola: Produk · Pelanggan','Laporan','Pengaturan']],
+  ['Elsewhere',['Masuk','Onboarding','Akun','Bantuan','Admin console','Landing (no tokens)']]]}
+];
+const chip=x=>{
+ if(typeof x==='string')return `<span class="c">${x}</span>`;
+ if(typeof x[1]==='string')return `<span class="c"><i style="background:${x[1]}"></i>${x[0]}</span>`;
+ return `<span class="c${x[1]>=8?' hot':''}">${x[0]} <em>${x[1]}</em></span>`;
+};
+const arrow='<div class="arrow" aria-hidden="true"><svg viewBox="0 0 22 26"><path d="M11 0v22M4 15l7 8 7-8"/></svg></div>';
+document.getElementById('tiers').innerHTML=T.map(t=>`<div class="tier${t.t0?' t0':''}"><div><div class="tname">${t.n}</div><div class="path">${t.p}</div><div class="note">${t.note}</div></div><div>${t.g.map(g=>`<div class="grp"><div class="gl">${g[0]}</div><div class="row">${g[1].map(chip).join('')}</div></div>`).join('')}</div></div>`).join(arrow);
+
+const A=[['pages/POS','Kasir'],['pages/History','Riwayat'],['pages/Cash','Kas'],['pages/OpenOrders','Pesanan'],['pages/Products','Produk'],['pages/Customers','Pelanggan'],['pages/Reports','Laporan'],['pages/Settings','Pengaturan'],['pages/Auth','Masuk'],['pages/Onboarding','Onboarding'],['pages/Help','Bantuan'],['pages/More','Akun'],['components/*','Shared pop-ups'],['admin','Admin']];
+const R=[["k","Sheet",["admin","components/Access","components/Help","components/Pin","components/Receipt","components/Register","pages/Cash","pages/Customers","pages/Help","pages/History","pages/OpenOrders","pages/POS","pages/Products","pages/Reports","pages/Settings"]],["c","btnPrimary",["admin","pages/Auth","pages/Cash","pages/Customers","pages/Help","pages/History","pages/Onboarding","pages/OpenOrders","pages/POS","pages/Products","pages/Reports","pages/Settings"]],["c","btnSecondary",["admin","pages/Cash","pages/Customers","pages/Help","pages/History","pages/More","pages/Onboarding","pages/OpenOrders","pages/POS","pages/Products","pages/Reports","pages/Settings"]],["c","card",["admin","pages/Auth","pages/Cash","pages/Customers","pages/Help","pages/History","pages/More","pages/Onboarding","pages/OpenOrders","pages/Products","pages/Reports","pages/Settings"]],["c","labelBase",["admin","pages/Auth","pages/Cash","pages/History","pages/Onboarding","pages/OpenOrders","pages/POS","pages/Products","pages/Reports","pages/Settings"]],["k","EmptyState",["admin","pages/Cash","pages/Customers","pages/Help","pages/History","pages/OpenOrders","pages/POS","pages/Products","pages/Reports","pages/Settings"]],["c","inputBase",["admin","pages/Auth","pages/Cash","pages/History","pages/Onboarding","pages/OpenOrders","pages/POS","pages/Products","pages/Settings"]],["k","PageHeader",["pages/Cash","pages/Customers","pages/Help","pages/History","pages/More","pages/OpenOrders","pages/Products","pages/Reports","pages/Settings"]],["k","LoadingScreen",["admin","pages/Cash","pages/Customers","pages/History","pages/POS","pages/Products","pages/Reports","pages/Settings"]],["c","btnGhost",["admin","pages/Auth","pages/Cash","pages/Customers","pages/Onboarding","pages/POS","pages/Products","pages/Settings"]],["c","option()",["admin","pages/Cash","pages/History","pages/OpenOrders","pages/POS","pages/Products","pages/Reports","pages/Settings"]],["c","helperText",["admin","pages/Auth","pages/Cash","pages/Onboarding","pages/POS","pages/Products","pages/Settings"]],["k","SegmentedControl",["admin","pages/Auth","pages/POS","pages/Products","pages/Reports","pages/Settings"]],["c","btnDanger",["admin","pages/Customers","pages/History","pages/OpenOrders","pages/Products","pages/Settings"]],["c","btnDangerSolid",["pages/Cash","pages/Customers","pages/History","pages/OpenOrders","pages/Products","pages/Settings"]],["c","sectionTitle",["admin","pages/Cash","pages/Customers","pages/History","pages/POS","pages/Products"]],["k","SearchInput",["admin","pages/Customers","pages/Help","pages/History","pages/POS","pages/Products"]],["k","Switch",["admin","pages/Cash","pages/Onboarding","pages/POS","pages/Products","pages/Settings"]],["k","Tabs",["admin","pages/Cash","pages/Customers","pages/POS","pages/Products","pages/Settings"]],["c","btnIcon",["admin","pages/History","pages/POS","pages/Products","pages/Settings"]],["k","RupiahInput",["admin","components/Register","pages/Cash","pages/POS","pages/Products"]],["c","badgeNeutral",["admin","pages/Cash","pages/Products","pages/Settings"]],["c","badgeWarn",["admin","pages/Customers","pages/Products","pages/Settings"]],["c","badgeBrand",["admin","pages/Products","pages/Reports","pages/Settings"]],["k","Logo",["components/Pin","pages/Auth","pages/More","pages/Onboarding"]],["k","StatTile",["admin","pages/History","pages/Reports"]],["k","DateRangeControl",["pages/Cash","pages/History","pages/Reports"]],["c","receiptRule",["pages/Cash","pages/POS"]],["k","ProductThumb",["pages/POS","pages/Products"]],["k","NumberInput",["pages/Products","pages/Settings"]],["k","StatusBadge",["pages/Customers","pages/History"]],["c","fieldGrid",["pages/Settings"]],["k","Select",["pages/History"]]];
+const has=(r,a)=>a==='components/*'?r.some(x=>x.startsWith('components/')):r.includes(a);
+document.getElementById('mx').innerHTML='<thead><tr><th></th>'+A.map(a=>`<th><span>${a[1]}</span></th>`).join('')+'<th><span>Areas</span></th></tr></thead><tbody>'+R.map(r=>`<tr><th>${r[1]}<small>${r[0]==='c'?'class':'component'}</small></th>${A.map(a=>`<td class="${has(r[2],a[0])?'y':'n'}"></td>`).join('')}<td class="cnt">${r[2].length}</td></tr>`).join('')+'</tbody>';
+
+const E=[['A colour','<code>--color-*</code> in <code>src/index.css</code>, then the hex mirrors on the right and the MASTER.md table'],['Buttons','<code>btnBase</code> and <code>btn*</code> in <code>components/ui/styles.ts</code>'],['Inputs','<code>inputBase</code>, <code>labelBase</code>, <code>helperText</code>; RupiahInput, NumberInput, SearchInput, Select have own markup'],['Pop-ups','<code>components/ui/Sheet.tsx</code> plus the sheet and dialog keyframes in <code>index.css</code>'],['Corners, shadows','<code>--radius-*</code>, <code>--shadow-*</code>; cards stay border plus shadow-xs'],['Menu','<code>Layout/navItems.ts</code> for groups, <code>Layout/GroupNav.tsx</code> for rail, tab bar and sub-menus'],['Page titles','<code>Layout/PageHeader.tsx</code> (<code>pageTitle</code>, <code>NARROW_COLUMN</code>)'],['Settings forms','<code>fieldGrid</code> inside <code>pages/Settings/SettingsSection.tsx</code>'],['Money totals','<code>receiptRule</code> plus <code>border-t</code> above, <code>num</code> on the amount'],['Logo','<code>Brand/Logo.tsx</code> only; app icons come from the brand kit']];
+document.getElementById('edit').innerHTML=E.map(e=>`<tr><td>${e[0]}</td><td>${e[1]}</td></tr>`).join('');
+}
+</script>
