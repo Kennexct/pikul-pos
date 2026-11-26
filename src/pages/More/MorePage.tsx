@@ -27,7 +27,7 @@ export function MorePage() {
       <div className="flex flex-col gap-4 p-4">
         <div className={`${card} p-4`}>
           <div className="flex items-center gap-3">
-            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-ink text-[13px] font-bold text-white">
+            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-ink text-[13px] font-semibold text-white">
               {initialsOf(cashier?.displayName ?? '')}
             </span>
             <div className="flex-1">

@@ -45,7 +45,7 @@ export function ExpensesPanel({ dateRange, today, expenses, memberNames, onAdd, 
               <p className="text-[13px] font-semibold text-ink-soft">{t('Total pengeluaran')}</p>
               <p className="num text-[13px] text-muted">{expenses.length} {t('catatan · dari laci')} {formatRupiah(fromDrawer)}</p>
             </div>
-            <p className="num text-[24px] font-extrabold leading-none tracking-[-0.02em]">{formatRupiah(total)}</p>
+            <p className="num text-[24px] font-semibold leading-none tracking-[-0.02em]">{formatRupiah(total)}</p>
           </div>
           <ul className={`${card} divide-y divide-line overflow-hidden`}>
             {expenses.map((expense) => (

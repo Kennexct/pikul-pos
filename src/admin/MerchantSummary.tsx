@@ -26,7 +26,7 @@ export function MerchantSummary({ id, onError }: { id: string; onError: (e: unkn
   return (
     <section aria-label={t('Ringkasan penjualan')} className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h3 className="text-[15px] font-bold text-ink">{t('Ringkasan penjualan')}</h3>
+        <h3 className="text-[15px] font-semibold text-ink">{t('Ringkasan penjualan')}</h3>
         <SegmentedControl label={t('Rentang')} options={RANGES} value={range} onChange={setRange} />
       </div>
       {error && !data ? (

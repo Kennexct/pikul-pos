@@ -260,7 +260,7 @@ export function POSPage() {
               <button type="button" aria-label={t('Tandai stok habis')} title={t('Tandai stok habis')} onClick={() => setPanel('soldOut')} className={`${btnIcon} relative border-danger-200! bg-danger-50! text-danger-700! hover:bg-danger-200/50!`}>
                 <PackageX aria-hidden size={20} />
                 {soldOutCount > 0 && (
-                  <span className="num absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-md bg-danger-600 px-1 text-[11px] font-bold text-white ring-2 ring-surface">
+                  <span className="num absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-md bg-danger-600 px-1 text-[11px] font-semibold text-white ring-2 ring-surface">
                     {soldOutCount}
                   </span>
                 )}

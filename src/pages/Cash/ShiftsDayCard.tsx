@@ -54,7 +54,7 @@ export function ShiftsDayCard({ shifts, selected, timeZone, onSelect }: ShiftsDa
       <dl className="mt-2 flex flex-col gap-1.5 border-t border-line pt-3 text-[14px]">
         <div className="flex items-center justify-between gap-3">
           <dt className="font-semibold">{t('Total hari ini')}</dt>
-          <dd className="num text-[18px] font-bold">{formatRupiah(total.net)}</dd>
+          <dd className="num text-[18px] font-semibold">{formatRupiah(total.net)}</dd>
         </div>
         <div className="flex items-center justify-between gap-3 text-ink-soft">
           <dt>{t('Transaksi')}</dt>

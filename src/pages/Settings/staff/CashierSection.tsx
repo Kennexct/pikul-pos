@@ -82,7 +82,7 @@ export function CashierSection({ storeId }: { storeId: Id }) {
             <ul className="divide-y divide-line rounded-lg border border-line">
               {cashiers.map((member) => (
                 <li key={member.id} className="flex flex-wrap items-center gap-3 px-3.5 py-2.5">
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-ink text-[12px] font-bold text-white">{initialsOf(member.displayName)}</span>
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-ink text-[12px] font-semibold text-white">{initialsOf(member.displayName)}</span>
                   <span className="min-w-0 flex-1 truncate text-[15px] font-semibold">{member.displayName}</span>
                   <button type="button" onClick={() => setDialog({ kind: 'reset', member })} className={`${btnGhost} text-[14px]`}>
                     <KeyRound aria-hidden size={16} /> {t('Reset PIN')}

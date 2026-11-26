@@ -48,7 +48,7 @@ export function MerchantProfile({ m, onError }: { m: AccountView; onError: (e: u
 
   return (
     <section aria-label={t('Profil toko')} className="space-y-3">
-      <h3 className="text-[15px] font-bold text-ink">{t('Profil toko')}</h3>
+      <h3 className="text-[15px] font-semibold text-ink">{t('Profil toko')}</h3>
       <dl className={`${card} divide-y divide-line`}>
         <Row label={t('Nama toko')} value={m.storeName} />
         <Row label={t('Pemilik')} value={m.ownerName} />
@@ -60,7 +60,7 @@ export function MerchantProfile({ m, onError }: { m: AccountView; onError: (e: u
       {password ? (
         <div role="status" className="rounded-lg border border-brand-200 bg-brand-50 px-4 py-3 text-[14px] text-ink">
           <p>{t('Kata sandi sementara (hanya tampil sekali). Kirim ke merchant, lalu minta ia menggantinya di Pengaturan.')}</p>
-          <p className="num mt-2 select-all text-[20px] font-bold tracking-[0.06em]">{password}</p>
+          <p className="num mt-2 select-all text-[20px] font-semibold tracking-[0.06em]">{password}</p>
           {wa && (
             <a className={`${btnSecondary} mt-3`} href={`${wa}?text=${encodeURIComponent(t('Kata sandi sementara Pikul Anda: {0}', password))}`} target="_blank" rel="noopener noreferrer">
               <MessageCircle aria-hidden size={18} />

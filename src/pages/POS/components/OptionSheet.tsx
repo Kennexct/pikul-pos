@@ -37,7 +37,7 @@ export function OptionSheet({ product, groups, mode, onClose, onConfirm }: Optio
     setSelection((prev) => ({ ...prev, [group.id]: toggleOption(group, prev[group.id] ?? [], optionId) }));
 
   const badge = (isRequired: boolean) => (
-    <span className={`rounded px-1.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide ${isRequired ? 'bg-ink text-white' : 'bg-subtle text-muted'}`}>
+    <span className={`rounded-md px-1.5 py-0.5 text-[12px] font-medium ${isRequired ? 'bg-subtle text-ink-soft' : 'text-muted'}`}>
       {isRequired ? t('Wajib') : t('Opsional')}
     </span>
   );

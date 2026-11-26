@@ -86,7 +86,7 @@ export function OpenOrdersPage() {
               <li key={order.id} className={`${card} flex flex-col shadow-xs`}>
                 <div className="flex items-start gap-3 px-4 pt-4">
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-[17px] font-bold tracking-[-0.01em]">{order.label}</p>
+                    <p className="truncate text-[17px] font-semibold tracking-[-0.01em]">{order.label}</p>
                     <p className="num truncate text-[13px] text-muted">
                       {order.receiptNo} · {order.salesModeNameSnapshot}
                       {order.customerNameSnapshot ? ` · ${order.customerNameSnapshot}` : ''}
@@ -100,7 +100,7 @@ export function OpenOrdersPage() {
                   {order.items.map((i) => `${formatLineQty(i)} ${i.nameSnapshot}`).join(', ')}
                 </p>
                 <div className="mt-auto flex items-center gap-2 px-4 pb-4 pt-3">
-                  <p className="num flex-1 text-[20px] font-bold tracking-[-0.02em]">{formatRupiah(order.totals.grandTotal)}</p>
+                  <p className="num flex-1 text-[20px] font-semibold tracking-[-0.02em]">{formatRupiah(order.totals.grandTotal)}</p>
                   <button type="button" onClick={() => setCancelTarget(order)} className={`${btnDanger} h-11`}>{t('Batalkan')}</button>
                   <button type="button" onClick={() => resume(order)} className={`${btnPrimary} h-11`}>{t('Buka')}</button>
                 </div>

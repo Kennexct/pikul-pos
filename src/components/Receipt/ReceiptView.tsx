@@ -25,7 +25,7 @@ export function ReceiptView({ order, store, cashierName, refunds = [] }: Receipt
       data-paper={store.receiptPaperMm}
     >
       <header className="mb-3 text-center font-sans">
-        <p className="text-[15px] font-bold tracking-[-0.01em]">{store.name}</p>
+        <p className="text-[15px] font-semibold tracking-[-0.01em]">{store.name}</p>
         {store.address && <p className="text-[12px] text-muted">{store.address}</p>}
         {store.phone && <p className="text-[12px] text-muted">{store.phone}</p>}
         {store.receiptHeader && <p className="mt-1 text-[12px] text-ink-soft">{store.receiptHeader}</p>}
@@ -61,7 +61,7 @@ export function ReceiptView({ order, store, cashierName, refunds = [] }: Receipt
       {discount > 0 && <Line label={order.orderDiscount?.name ?? t('Diskon')} value={`-${formatRupiah(discount)}`} />}
       {totals.serviceTotal > 0 && <Line label={t('Service {0}%', store.servicePct)} value={formatRupiah(totals.serviceTotal)} />}
       {totals.taxTotal > 0 && <Line label={t('Pajak {0}%{1}', store.taxPct, store.isTaxInclusive ? t(' (termasuk)') : '')} value={formatRupiah(totals.taxTotal)} />}
-      <p className="mt-1 flex justify-between text-[14px] font-bold">
+      <p className="mt-1 flex justify-between text-[14px] font-semibold">
         <span>{t('TOTAL')}</span>
         <span>{formatRupiah(totals.grandTotal)}</span>
       </p>
@@ -74,7 +74,7 @@ export function ReceiptView({ order, store, cashierName, refunds = [] }: Receipt
           {payment.change !== undefined && <Line label={t('Kembali::uang')} value={formatRupiah(payment.change)} />}
         </div>
       ))}
-      {order.status === 'open' && <p className="mt-2 text-center font-bold">{t('** BELUM DIBAYAR **')}</p>}
+      {order.status === 'open' && <p className="mt-2 text-center font-semibold">{t('** BELUM DIBAYAR **')}</p>}
 
       {refunds.length > 0 && <Divider />}
       {refunds.map((refund) => (

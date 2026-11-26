@@ -24,7 +24,7 @@ export function ProductThumb({ name, photoUrl, className = '' }: ProductThumbPro
   }
   return (
     <div aria-hidden className={`@container flex items-center justify-center bg-subtle ${className}`}>
-      <span className="text-[clamp(13px,20cqw,26px)] font-bold tracking-[-0.02em] text-muted">{monogram(name)}</span>
+      <span className="text-[clamp(13px,20cqw,26px)] font-semibold tracking-[-0.02em] text-muted">{monogram(name)}</span>
     </div>
   );
 }

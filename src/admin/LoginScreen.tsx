@@ -38,7 +38,7 @@ export function LoginScreen({ state, onSignedIn }: { state: Exclude<Gate, 'ready
     <main className="flex min-h-dvh items-center justify-center bg-canvas px-4 py-10">
       <div className="w-full max-w-sm rounded-xl border border-line bg-surface p-6 shadow-xs">
         <ShieldCheck aria-hidden size={28} className="text-brand-600" />
-        <h1 className="mt-3 text-[22px] font-bold tracking-[-0.02em] text-ink">{t('Konsol admin Pikul')}</h1>
+        <h1 className="mt-3 text-[22px] font-semibold tracking-[-0.02em] text-ink">{t('Konsol admin Pikul')}</h1>
         {closed ? (
           <p role="alert" className="mt-3 text-[15px] leading-relaxed text-ink-soft">
             {closed}

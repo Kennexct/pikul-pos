@@ -1,5 +1,15 @@
 # Status
 
+## Polish pass: stop looking AI-generated (v0.20.2) — In review (2026-11-26)
+Branch `claude/project-thread-3shxpg` from `main` `9ccb30d`. Kenny: "unslop, polish, clean up the entire system". Audit found light slop only, so a polish pass; palette, layout, features unchanged. No ADR. Next ADR: 028.
+- [x] Uppercase tracked labels → sentence case (section titles, sub-menu titles, table headers, admin sidebar, landing)
+- [x] Weights capped at 600 (was 700–800); logo wordmark unchanged
+- [x] Signature: dashed `receiptRule` above money totals (cart, Pembayaran, Kas)
+- [x] Landing: no full stops on headlines, plan tags no longer pills, h1 tracking eased; default receipt footer without "!"
+- [x] Loading screen no longer pulses; MASTER.md updated
+- [x] Checks: typecheck, i18n, 290 tests, build; e2e flow + v16 pass on phone + tablet
+- [ ] Kenny: try the preview, merge
+
 ## Recognisable devices (v0.20.1) — In review (2026-11-25)
 Branch `claude/project-thread-mgy8pd` from `main` `15fe414`, merged with the shift branch (v0.20.0, PR #15). Kenny: "Perangkat 1, 2" says nothing; incognito sign-ins leave devices nobody can continue. Spec `specs/2026-11-25-device-names-design.md`. No ADR (extends ADR-025). Next ADR: 028.
 - [x] Devices named by browser + system ("Chrome · Android"), rename still possible; duplicates get " 2"

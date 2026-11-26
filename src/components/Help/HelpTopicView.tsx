@@ -9,13 +9,13 @@ export function HelpTopicView({ topic }: { topic: HelpTopic }) {
       <ol className="flex flex-col gap-2.5">
         {topic.steps.map((step, index) => (
           <li key={step} className="flex gap-3">
-            <span aria-hidden className="num mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-brand-50 text-[12px] font-bold text-brand-700">{index + 1}</span>
+            <span aria-hidden className="num mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-brand-50 text-[12px] font-semibold text-brand-700">{index + 1}</span>
             <span className="text-ink">{step}</span>
           </li>
         ))}
       </ol>
       <div className="rounded-lg bg-subtle px-3.5 py-3">
-        <p className="mb-1.5 text-[12px] font-semibold uppercase tracking-[0.06em] text-muted">{t('Perlu diketahui')}</p>
+        <p className="mb-1.5 text-[12px] font-semibold text-muted">{t('Perlu diketahui')}</p>
         <ul className="flex list-disc flex-col gap-1.5 pl-4 marker:text-faint">
           {topic.notes.map((note) => (
             <li key={note}>{note}</li>

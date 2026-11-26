@@ -37,7 +37,7 @@ export function buildStoreBundle(setup: StoreSetup = DEFAULT_SETUP): StoreBundle
     timezone: 'Asia/Jakarta',
     dayCutoff: '04:00',
     receiptHeader: '',
-    receiptFooter: t('Terima kasih, sampai jumpa lagi!'),
+    receiptFooter: t('Terima kasih, sampai jumpa lagi'),
     receiptPaperMm: 58,
     taxPct: 0,
     servicePct: 0,

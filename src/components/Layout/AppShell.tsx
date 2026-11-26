@@ -82,7 +82,7 @@ export function AppShell() {
             aria-label={t('Akun: {0}. Ganti kasir', cashier?.displayName ?? '')}
             title={`${cashier?.displayName ?? ''} · ${cashier?.role === 'owner' ? t('Pemilik') : t('Kasir::orang')}`}
             onClick={() => setIsAccountOpen(true)}
-            className="flex h-11 w-11 items-center justify-center rounded-full bg-ink text-[12px] font-bold text-white hover:bg-ink-soft"
+            className="flex h-11 w-11 items-center justify-center rounded-full bg-ink text-[12px] font-semibold text-white hover:bg-ink-soft"
           >
             {initialsOf(cashier?.displayName ?? '')}
           </button>

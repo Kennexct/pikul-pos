@@ -51,7 +51,7 @@ export function ReceiptSheet({ order, store, cashierName, onClose }: ReceiptShee
               {t('Lunas ·')} {payment?.methodNameSnapshot} · {formatRupiah(order.totals.grandTotal)}
             </p>
             {payment?.methodType === 'cash' && (
-              <p className="num text-[22px] font-bold tracking-[-0.02em] text-brand-900">{t('Kembalian')} {formatRupiah(change)}</p>
+              <p className="num text-[22px] font-semibold tracking-[-0.02em] text-brand-900">{t('Kembalian')} {formatRupiah(change)}</p>
             )}
           </div>
         </div>

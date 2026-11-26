@@ -24,7 +24,7 @@ export function ClosingHistory({ closings, memberNames }: ClosingHistoryProps) {
   }
   return (
     <div className={`${card} overflow-hidden`}>
-      <div className={`hidden gap-3 border-b border-line bg-subtle px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.06em] text-muted md:grid ${COLUMNS}`}>
+      <div className={`hidden gap-3 border-b border-line bg-subtle px-4 py-2 text-[12px] font-semibold text-muted md:grid ${COLUMNS}`}>
         <span>{t('Hari')}</span>
         <span className="text-right">{t('Penjualan bersih')}</span>
         <span className="text-right">{t('Seharusnya')}</span>

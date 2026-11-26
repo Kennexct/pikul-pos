@@ -20,7 +20,7 @@ export function OwnerGate({ children }: { children: ReactNode }) {
         <span className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl border border-line bg-surface text-muted shadow-xs">
           <Lock aria-hidden size={22} />
         </span>
-        <h1 className="text-[20px] font-bold tracking-[-0.02em]">{t('Khusus pemilik')}</h1>
+        <h1 className="text-[20px] font-semibold tracking-[-0.02em]">{t('Khusus pemilik')}</h1>
         <p className="mb-5 mt-1 text-center text-[14px] text-muted">{t('Masukkan PIN pemilik untuk membuka layar ini.')}</p>
         <div className="w-full max-w-sm">
           <OwnerPinForm onVerified={() => unlockOwner()} />

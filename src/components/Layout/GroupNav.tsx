@@ -10,7 +10,7 @@ export function CountBadge({ count, className = 'absolute right-2 top-1' }: { co
   return (
     <span
       aria-label={t('{0} pesanan belum dibayar', count)}
-      className={`num flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-danger-600 px-1 text-[11px] font-bold text-white ring-2 ring-surface ${className}`}
+      className={`num flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-danger-600 px-1 text-[11px] font-semibold text-white ring-2 ring-surface ${className}`}
     >
       {count}
     </span>

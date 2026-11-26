@@ -11,7 +11,7 @@ export function PanelHead({ title, hint, actions }: { title: string; hint?: stri
   return (
     <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
       <div className="min-w-0">
-        <h2 className="text-[17px] font-bold text-ink">{title}</h2>
+        <h2 className="text-[17px] font-semibold text-ink">{title}</h2>
         {hint && <p className="text-[14px] text-muted">{hint}</p>}
       </div>
       {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
@@ -38,7 +38,7 @@ export function LoadError({ error, onRetry }: { error: unknown; onRetry: () => v
 export function Section({ title, hint, children, className = '' }: { title: string; hint?: string; children: ReactNode; className?: string }) {
   return (
     <section aria-label={title} className={`${card} p-4 md:p-5 ${className}`}>
-      <h3 className="text-[15px] font-bold tracking-[-0.01em] text-ink">{title}</h3>
+      <h3 className="text-[15px] font-semibold tracking-[-0.01em] text-ink">{title}</h3>
       {hint && <p className="text-[13px] text-muted">{hint}</p>}
       <div className="mt-3">{children}</div>
     </section>

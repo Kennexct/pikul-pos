@@ -67,7 +67,7 @@ export function OnboardingPage({ onComplete, defaultStoreName = '' }: Onboarding
               <span key={title} className={`h-1 flex-1 rounded-full ${index <= step ? 'bg-brand-600' : 'bg-subtle'}`} />
             ))}
           </div>
-          <h1 className="mt-4 text-[22px] font-bold tracking-[-0.02em]">{STEP_TITLES[step]}</h1>
+          <h1 className="mt-4 text-[22px] font-semibold tracking-[-0.02em]">{STEP_TITLES[step]}</h1>
         </header>
 
         <div className="px-5 py-5">

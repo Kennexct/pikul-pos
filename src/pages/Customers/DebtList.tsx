@@ -34,7 +34,7 @@ export function DebtList({ debtors, hasQuery, onOpen }: DebtListProps) {
           <p className="text-[13px] font-semibold text-ink-soft">{t('Total belum dibayar')}</p>
           <p className="num text-[13px] text-muted">{t('{0} pelanggan · {1} pesanan', debtors.length, orderCount)}</p>
         </div>
-        <p className="num text-[24px] font-extrabold leading-none tracking-[-0.02em]">{formatRupiah(total)}</p>
+        <p className="num text-[24px] font-semibold leading-none tracking-[-0.02em]">{formatRupiah(total)}</p>
       </div>
       <ul className={`${card} divide-y divide-line overflow-hidden`}>
         {debtors.map(({ customer, stats }) => (

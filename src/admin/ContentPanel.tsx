@@ -165,7 +165,7 @@ export function ContentPanel({ onError }: { onError: (e: unknown) => Promise<voi
         <dl className="min-w-0 flex-1 space-y-2">
           {FIELDS[s].map((f) => (
             <div key={f.key}>
-              <dt className="text-[12px] font-semibold uppercase tracking-[0.06em] text-muted">{f.label}</dt>
+              <dt className="text-[12px] font-semibold text-muted">{f.label}</dt>
               <dd className="text-[15px] break-words text-ink">{(draft as unknown as Values)[f.key] || <span className="text-muted">{t('(kosong)')}</span>}</dd>
             </div>
           ))}

@@ -11,7 +11,7 @@ export function ChecklistCard({ checklist }: { checklist: ChecklistState }) {
     <section aria-label={t('Langkah awal')} className={`${card} overflow-hidden`}>
       <header className="px-4 pb-3 pt-4">
         <div className="flex items-baseline justify-between gap-3">
-          <h2 className="text-[16px] font-bold tracking-[-0.01em]">{t('Langkah awal')}</h2>
+          <h2 className="text-[16px] font-semibold tracking-[-0.01em]">{t('Langkah awal')}</h2>
           <p className="num text-[13px] font-semibold text-muted">{checklist.isComplete ? t('Semua selesai') : t('{0} dari {1} selesai', checklist.done, checklist.total)}</p>
         </div>
         <div role="progressbar" aria-label={t('Kemajuan langkah awal')} aria-valuemin={0} aria-valuemax={checklist.total} aria-valuenow={checklist.done} className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-subtle">

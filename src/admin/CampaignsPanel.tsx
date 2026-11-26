@@ -45,7 +45,7 @@ export function CampaignsPanel({ catalog, onChanged, onError }: Props) {
     <section aria-labelledby="campaigns-title">
       <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h2 id="campaigns-title" className="text-[17px] font-bold text-ink">
+          <h2 id="campaigns-title" className="text-[17px] font-semibold text-ink">
             {t('Kampanye promo')}
           </h2>
           <p className="text-[14px] text-muted">{t('Pop-up banner terjadwal di halaman depan dan/atau aplikasi merchant.')}</p>

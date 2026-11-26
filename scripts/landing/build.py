@@ -41,40 +41,40 @@ def shot(key, alt, w='100%', hero=False):
     iw, ih = SIZE[key]
     load = 'fetchpriority="high"' if hero else 'loading="lazy" decoding="async"'
     return f'<div{"" if hero else " data-reveal"} style="border-radius: 16px; border: 1px solid {LINE}; background: #fff; padding: 8px; box-shadow: 0 1px 2px rgba(15,26,22,.04), 0 12px 32px -12px rgba(15,26,22,.18)"><img src="{IMG[key]}" alt="{alt}" width="{iw}" height="{ih}" {load} style="display: block; width: {w}; height: auto; border-radius: 10px"></div>'
-def eyebrow(t): return f'<p style="margin: 0 0 10px; font-size: 15px; font-weight: 700; color: {G}">{t}</p>'
-def h2(t, id_=''): return f'<h2{f" id={chr(34)}{id_}{chr(34)}" if id_ else ""} style="margin: 0; font-size: clamp(28px, 4vw, 40px); line-height: 1.15; letter-spacing: -0.02em; font-weight: 800; color: {INK}">{t}</h2>'
+def eyebrow(t): return f'<p style="margin: 0 0 10px; font-size: 15px; font-weight: 600; color: {G}">{t}</p>'
+def h2(t, id_=''): return f'<h2{f" id={chr(34)}{id_}{chr(34)}" if id_ else ""} style="margin: 0; font-size: clamp(28px, 4vw, 40px); line-height: 1.15; letter-spacing: -0.02em; font-weight: 600; color: {INK}">{t}</h2>'
 
 usp = [('wifi','Jalan tanpa internet','Semua data tersimpan di perangkat. Sinyal hilang, penjualan tetap tercatat dan struk tetap keluar.'),
        ('timer','Siap dalam 2 menit','Daftar dengan email, pilih jenis usaha, dan contoh menu langsung jadi. Tanpa install dari toko aplikasi.'),
        ('store','Dibuat untuk cara jual kita','Bon pelanggan, QRIS statis, harga Dine In / Takeaway / ojol, jual per kilo, harga nego di meja kasir.'),
        ('wallet','Tahu uang dan untung tiap malam','Tutup kasir: uang laci seharusnya vs yang dihitung. Laba dari harga modal, bukan tebakan.')]
-usp_html = ''.join(f'<div style="border-top: 2px solid {INK}; padding-top: 18px; display: flex; flex-direction: column; gap: 8px"><h3 style="margin: 0; display: flex; gap: 10px; align-items: flex-start; font-size: 18px; line-height: 1.3; font-weight: 800; letter-spacing: -0.01em; color: {INK}">{ic(I[i])}{a}</h3><p style="margin: 0; font-size: 15px; line-height: 1.6; color: {SOFT}">{b}</p></div>' for i,a,b in usp)
+usp_html = ''.join(f'<div style="border-top: 2px solid {INK}; padding-top: 18px; display: flex; flex-direction: column; gap: 8px"><h3 style="margin: 0; display: flex; gap: 10px; align-items: flex-start; font-size: 18px; line-height: 1.3; font-weight: 600; letter-spacing: -0.01em; color: {INK}">{ic(I[i])}{a}</h3><p style="margin: 0; font-size: 15px; line-height: 1.6; color: {SOFT}">{b}</p></div>' for i,a,b in usp)
 
-deep = [('varian','Layar pilih varian dan add-on di kasir','Varian &amp; add-on','Kopi → Latte → sedikit es, tanpa gula, Grande.','Setiap varian punya harga sendiri, termasuk harga Takeaway. Add-on seperti es, gula, dan ukuran bisa wajib atau opsional, dengan tambahan harga. Di struk dan laporan tertulis "Kopi – Latte", jadi Anda tahu minuman mana yang paling laku.', True),
-        ('timbang','Layar isi berat atau nominal untuk barang timbangan','Untuk pedagang pasar','Jual per kilo, atau "beli sepuluh ribu".','Ketik beratnya (0,75 kg) atau uang pembeli (Rp10.000) dan beratnya dihitung sendiri. Harga hari ini beda? Ganti langsung di kasir; harga normal tetap tercatat.', True),
-        ('bon','Daftar pelanggan yang belum bayar','Bon pelanggan','Catat bon, ingatkan lewat WhatsApp.','Simpan pesanan atas nama pelanggan dan bayar nanti. Lihat siapa yang belum bayar, berapa, dan sejak kapan, lalu kirim pengingat sopan dengan satu ketukan.', False),
-        ('tutup','Layar tutup kasir dengan selisih uang laci','Tutup kasir','Uang di laci harusnya berapa? Sekarang ketahuan.','Modal awal + penjualan tunai − refund − pengeluaran dari laci. Hitung uangnya, ketik, dan lihat pas, kurang, atau lebih. Ringkasan bisa dikirim ke pemilik lewat WhatsApp.', False)]
+deep = [('varian','Layar pilih varian dan add-on di kasir','Varian &amp; add-on','Kopi → Latte → sedikit es, tanpa gula, Grande','Setiap varian punya harga sendiri, termasuk harga Takeaway. Add-on seperti es, gula, dan ukuran bisa wajib atau opsional, dengan tambahan harga. Di struk dan laporan tertulis "Kopi – Latte", jadi Anda tahu minuman mana yang paling laku.', True),
+        ('timbang','Layar isi berat atau nominal untuk barang timbangan','Untuk pedagang pasar','Jual per kilo, atau "beli sepuluh ribu"','Ketik beratnya (0,75 kg) atau uang pembeli (Rp10.000) dan beratnya dihitung sendiri. Harga hari ini beda? Ganti langsung di kasir; harga normal tetap tercatat.', True),
+        ('bon','Daftar pelanggan yang belum bayar','Bon pelanggan','Catat bon, ingatkan lewat WhatsApp','Simpan pesanan atas nama pelanggan dan bayar nanti. Lihat siapa yang belum bayar, berapa, dan sejak kapan, lalu kirim pengingat sopan dengan satu ketukan.', False),
+        ('tutup','Layar tutup kasir dengan selisih uang laci','Tutup kasir','Uang di laci harusnya berapa? Sekarang ketahuan','Modal awal + penjualan tunai − refund − pengeluaran dari laci. Hitung uangnya, ketik, dan lihat pas, kurang, atau lebih. Ringkasan bisa dikirim ke pemilik lewat WhatsApp.', False)]
 deep_html = ''
 for n,(k,alt,eb,title,body,phone) in enumerate(deep):
-    text = f'<div style="flex: 1 1 360px; min-width: 0; display: flex; flex-direction: column; justify-content: center">{eyebrow(eb)}<h3 style="margin: 0; font-size: clamp(24px, 3vw, 32px); line-height: 1.2; letter-spacing: -0.02em; font-weight: 800; color: {INK}">{title}</h3><p style="margin: 16px 0 0; font-size: 17px; line-height: 1.65; color: {SOFT}; max-width: 520px">{body}</p></div>'
+    text = f'<div style="flex: 1 1 360px; min-width: 0; display: flex; flex-direction: column; justify-content: center">{eyebrow(eb)}<h3 style="margin: 0; font-size: clamp(24px, 3vw, 32px); line-height: 1.2; letter-spacing: -0.02em; font-weight: 600; color: {INK}">{title}</h3><p style="margin: 16px 0 0; font-size: 17px; line-height: 1.65; color: {SOFT}; max-width: 520px">{body}</p></div>'
     img = f'<div style="flex: 1 1 420px; min-width: 0; display: flex; justify-content: center">{shot(k, alt, "min(100%, 380px)" if phone else "100%")}</div>'
     deep_html += f'<div style="display: flex; flex-wrap: wrap; gap: 48px; align-items: center">{text+img if n%2==0 else img+text}</div>'
 
 feats = [(f['icon'] if f['icon'] in I else 'check', E(f['title']), E(f['text'])) for f in CONTENT['features'] if not f['hidden']]
 I['check'] = '<path d="M20 6 9 17l-5-5"/>'
-feat_html = ''.join(f'<div data-icon="{i}" style="display: flex; gap: 14px; align-items: flex-start; padding: 18px 0; border-bottom: 1px solid {LINE}"><div style="flex: none; margin-top: 2px">{ic(I[i])}</div><div><h3 style="margin: 0; font-size: 16px; font-weight: 700; color: {INK}">{a}</h3><p style="margin: 4px 0 0; font-size: 14px; line-height: 1.55; color: {MUTED}">{b}</p></div></div>' for i,a,b in feats)
+feat_html = ''.join(f'<div data-icon="{i}" style="display: flex; gap: 14px; align-items: flex-start; padding: 18px 0; border-bottom: 1px solid {LINE}"><div style="flex: none; margin-top: 2px">{ic(I[i])}</div><div><h3 style="margin: 0; font-size: 16px; font-weight: 600; color: {INK}">{a}</h3><p style="margin: 4px 0 0; font-size: 14px; line-height: 1.55; color: {MUTED}">{b}</p></div></div>' for i,a,b in feats)
 # Icons the live script (src/landing/live.ts) reuses when it redraws features saved in the admin console.
 icon_tpl = '<template data-lp="icons">' + ''.join(f'<span data-icon="{k}">{ic(v)}</span>' for k,v in I.items()) + '</template>'
 
 who = [('Kedai kopi','Varian minuman, es/gula/ukuran, harga Takeaway dan ojol.'),('Bakso &amp; warung makan','Pesanan per meja, simpan dulu bayar nanti, level pedas.'),('Gorengan &amp; jajanan','Satu ketuk per item, uang pas, antrean cepat.'),('Lapak pasar','Per kilo atau per nominal, harga harian, bon langganan.')]
-who_html = ''.join(f'<div style="padding: 24px; border-radius: 14px; background: #fff; border: 1px solid {LINE}"><h3 style="margin: 0; font-size: 18px; font-weight: 700; color: {INK}">{a}</h3><p style="margin: 8px 0 0; font-size: 15px; line-height: 1.6; color: {SOFT}">{b}</p></div>' for a,b in who)
+who_html = ''.join(f'<div style="padding: 24px; border-radius: 14px; background: #fff; border: 1px solid {LINE}"><h3 style="margin: 0; font-size: 18px; font-weight: 600; color: {INK}">{a}</h3><p style="margin: 8px 0 0; font-size: 15px; line-height: 1.6; color: {SOFT}">{b}</p></div>' for a,b in who)
 
 steps = [('1','Daftar dengan email','Masukkan email, ketik kode yang kami kirim. Masa coba 14 hari langsung mulai.'),('2','Pilih jenis usaha','Bakso, kopi, gorengan, warung makan, atau mulai kosong. Contoh menu langsung jadi.'),('3','Mulai jualan','Ubah menu dan harga kapan saja. Pasang di layar utama tablet atau HP Anda.')]
-steps_html = ''.join(f'<div style="display: flex; gap: 16px; align-items: flex-start"><div style="flex: none; width: 40px; height: 40px; border-radius: 999px; background: {G}; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 17px">{n}</div><div><h3 style="margin: 6px 0 0; font-size: 18px; font-weight: 700; color: {INK}">{a}</h3><p style="margin: 6px 0 0; font-size: 15px; line-height: 1.6; color: {SOFT}">{b}</p></div></div>' for n,a,b in steps)
+steps_html = ''.join(f'<div style="display: flex; gap: 16px; align-items: flex-start"><div style="flex: none; width: 40px; height: 40px; border-radius: 999px; background: {G}; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 17px">{n}</div><div><h3 style="margin: 6px 0 0; font-size: 18px; font-weight: 600; color: {INK}">{a}</h3><p style="margin: 6px 0 0; font-size: 15px; line-height: 1.6; color: {SOFT}">{b}</p></div></div>' for n,a,b in steps)
 
 li = lambda xs, mark: ''.join(f'<li style="display: flex; gap: 10px; align-items: flex-start; font-size: 15px; line-height: 1.5; color: {SOFT}"><span style="flex: none; margin-top: 1px">{mark}</span>{x}</li>' for x in xs)
 all_feats = ['Kasir, struk, QRIS statis','Varian, add-on, mode penjualan','Jual per berat &amp; harga bebas','Laporan, laba, ekspor Excel/PDF','Pelanggan &amp; bon, kas &amp; tutup kasir','Staf &amp; PIN, cadangan ke berkas','Tanpa batas transaksi']
-btn = 'display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 22px; border-radius: 10px; font-size: 16px; font-weight: 700; text-decoration: none'
+btn = 'display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 22px; border-radius: 10px; font-size: 16px; font-weight: 600; text-decoration: none'
 wrap = 'width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 24px; box-sizing: border-box'
 
 def plan_card(name, price, unit, note, badge, badge_cls, items, cta, primary, paid=True):
@@ -83,8 +83,8 @@ def plan_card(name, price, unit, note, badge, badge_cls, items, cta, primary, pa
     cta_style = f'{btn}; margin-top: auto; background: {G}; color: #fff' if primary else f'{btn}; margin-top: auto; background: #fff; color: {INK}; border: 1px solid #c9d2cd'
     mark = ' data-plan-card' if paid else ''
     return f'''<div{mark} style="background: #fff; border: {border}; border-radius: 18px; padding: 28px; display: flex; flex-direction: column; gap: 18px">
-<div style="display: flex; justify-content: space-between; align-items: center; gap: 12px"><h3 style="margin: 0; font-size: 20px; font-weight: 800; color: {INK}">{name}</h3>{f'<span style="padding: 4px 10px; border-radius: 999px; {bstyle}; font-size: 13px; font-weight: 700">{badge}</span>' if badge else ''}</div>
-<p style="margin: 0; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap"><span style="font-size: 40px; font-weight: 800; letter-spacing: -0.03em; color: {INK}">{price}</span><span style="font-size: 15px; color: {MUTED}">{unit}</span></p>
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 12px"><h3 style="margin: 0; font-size: 20px; font-weight: 600; color: {INK}">{name}</h3>{f'<span style="padding: 4px 8px; border-radius: 6px; {bstyle}; font-size: 13px; font-weight: 600">{badge}</span>' if badge else ''}</div>
+<p style="margin: 0; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap"><span style="font-size: 40px; font-weight: 600; letter-spacing: -0.03em; color: {INK}">{price}</span><span style="font-size: 15px; color: {MUTED}">{unit}</span></p>
 <p style="margin: 0; font-size: 15px; line-height: 1.6; color: {SOFT}">{note}</p>
 <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px">{li(items, check)}</ul>
 <a href="{APP}" style="{cta_style}">{cta}</a>
@@ -97,10 +97,10 @@ pricing = (plan_card('Coba gratis', 'Rp0', '14 hari', 'Semua fitur, tanpa kartu 
 soon = ['Cadangan otomatis ke cloud','Data tersinkron antar perangkat','Laporan gabungan semua kasir']
 
 faqs = [(E(f['q']), E(f['a'])) for f in CONTENT['faqs'] if not f['hidden']]
-faq_html = ''.join(f'<details style="border-bottom: 1px solid {LINE}; padding: 4px 0"><summary style="cursor: pointer; list-style: none; padding: 18px 0; font-size: 17px; font-weight: 700; color: {INK}">{q}</summary><p style="margin: 0 0 20px; font-size: 16px; line-height: 1.65; color: {SOFT}; max-width: 760px">{a}</p></details>' for q,a in faqs)
+faq_html = ''.join(f'<details style="border-bottom: 1px solid {LINE}; padding: 4px 0"><summary style="cursor: pointer; list-style: none; padding: 18px 0; font-size: 17px; font-weight: 600; color: {INK}">{q}</summary><p style="margin: 0 0 20px; font-size: 16px; line-height: 1.65; color: {SOFT}; max-width: 760px">{a}</p></details>' for q,a in faqs)
 
 # Pikul logo (ADR-016, brand kit v1): mark on a pandan tile + ExtraBold wordmark.
-logo = f'<span style="display: inline-flex; align-items: center; gap: 10px"><svg aria-hidden="true" width="34" height="34" viewBox="0 0 64 64"><rect width="64" height="64" rx="14.4" fill="{G}"/><g transform="translate(7.86 10.13) scale(0.7543)"><circle cx="32" cy="14" r="6.5" fill="#f2a93b"/><path d="M7 32Q32 22 57 32" fill="none" stroke="#f6f1e7" stroke-width="6" stroke-linecap="round"/><rect x="13" y="29" width="4" height="11" fill="#f6f1e7"/><rect x="47" y="29" width="4" height="11" fill="#f6f1e7"/><path d="M4 39.5h22a11 11 0 0 1-22 0z" fill="#f6f1e7"/><path d="M38 39.5h22a11 11 0 0 1-22 0z" fill="#f6f1e7"/></g></svg><span style="font-size: 22px; font-weight: 800; letter-spacing: -0.03em; color: {INK}">Pikul</span></span>'
+logo = f'<span style="display: inline-flex; align-items: center; gap: 10px"><svg aria-hidden="true" width="34" height="34" viewBox="0 0 64 64"><rect width="64" height="64" rx="14.4" fill="{G}"/><g transform="translate(7.86 10.13) scale(0.7543)"><circle cx="32" cy="14" r="6.5" fill="#f2a93b"/><path d="M7 32Q32 22 57 32" fill="none" stroke="#f6f1e7" stroke-width="6" stroke-linecap="round"/><rect x="13" y="29" width="4" height="11" fill="#f6f1e7"/><rect x="47" y="29" width="4" height="11" fill="#f6f1e7"/><path d="M4 39.5h22a11 11 0 0 1-22 0z" fill="#f6f1e7"/><path d="M38 39.5h22a11 11 0 0 1-22 0z" fill="#f6f1e7"/></g></svg><span style="font-size: 22px; font-weight: 600; letter-spacing: -0.03em; color: {INK}">Pikul</span></span>'
 navlink = f'color: {SOFT}; text-decoration: none; font-size: 15px; font-weight: 600; padding: 10px 0'
 
 body = f'''<div style="font-family: 'Plus Jakarta Sans', system-ui, sans-serif; background: {CANVAS}; color: {INK}; min-width: 0">
@@ -117,7 +117,7 @@ body = f'''<div style="font-family: 'Plus Jakarta Sans', system-ui, sans-serif; 
 <section style="padding: 72px 0 56px">
 <div style="{wrap}; display: flex; flex-wrap: wrap; gap: 56px; align-items: center">
 <div style="flex: 1 1 440px; min-width: 0">
-<h1 data-lp="hero-title" style="margin: 0; font-size: clamp(38px, 5.6vw, 64px); line-height: 1.05; letter-spacing: -0.035em; font-weight: 800; color: {INK}">{E(CONTENT['heroTitle'])}</h1>
+<h1 data-lp="hero-title" style="margin: 0; font-size: clamp(38px, 5.6vw, 64px); line-height: 1.05; letter-spacing: -0.025em; font-weight: 600; color: {INK}">{E(CONTENT['heroTitle'])}</h1>
 <p data-lp="hero-subtitle" style="margin: 22px 0 0; font-size: clamp(17px, 2vw, 20px); line-height: 1.6; color: {SOFT}; max-width: 560px">{E(CONTENT['heroSubtitle'])}</p>
 <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px">
 <a href="{APP}" style="{btn}; background: {G}; color: #fff">Coba gratis 14 hari</a>
@@ -142,38 +142,38 @@ body = f'''<div style="font-family: 'Plus Jakarta Sans', system-ui, sans-serif; 
 
 <section id="fitur" style="padding: 72px 0; background: #fff; border-top: 1px solid {LINE}; border-bottom: 1px solid {LINE}">
 <div style="{wrap}; display: flex; flex-direction: column; gap: 96px">
-<div data-reveal style="max-width: 720px">{eyebrow('Yang membuatnya berbeda')}{h2('Dibuat dari cara pedagang Indonesia benar-benar berjualan.')}</div>
+<div data-reveal style="max-width: 720px">{eyebrow('Yang membuatnya berbeda')}{h2('Dibuat dari cara pedagang Indonesia benar-benar berjualan')}</div>
 {deep_html}
 </div>
 </section>
 
 <section aria-labelledby="semua-fitur" style="padding: 88px 0">
 <div style="{wrap}">
-<div style="max-width: 720px; margin-bottom: 36px">{eyebrow('Semua fitur')}{h2('Semua yang dibutuhkan satu toko, dalam satu aplikasi.', 'semua-fitur')}</div>
+<div style="max-width: 720px; margin-bottom: 36px">{eyebrow('Semua fitur')}{h2('Semua yang dibutuhkan satu toko, dalam satu aplikasi', 'semua-fitur')}</div>
 <div class="lp-feats" data-lp="features">{feat_html}</div>{icon_tpl}
 </div>
 </section>
 
 <section id="untuk-siapa" style="padding: 24px 0 88px">
 <div style="{wrap}; display: flex; flex-wrap: wrap; gap: 48px">
-<div style="flex: 1 1 320px; min-width: 0">{eyebrow('Untuk siapa')}{h2('Satu kasir, empat cara berjualan.')}<p style="margin: 16px 0 0; font-size: 17px; line-height: 1.65; color: {SOFT}">Pilih jenis usaha saat pertama buka, dan Pikul menyiapkan contoh menu yang cocok. Semuanya bisa diubah.</p></div>
+<div style="flex: 1 1 320px; min-width: 0">{eyebrow('Untuk siapa')}{h2('Satu kasir, empat cara berjualan')}<p style="margin: 16px 0 0; font-size: 17px; line-height: 1.65; color: {SOFT}">Pilih jenis usaha saat pertama buka, dan Pikul menyiapkan contoh menu yang cocok. Semuanya bisa diubah.</p></div>
 <div style="flex: 2 1 560px; min-width: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px">{who_html}</div>
 </div>
 </section>
 
 <section aria-labelledby="cara-mulai" style="padding: 80px 0; background: #fff; border-top: 1px solid {LINE}; border-bottom: 1px solid {LINE}">
 <div style="{wrap}">
-<div style="max-width: 720px; margin-bottom: 40px">{eyebrow('Cara mulai')}{h2('Dari daftar sampai transaksi pertama: tiga langkah.', 'cara-mulai')}</div>
+<div style="max-width: 720px; margin-bottom: 40px">{eyebrow('Cara mulai')}{h2('Dari daftar sampai transaksi pertama dalam tiga langkah', 'cara-mulai')}</div>
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 32px">{steps_html}</div>
 </div>
 </section>
 
 <section id="harga" style="padding: 96px 0">
 <div style="{wrap}">
-<div style="max-width: 720px; margin: 0 auto 48px; text-align: center">{eyebrow('Harga')}{h2('Coba 14 hari gratis. Lanjut kalau cocok.')}<p style="margin: 16px 0 0; font-size: 17px; line-height: 1.65; color: {SOFT}">Satu harga, semua fitur. Tanpa biaya per transaksi.</p></div>
+<div style="max-width: 720px; margin: 0 auto 48px; text-align: center">{eyebrow('Harga')}{h2('Coba 14 hari gratis, lanjut kalau cocok')}<p style="margin: 16px 0 0; font-size: 17px; line-height: 1.65; color: {SOFT}">Satu harga, semua fitur. Tanpa biaya per transaksi.</p></div>
 <div id="paket-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; max-width: 1080px; margin: 0 auto">{pricing}</div>
 <div style="max-width: 1080px; margin: 24px auto 0; padding: 20px 24px; border: 1px dashed #c9d2cd; border-radius: 14px; display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: center">
-<p style="margin: 0; font-size: 15px; font-weight: 700; color: {INK}">Segera hadir untuk pelanggan:</p>
+<p style="margin: 0; font-size: 15px; font-weight: 600; color: {INK}">Segera hadir untuk pelanggan:</p>
 <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 10px 24px">{li(soon, clock)}</ul>
 </div>
 <p style="margin: 20px auto 0; max-width: 900px; text-align: center; font-size: 14px; color: {MUTED}">Harga dapat berubah sebelum peluncuran resmi.</p>
@@ -190,7 +190,7 @@ body = f'''<div style="font-family: 'Plus Jakarta Sans', system-ui, sans-serif; 
 <section aria-labelledby="cta-akhir" style="padding: 88px 0; background: #0a3d2e">
 <div style="{wrap}; display: flex; flex-wrap: wrap; gap: 32px; align-items: center; justify-content: space-between">
 <div style="flex: 1 1 480px; min-width: 0">
-<h2 id="cta-akhir" style="margin: 0; font-size: clamp(30px, 4vw, 44px); line-height: 1.1; letter-spacing: -0.025em; font-weight: 800; color: #fff">Buka toko digital Anda hari ini.</h2>
+<h2 id="cta-akhir" style="margin: 0; font-size: clamp(30px, 4vw, 44px); line-height: 1.1; letter-spacing: -0.025em; font-weight: 600; color: #fff">Buka toko digital Anda hari ini</h2>
 <p style="margin: 14px 0 0; font-size: 18px; line-height: 1.6; color: #c6e3d6">Dua menit dari sekarang, transaksi pertama Anda sudah tercatat.</p>
 </div>
 <a href="{APP}" style="{btn}; background: #fff; color: #0a3d2e">Coba gratis 14 hari</a>

@@ -77,23 +77,23 @@ export function LandingPreview({ draft, section, focus }: Props) {
           <span className="h-2 w-2 rounded-full bg-line-strong" />
           <span className="h-2 w-2 rounded-full bg-line-strong" />
         </span>
-        <span className="text-[12px] font-semibold uppercase tracking-[0.06em] text-muted">{t('Contoh tampilan')}</span>
+        <span className="text-[12px] font-semibold text-muted">{t('Contoh tampilan')}</span>
       </figcaption>
       <div ref={box} className="max-h-[70vh] overflow-y-auto p-5">
         {section === 'hero' && (
           <div data-focus={focus !== null} className={`space-y-3 p-1 ${ring(focus !== null)}`}>
-            <p className="text-[30px] font-extrabold leading-[1.08] tracking-[-0.035em] break-words text-ink">{draft.heroTitle || t('(Judul kosong)')}</p>
+            <p className="text-[30px] font-semibold leading-[1.08] tracking-[-0.025em] break-words text-ink">{draft.heroTitle || t('(Judul kosong)')}</p>
             <p className="text-[15px] leading-relaxed break-words text-ink-soft">{draft.heroSubtitle || t('(Subjudul kosong)')}</p>
             <div className="flex flex-wrap gap-2 pt-1" aria-hidden>
-              <span className="inline-flex h-10 items-center rounded-lg bg-brand-600 px-4 text-[14px] font-bold text-white">{LP.cta}</span>
-              <span className="inline-flex h-10 items-center rounded-lg border border-line-strong px-4 text-[14px] font-bold text-ink">{LP.ctaAlt}</span>
+              <span className="inline-flex h-10 items-center rounded-lg bg-brand-600 px-4 text-[14px] font-semibold text-white">{LP.cta}</span>
+              <span className="inline-flex h-10 items-center rounded-lg border border-line-strong px-4 text-[14px] font-semibold text-ink">{LP.ctaAlt}</span>
             </div>
           </div>
         )}
         {section === 'features' && (
           <div>
-            <p className="text-[12px] font-bold uppercase tracking-[0.08em] text-brand-700">{LP.featEyebrow}</p>
-            <p className="mt-1 text-[20px] font-extrabold leading-tight tracking-[-0.02em] text-ink">{LP.featTitle}</p>
+            <p className="text-[12px] font-semibold text-brand-700">{LP.featEyebrow}</p>
+            <p className="mt-1 text-[20px] font-semibold leading-tight tracking-[-0.02em] text-ink">{LP.featTitle}</p>
             <ul className="mt-3">
               {draft.features.map((f, i) => {
                 if (f.hidden && focus !== i) return null;
@@ -102,7 +102,7 @@ export function LandingPreview({ draft, section, focus }: Props) {
                   <li key={i} data-focus={focus === i} className={`flex items-start gap-3 border-b border-line py-3 ${ring(focus === i)} ${f.hidden ? 'opacity-50' : ''}`}>
                     <Icon aria-hidden size={18} className="mt-0.5 shrink-0 text-brand-600" />
                     <div className="min-w-0">
-                      <p className="text-[15px] font-bold break-words text-ink">{f.title || t('(Judul kosong)')}</p>
+                      <p className="text-[15px] font-semibold break-words text-ink">{f.title || t('(Judul kosong)')}</p>
                       <p className="mt-0.5 text-[13px] leading-snug break-words text-muted">{f.text || t('(Teks kosong)')}</p>
                     </div>
                   </li>
@@ -113,15 +113,15 @@ export function LandingPreview({ draft, section, focus }: Props) {
         )}
         {section === 'faqs' && (
           <div>
-            <p className="text-[12px] font-bold uppercase tracking-[0.08em] text-brand-700">{LP.faqEyebrow}</p>
-            <p className="mt-1 text-[20px] font-extrabold leading-tight tracking-[-0.02em] text-ink">{LP.faqTitle}</p>
+            <p className="text-[12px] font-semibold text-brand-700">{LP.faqEyebrow}</p>
+            <p className="mt-1 text-[20px] font-semibold leading-tight tracking-[-0.02em] text-ink">{LP.faqTitle}</p>
             <ul className="mt-2 border-t border-line">
               {draft.faqs.map((f, i) => {
                 if (f.hidden && focus !== i) return null;
                 const isOpen = focus === i;
                 return (
                   <li key={i} data-focus={isOpen} className={`border-b border-line py-3 ${ring(isOpen)} ${f.hidden ? 'opacity-50' : ''}`}>
-                    <p className="flex items-start justify-between gap-3 text-[15px] font-bold break-words text-ink">
+                    <p className="flex items-start justify-between gap-3 text-[15px] font-semibold break-words text-ink">
                       <span className="min-w-0">{f.q || t('(Pertanyaan kosong)')}</span>
                       <ChevronDown aria-hidden size={18} className={`mt-0.5 shrink-0 text-muted ${isOpen ? 'rotate-180' : ''}`} />
                     </p>

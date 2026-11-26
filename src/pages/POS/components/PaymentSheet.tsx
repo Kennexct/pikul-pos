@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { METHOD_ICON } from '../../../components/ui/paymentIcon';
 import { RupiahInput } from '../../../components/ui/RupiahInput';
 import { Sheet } from '../../../components/ui/Sheet';
-import { btnPrimary, inputBase, labelBase, option, sectionTitle } from '../../../components/ui/styles';
+import { btnPrimary, inputBase, labelBase, option, receiptRule, sectionTitle } from '../../../components/ui/styles';
 import { QUICK_CASH_AMOUNTS } from '../../../constants';
 import { formatRupiah } from '../../../lib/money';
 import { calculateChange } from '../../../lib/pricing';
@@ -85,9 +85,9 @@ export function PaymentSheet({ total, methods, storeName, isSubmitting, onConfir
         </button>
       }
     >
-      <div className="mb-5 flex items-end justify-between border-b border-line pb-4">
+      <div className={`mb-5 flex items-end justify-between border-b ${receiptRule} pb-4`}>
         <span className="text-[14px] font-medium text-muted">{t('Total tagihan')}</span>
-        <span className="num text-[32px] font-extrabold leading-none tracking-[-0.03em]">{formatRupiah(total)}</span>
+        <span className="num text-[32px] font-semibold leading-none tracking-[-0.03em]">{formatRupiah(total)}</span>
       </div>
 
       <h3 className={`${sectionTitle} mb-2.5`}>{t('Metode pembayaran')}</h3>
@@ -124,7 +124,7 @@ export function PaymentSheet({ total, methods, storeName, isSubmitting, onConfir
           </div>
           <div className={`flex items-center justify-between rounded-lg px-4 py-3 ${shortBy > 0 ? 'bg-danger-50 text-danger-700' : 'bg-brand-50 text-brand-800'}`}>
             <span className="text-[14px] font-semibold">{shortBy > 0 ? t('Kurang') : t('Kembalian')}</span>
-            <span className="num text-[24px] font-bold tracking-[-0.02em]">
+            <span className="num text-[24px] font-semibold tracking-[-0.02em]">
               {shortBy > 0 ? formatRupiah(shortBy) : change === null ? '—' : formatRupiah(change)}
             </span>
           </div>

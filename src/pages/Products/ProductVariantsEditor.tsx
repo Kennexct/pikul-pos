@@ -101,7 +101,7 @@ export function ProductVariantsEditor({ variants, priceModes, unitSuffix, onChan
         </div>
       )}
 
-      <div aria-hidden className="grid grid-cols-[1fr_8.5rem_2.75rem] gap-2 px-0.5 text-[12px] font-semibold uppercase tracking-[0.05em] text-muted sm:grid-cols-[1fr_10rem_2.75rem]">
+      <div aria-hidden className="grid grid-cols-[1fr_8.5rem_2.75rem] gap-2 px-0.5 text-[12px] font-semibold text-muted sm:grid-cols-[1fr_10rem_2.75rem]">
         <span>{t('Nama varian')}</span>
         <span>
           {t('Harga')} <span className="num normal-case tracking-normal">{unitSuffix}</span>

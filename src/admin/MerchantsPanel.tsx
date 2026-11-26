@@ -84,7 +84,7 @@ export function MerchantsPanel({ openId, onOpenChange, onError }: Props) {
                 className={`${card} px-3 py-2.5 text-left transition-colors ${active ? 'border-brand-600 ring-1 ring-inset ring-brand-600' : 'hover:bg-subtle'}`}
               >
                 <span className="block truncate text-[13px] font-medium text-muted">{planLabel(p)}</span>
-                <span className="num block text-[20px] font-bold text-ink">{num(p.count)}</span>
+                <span className="num block text-[20px] font-semibold text-ink">{num(p.count)}</span>
               </button>
             );
           })}

@@ -81,7 +81,7 @@ export function RefundSheet({ order, refunds, isSubmitting, onConfirm, onClose }
               <button type="button" aria-label={t('Kurangi refund {0}', item.nameSnapshot)} disabled={selected === 0} onClick={() => change(item.id, -step)} className={btnIcon}>
                 <Minus aria-hidden size={17} />
               </button>
-              <span className="num min-w-7 text-center text-[15px] font-bold">{formatQuantity(selected, item.unit)}</span>
+              <span className="num min-w-7 text-center text-[15px] font-semibold">{formatQuantity(selected, item.unit)}</span>
               <button type="button" aria-label={t('Tambah refund {0}', item.nameSnapshot)} disabled={selected >= left} onClick={() => change(item.id, step)} className={btnIcon}>
                 <Plus aria-hidden size={17} />
               </button>

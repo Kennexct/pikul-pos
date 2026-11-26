@@ -9,20 +9,23 @@ Components must use semantic tokens only — no raw `slate-*`, `orange-*` or hex
 2. **Borders carry structure, shadows mean "floating".** Cards = 1px `line` border + `shadow-xs`. Only sheets, toasts and the phone cart bar use `shadow-pop`.
 3. **One accent.** Pandan green is the only brand color. Status colors (danger, warn) appear only when there is a status to communicate.
 4. **The photo is the only color on a product tile.** No random pastel placeholders — monogram on neutral.
-5. **Numbers are first-class.** Every amount uses the `num` utility (tabular figures) so columns of Rupiah align.
+5. **The receipt rule is our signature.** A dashed `receiptRule` line (`border-dashed border-line-strong`) sits above every money total: cart Total, Pembayaran "Total tagihan", Kas "Uang di laci seharusnya", and the receipt itself. Nowhere else.
+6. **Numbers are first-class.** Every amount uses the `num` utility (tabular figures) so columns of Rupiah align.
 
 ## Typography
 
 | Role | Spec |
 | --- | --- |
 | Family | Plus Jakarta Sans Variable (Tokotype, Jakarta), self-hosted via `@fontsource-variable` — works offline |
-| Page title | 22px / 700 / -0.02em |
-| Sheet title | 17px / 700 / -0.01em |
+| Page title | 22px / 600 / -0.02em |
+| Sheet title | 17px / 600 / -0.01em |
 | Body / inputs | 15px / 400–500 |
 | Secondary | 13–14px, `muted` |
-| Section label | 13px / 600 / uppercase / 0.06em, `muted` |
-| Big money | 20–36px / 700–800 / -0.02 to -0.03em, `num` |
+| Section label | 13px / 600, sentence case, no letter spacing, `muted` (also table headers and sub-menu titles) |
+| Big money | 20–36px / 600 / -0.02 to -0.03em, `num` |
 | Receipt | system monospace 12.5px (thermal-printer feel) |
+
+Weights stop at 600: hierarchy comes from size and color. The only heavier type is the logo wordmark. No uppercase labels with wide tracking anywhere (app, admin, landing).
 
 ## Color tokens
 
@@ -102,7 +105,7 @@ Motion confirms what just happened; nothing loops. Tokens and keyframes live in 
 
 ## Anti-patterns (reject in review)
 
-Pastel random tile colors · dot-grid or pattern fills behind monograms · endless pulse/float loops · gradient buttons · pill-shaped everything · emoji icons · gray text below `muted` · raw palette classes in JSX · shadows on every card · centered-everything layouts · more than one accent color.
+Pastel random tile colors · uppercase tracked labels · headings heavier than 600 · exclamation marks or full stops on headlines and labels · dot-grid or pattern fills behind monograms · endless pulse/float loops · gradient buttons · pill-shaped everything · emoji icons · gray text below `muted` · raw palette classes in JSX · shadows on every card · centered-everything layouts · more than one accent color.
 
 ## Page width
 

@@ -99,7 +99,7 @@ export function SaleEntrySheet({ name, unit, isPriceEditable, normalPrice, initi
                     placeholder="0"
                     value={quantityText}
                     onChange={(event) => setQuantityText(event.target.value)}
-                    className={`${inputBase} num h-14 pr-14 text-right text-[22px] font-bold`}
+                    className={`${inputBase} num h-14 pr-14 text-right text-[22px] font-semibold`}
                   />
                   <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-[15px] font-semibold text-muted">{info.symbol}</span>
                 </div>
@@ -131,7 +131,7 @@ export function SaleEntrySheet({ name, unit, isPriceEditable, normalPrice, initi
                   {qty !== null ? (
                     <p className="flex min-w-0 flex-wrap items-baseline gap-x-2">
                       <span className="text-[14px] font-semibold text-brand-800">{t('Timbang sebanyak')}</span>
-                      <span className="num text-[28px] font-bold leading-none text-brand-800">{formatQuantity(qty, unit)}</span>
+                      <span className="num text-[28px] font-semibold leading-none text-brand-800">{formatQuantity(qty, unit)}</span>
                     </p>
                   ) : (
                     <p className="text-[14px] text-muted">{t('Isi nominal untuk melihat beratnya.')}</p>

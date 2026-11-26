@@ -44,7 +44,7 @@ export function SellerSwitcher({ onDone }: { onDone: () => void }) {
       {members?.map((member) => (
         <li key={member.id}>
           <button type="button" onClick={() => setSelected(member)} className="flex min-h-16 w-full items-center gap-3 px-4 text-left hover:bg-subtle">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-ink text-[13px] font-bold text-white">{initialsOf(member.displayName)}</span>
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-ink text-[13px] font-semibold text-white">{initialsOf(member.displayName)}</span>
             <span className="min-w-0 flex-1">
               <span className="block truncate text-[15px] font-semibold">{member.displayName}</span>
               <span className="block text-[13px] text-muted">

@@ -27,7 +27,7 @@ const groupFormatter = new Intl.NumberFormat(LOCALE, { maximumFractionDigits: 0 
 export function RupiahInput({ id, value, onChange, placeholder = '0', autoFocus, ariaLabel, size = 'md', onEnter, enterKeyHint }: RupiahInputProps) {
   /** Safari/iOS collapse the selection on the mouseup that follows focus; skip that one. */
   const justFocused = useRef(false);
-  const sizeClass = size === 'lg' ? 'h-14 text-[22px] font-bold' : 'font-semibold';
+  const sizeClass = size === 'lg' ? 'h-14 text-[22px] font-semibold' : 'font-semibold';
   return (
     <div className="relative">
       <span className="pointer-events-none absolute inset-y-0 left-3.5 flex items-center text-[14px] font-semibold text-muted">Rp</span>

@@ -62,7 +62,7 @@ export function SidePanel({ title, isCollapsed, onCollapsedChange, children, as 
       className={`hidden shrink-0 flex-col overflow-y-auto border-r border-line bg-surface py-4 transition-[width] duration-200 md:flex ${isCollapsed ? 'w-16 items-center px-2' : 'w-52 px-3'}`}
     >
       <div className={`mb-2 flex items-center ${isCollapsed ? 'justify-center' : 'justify-between pl-3'}`}>
-        {!isCollapsed && <p className="truncate text-[12px] font-semibold uppercase tracking-[0.06em] text-muted">{title}</p>}
+        {!isCollapsed && <p className="truncate text-[12px] font-semibold text-muted">{title}</p>}
         {toggle}
       </div>
       <List {...listProps} className="flex w-full flex-col gap-1">
