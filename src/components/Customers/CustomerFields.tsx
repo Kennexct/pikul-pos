@@ -4,6 +4,7 @@ import { t } from '../../i18n';
 export interface CustomerDraft {
   name: string;
   phone: string;
+  email: string;
   note: string;
 }
 
@@ -12,11 +13,12 @@ interface CustomerFieldsProps {
   value: CustomerDraft;
   onChange: (patch: Partial<CustomerDraft>) => void;
   hasNote?: boolean;
+  hasEmail?: boolean;
   autoFocusName?: boolean;
 }
 
-/** Name / phone / note fields shared by the customer form and the POS quick-add. */
-export function CustomerFields({ idPrefix, value, onChange, hasNote = true, autoFocusName = false }: CustomerFieldsProps) {
+/** Name / phone / email / note fields shared by the customer form and the POS quick-add. */
+export function CustomerFields({ idPrefix, value, onChange, hasNote = true, hasEmail = true, autoFocusName = false }: CustomerFieldsProps) {
   return (
     <div className="flex flex-col gap-4">
       <div>
@@ -30,6 +32,14 @@ export function CustomerFields({ idPrefix, value, onChange, hasNote = true, auto
         <input id={`${idPrefix}-phone`} type="tel" inputMode="tel" value={value.phone} autoComplete="off" placeholder="0812-3456-7890" onChange={(e) => onChange({ phone: e.target.value })} className={`${inputBase} num`} />
         <p className={helperText}>{t('Dipakai untuk mengirim struk lewat WhatsApp.')}</p>
       </div>
+      {hasEmail && (
+        <div>
+          <label htmlFor={`${idPrefix}-email`} className={labelBase}>
+            {t('Email')} <span className="font-normal text-muted">{t('(opsional)')}</span>
+          </label>
+          <input id={`${idPrefix}-email`} type="email" inputMode="email" value={value.email} maxLength={254} autoComplete="off" placeholder="nama@email.com" onChange={(e) => onChange({ email: e.target.value })} className={inputBase} />
+        </div>
+      )}
       {hasNote && (
         <div>
           <label htmlFor={`${idPrefix}-note`} className={labelBase}>

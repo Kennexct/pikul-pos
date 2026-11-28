@@ -187,6 +187,8 @@ export interface Discount extends SyncMeta {
 export interface Customer extends SyncMeta {
   name: string;
   phone?: string;
+  /** For sending receipts by email (ADR-028); lower case. */
+  email?: string;
   note?: string;
 }
 
@@ -365,5 +367,28 @@ export const SYNC_TABLES = [
   'stores',
 ] as const;
 export type SyncTable = (typeof SYNC_TABLES)[number];
+
+/** A receipt the cashier shared by link (ADR-028). Device-only, never synced. */
+export interface ReceiptShareRow {
+  orderId: Id;
+  /** 22 characters, base64url of 16 random bytes: the /r/<token> link. */
+  token: string;
+  cashierName: string;
+  createdAt: IsoDateTime;
+  /** JSON of the copy the server has; a different copy (void, refund) is uploaded again. */
+  uploadedDoc?: string;
+  uploadedAt?: IsoDateTime;
+  lastError?: string;
+}
+
+/** A receipt email waiting to be sent by the server (ADR-028). */
+export interface ReceiptEmailRow {
+  seq?: number;
+  orderId: Id;
+  to: string;
+  queuedAt: IsoDateTime;
+  attempts: number;
+  lastError?: string;
+}
 
 export type Result<T> = { ok: true; value: T } | { ok: false; error: string };

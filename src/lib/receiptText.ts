@@ -40,6 +40,19 @@ export function buildReceiptText(order: Order, store: Pick<Store, 'name' | 'addr
   return lines.join('\n');
 }
 
+/**
+ * WhatsApp message with the web receipt link (ADR-028): short, the link carries the full receipt and its picture.
+ * Offline the link opens only after the device syncs, so the full text goes along too.
+ */
+export function buildReceiptMessage(order: Order, store: Pick<Store, 'name' | 'address' | 'phone' | 'receiptFooter'>, link: string, isOnline: boolean): string {
+  if (!isOnline) return `${buildReceiptText(order, store)}\n\n${t('Lihat struk: {0}', link)}`;
+  const lines = [`*${store.name}*`, t('Terima kasih sudah berbelanja.'), '', t('Struk {0}', order.receiptNo), t('*Total  {0}*', formatRupiah(order.totals.grandTotal))];
+  const payment = order.payments[0];
+  if (payment) lines.push(payment.methodNameSnapshot);
+  lines.push('', t('Lihat struk: {0}', link));
+  return lines.join('\n');
+}
+
 /** With a phone (`+628…`) the chat opens directly with that customer; without, WhatsApp asks whom to send to. */
 export function whatsAppShareUrl(text: string, phone?: string): string {
   return `https://wa.me/${phone ? phone.replace(/\D/g, '') : ''}?text=${encodeURIComponent(text)}`;

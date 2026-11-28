@@ -124,7 +124,7 @@ describe('forgot, change and temporary passwords', () => {
   });
 
   it('resets with an emailed code and signs other devices out', async () => {
-    expect((await call('GET', '/api/auth/options')).body).toEqual({ emailReset: true, google: false });
+    expect((await call('GET', '/api/auth/options')).body).toEqual({ emailReset: true, google: false, receiptEmail: false });
     await call('POST', '/api/auth/code', { email: 'siti@warung.id' });
     const code = mail[0]!.code;
     expect((await call('POST', '/api/auth/reset', { email: 'siti@warung.id', code, password: 'baru-sekali-1' })).status).toBe(200);
@@ -134,7 +134,7 @@ describe('forgot, change and temporary passwords', () => {
 
   it('has no email reset without a mail provider', async () => {
     deps = { ...deps, emailEnabled: false };
-    expect((await call('GET', '/api/auth/options')).body).toEqual({ emailReset: false, google: false });
+    expect((await call('GET', '/api/auth/options')).body).toEqual({ emailReset: false, google: false, receiptEmail: false });
     expect((await call('POST', '/api/auth/code', { email: 'siti@warung.id' })).status).toBe(404);
     expect((await call('POST', '/api/auth/reset', { email: 'siti@warung.id', code: '123456', password: 'baru-sekali-1' })).status).toBe(404);
   });

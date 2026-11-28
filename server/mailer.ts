@@ -1,4 +1,17 @@
-import type { Mailer } from './types';
+import type { Mailer, ReceiptMail } from './types';
+
+const b64 = (bytes: Uint8Array) => {
+  let s = '';
+  for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+  return btoa(s);
+};
+
+/** `"Toko Sari via Pikul" <struk@pikul.id>` from MAIL_FROM's address; quotes, brackets and line breaks are dropped from the shop name. */
+export function receiptFrom(mailFrom: string, shopName: string): string {
+  const addr = /<([^>]+)>/.exec(mailFrom)?.[1] ?? mailFrom.trim();
+  const name = shopName.replace(/["<>\\\r\n]/g, '').trim().slice(0, 60);
+  return name ? `"${name} via Pikul" <${addr}>` : `Pikul <${addr}>`;
+}
 
 export function resendMailer(apiKey: string, from: string, fetchFn: typeof fetch = fetch): Mailer {
   return {
@@ -16,6 +29,22 @@ export function resendMailer(apiKey: string, from: string, fetchFn: typeof fetch
       });
       if (!res.ok) throw new Error(`resend_${res.status}`);
     },
+    async sendReceipt(m: ReceiptMail) {
+      const res = await fetchFn('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          from: receiptFrom(from, m.fromName),
+          to: [m.to],
+          ...(m.replyTo ? { reply_to: m.replyTo } : {}),
+          subject: m.subject,
+          html: m.html,
+          text: m.text,
+          attachments: [{ filename: m.fileName, content: b64(m.png) }],
+        }),
+      });
+      if (!res.ok) throw new Error(`resend_${res.status}`);
+    },
   };
 }
 
@@ -23,5 +52,8 @@ export function resendMailer(apiKey: string, from: string, fetchFn: typeof fetch
 export const consoleMailer: Mailer = {
   async sendLoginCode(email, code) {
     console.log(`[dev mail] login code for ${email}: ${code}`);
+  },
+  async sendReceipt(m) {
+    console.log(`[dev mail] receipt "${m.subject}" to ${m.to}`);
   },
 };

@@ -6,6 +6,7 @@ import type { Id, OutboxEntry, Result, SyncTable } from '../types';
 import { SYNC_TABLES } from '../types';
 import { ApiError, accountApi } from './account';
 import { deviceHello } from './deviceHello';
+import { flushReceipts } from './receiptShare';
 import { t } from '../i18n';
 
 /**
@@ -211,6 +212,8 @@ async function runSync(): Promise<SyncOutcome> {
     await pushOutbox(binding);
     await pullChanges(binding);
     await localDb.meta.put({ key: SYNC_KEYS.lastAt, value: nowIso() });
+    void flushReceipts(); // ADR-028: shared receipts and queued emails, after the records they show
+
     return 'synced';
   } catch (error) {
     return outcomeOf(error);

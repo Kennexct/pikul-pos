@@ -32,7 +32,7 @@ export function CustomerPicker({ storeId, selectedId, onSelect, onClose }: Custo
   const startNew = () => {
     const typed = query.trim();
     const isPhone = /^[\d+\-\s]{4,}$/.test(typed);
-    setDraft({ name: isPhone ? '' : typed, phone: isPhone ? typed : '', note: '' });
+    setDraft({ name: isPhone ? '' : typed, phone: isPhone ? typed : '', email: '', note: '' });
   };
 
   const saveNew = async () => {
@@ -62,7 +62,7 @@ export function CustomerPicker({ storeId, selectedId, onSelect, onClose }: Custo
           </div>
         }
       >
-        <CustomerFields idPrefix="quick-customer" value={draft} hasNote={false} autoFocusName onChange={(patch) => setDraft((prev) => (prev ? { ...prev, ...patch } : prev))} />
+        <CustomerFields idPrefix="quick-customer" value={draft} hasNote={false} hasEmail={false} autoFocusName onChange={(patch) => setDraft((prev) => (prev ? { ...prev, ...patch } : prev))} />
       </Sheet>
     );
   }

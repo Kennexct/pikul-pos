@@ -11,6 +11,8 @@ import type {
   OutboxEntry,
   PaymentMethod,
   Product,
+  ReceiptEmailRow,
+  ReceiptShareRow,
   Refund,
   SalesMode,
   Store,
@@ -39,6 +41,8 @@ export class LocalDb extends Dexie {
   stores!: EntityTable<Store, 'id'>;
   expenses!: EntityTable<Expense, 'id'>;
   dayClosings!: EntityTable<DayClosing, 'id'>;
+  receiptShares!: EntityTable<ReceiptShareRow, 'orderId'>;
+  receiptEmails!: EntityTable<ReceiptEmailRow, 'seq'>;
 
   constructor() {
     // Legacy database name, frozen (ADR-016): renaming it would orphan every sale on the device.
@@ -96,6 +100,11 @@ export class LocalDb extends Dexie {
             });
         }
       });
+    // ADR-028: receipts the cashier shared (link token, last uploaded copy) and receipt emails waiting to be sent.
+    this.version(6).stores({
+      receiptShares: 'orderId, &token',
+      receiptEmails: '++seq, orderId',
+    });
   }
 }
 

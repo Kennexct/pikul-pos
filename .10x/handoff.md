@@ -1,3 +1,7 @@
+# Handoff — send receipts (2026-11-28)
+
+**Latest:** v0.21.0 on `claude/project-thread-2wvt9b` (ADR-028). Receipt sharing lives in `components/Receipt/ReceiptShareActions.tsx` (used by the POS receipt sheet and Riwayat detail), `EmailReceiptSheet.tsx`, `useReceiptShare.ts`; logic in `services/receiptShare.ts` (token, `markShared`, `queueReceiptEmail`, `flushReceipts` called at the end of `runSync`). The copy is `lib/receiptDoc.ts` (mirror of `server/receiptTypes.ts`; keep both in step), PNG in `lib/receiptImage.ts`. Server: `server/receipts.ts`, `receiptCheck.ts`, `receiptHtml.ts`, `receiptRepos.ts`; `/r/<token>` routed in `scripts/vercel-build.mjs`. Dexie v6 adds `receiptShares` + `receiptEmails` (device-only, not synced). Migration 007 must run before deploy. Email needs Resend (`/api/auth/options` → `receiptEmail`). e2e `v25.py`. Next ADR: 029.
+
 # Handoff — a new shift after closing (2026-11-25)
 
 **Latest:** v0.20.0 on `claude/project-thread-kaitud` (ADR-027). A business day on one device now holds shifts: `DayClosing.shiftNo` (absent = 1), rules in `src/lib/shifts.ts`, drawer input filtered by the shift's time window in `services/dayClosing.ts` (`getClosings`, `getCurrentShiftNo`, `loadDrawerInput(storeId, date, shiftNo?)`). Do not add a "sell past the closing" path again: closing then selling opens the next shift. `reopenDay` refuses once the next shift started. Kas shows `ShiftsDayCard` from the second shift on. e2e `e2e/v24.py`. Next ADR: 028.

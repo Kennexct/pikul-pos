@@ -1,6 +1,7 @@
 import { neon } from '@neondatabase/serverless';
 import { neonAdminRepo } from './neonAdminRepo';
 import { neonSyncRepo } from './neonSyncRepo';
+import { neonReceiptRepo } from './receiptRepos';
 import type { Account, Campaign, StoredImage, LoginCode, PlanDef, RefreshToken, Repo } from './types';
 
 type Row = Record<string, unknown>;
@@ -67,6 +68,7 @@ export function neonRepo(databaseUrl: string): Repo {
   return {
     ...neonAdminRepo(sql),
     ...neonSyncRepo(sql),
+    ...neonReceiptRepo(sql),
     findAccountByEmail: (email) => one(sql`select * from accounts where email = ${email}` as Promise<Row[]>, account),
     findAccountById: (id) => one(sql`select * from accounts where id = ${id}` as Promise<Row[]>, account),
     async createAccount(a, passwordHash = null) {

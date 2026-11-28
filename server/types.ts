@@ -1,4 +1,5 @@
 import type { AdminRepo } from './adminTypes';
+import type { ReceiptRepo } from './receiptTypes';
 import type { SyncRepo } from './syncTypes';
 
 /** A plan Kenny sets in the admin console (ADR-014). `id` is a fixed slug; payments point at it. */
@@ -91,7 +92,7 @@ export interface RefreshToken {
   expiresAt: number;
 }
 
-export interface Repo extends AdminRepo, SyncRepo {
+export interface Repo extends AdminRepo, SyncRepo, ReceiptRepo {
   findAccountByEmail(email: string): Promise<Account | null>;
   findAccountById(id: string): Promise<Account | null>;
   /** Inserts; returns false when the email is taken. */
@@ -121,8 +122,23 @@ export interface Repo extends AdminRepo, SyncRepo {
   addAudit(e: AdminAuditEntry): Promise<void>;
 }
 
+/** A receipt email to a customer (ADR-028). */
+export interface ReceiptMail {
+  to: string;
+  /** Shown as "<fromName> via Pikul". */
+  fromName: string;
+  replyTo: string | null;
+  subject: string;
+  html: string;
+  text: string;
+  png: Uint8Array;
+  fileName: string;
+}
+
 export interface Mailer {
   sendLoginCode(email: string, code: string): Promise<void>;
+  /** Absent on mailers that cannot send receipts (tests). */
+  sendReceipt?(m: ReceiptMail): Promise<void>;
 }
 
 export interface PassSigner {

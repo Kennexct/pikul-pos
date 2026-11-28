@@ -25,6 +25,12 @@ export function formatPhone(phone: string): string {
 }
 
 /** Number part for `https://wa.me/<number>`. */
+/** One plain address in lower case, or null (ADR-028). Same rule as the server. */
+export function normalizeEmail(input: string): string | null {
+  const e = input.trim().toLowerCase();
+  return e.length <= 254 && /^[^\s@<>,;"'()]+@[^\s@<>,;"'()]+\.[a-z]{2,}$/.test(e) ? e : null;
+}
+
 export const toWhatsAppNumber = (phone: string): string => phone.replace(/\D/g, '');
 
 const MIN_PHONE_QUERY_DIGITS = 3;

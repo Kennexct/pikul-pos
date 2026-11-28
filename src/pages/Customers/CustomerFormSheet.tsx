@@ -18,6 +18,7 @@ export function CustomerFormSheet({ storeId, customer, onClose }: CustomerFormSh
   const [draft, setDraft] = useState<CustomerDraft>({
     name: customer?.name ?? '',
     phone: customer?.phone ? formatPhone(customer.phone) : '',
+    email: customer?.email ?? '',
     note: customer?.note ?? '',
   });
   const [isSaving, setIsSaving] = useState(false);

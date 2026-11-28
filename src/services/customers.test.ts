@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { localDb } from '../db/localDb';
 import type { OrderItem } from '../types';
 import { ensureLocalStore } from './bootstrap';
-import { deleteCustomer, saveCustomer } from './customers';
+import { deleteCustomer, saveCustomer, setCustomerEmail } from './customers';
 import { completeOrder } from './orders';
 
 beforeEach(async () => {
@@ -53,5 +53,19 @@ describe('customer on orders', () => {
 
     const later = await completeOrder({ openOrderId: null, items: [item], orderDiscount: null, customerId: sari.id, label: '' }, ctx, pay);
     expect(later).toMatchObject({ customerId: null, customerNameSnapshot: null });
+  });
+
+  it('keeps an optional email for receipts (ADR-028) and erases it on delete', async () => {
+    const { store } = await ensureLocalStore();
+    await expect(saveCustomer(store.id, { name: 'Budi', phone: '', email: 'budi@', note: '' })).rejects.toThrow(/email tidak valid/);
+    const budi = await saveCustomer(store.id, { name: 'Budi', phone: '', email: ' Budi@Mail.com ', note: '' });
+    expect(budi.email).toBe('budi@mail.com');
+    expect((await saveCustomer(store.id, { id: budi.id, name: 'Budi S', phone: '', note: '' })).email).toBe('budi@mail.com');
+    await setCustomerEmail(budi.id, 'b2@mail.com');
+    expect((await localDb.customers.get(budi.id))?.email).toBe('b2@mail.com');
+    expect((await saveCustomer(store.id, { id: budi.id, name: 'Budi S', phone: '', email: '', note: '' })).email).toBeUndefined();
+    await setCustomerEmail(budi.id, 'b3@mail.com');
+    await deleteCustomer(budi.id);
+    expect((await localDb.customers.get(budi.id))?.email).toBeUndefined();
   });
 });

@@ -27,6 +27,8 @@ Time needed: about 30 minutes. You need: a GitHub account with the `Kennexct/pik
 >
 > **Upgrading to v0.19 (device sync)?** Run `db/migrations/005_device_sync.sql` (or the whole `neon-setup.sql`) **before** deploying v0.19. It only adds three tables (`account_store`, `sync_records`, `sync_devices`) and one sequence.
 
+> **Upgrading to v0.21 (send receipts)?** Run `db/migrations/007_receipt_shares.sql` (or the whole `neon-setup.sql`) **before** deploying v0.21. It adds one table (`receipt_shares`). Without it the receipt link page says "not found" and email is not sent (selling and WhatsApp keep working).
+
 > **Upgrading to v0.20.1 (recognisable devices)?** Run `db/migrations/006_device_names.sql` (or the whole `neon-setup.sql`) **before** deploying v0.20.1. It adds two columns to `sync_devices` (`auto_name`, `private_mode`). Without it every push and pull fails and the app shows "Sinkronisasi tertunda" (selling keeps working).
 
 ## 2. Make the access-pass keys (2 min)
@@ -70,7 +72,7 @@ Pick a long passphrase, at least 12 characters (for example four random words). 
 
 | Name | When |
 |---|---|
-| `RESEND_API_KEY`, `MAIL_FROM` | once a Resend sending domain is verified: turns on "Lupa kata sandi" by email code. `MAIL_FROM` like `Pikul <masuk@yourdomain.id>` |
+| `RESEND_API_KEY`, `MAIL_FROM` | once a Resend sending domain is verified: turns on "Lupa kata sandi" by email code and the receipt **Email** button (ADR-028; sent as `"<Nama toko> via Pikul" <address of MAIL_FROM>`, reply-to the owner, 100 per store per day). `MAIL_FROM` like `Pikul <struk@yourdomain.id>` |
 | `GOOGLE_CLIENT_ID` + `VITE_GOOGLE_CLIENT_ID` | Google sign-in button for existing accounts |
 
    Never set `DEV_MODE` on Vercel (the server ignores it in Production anyway).
@@ -133,6 +135,8 @@ Every device signed in to the same account shares one store: menu, sales, custom
 | "Sesi berakhir" on every device after a deploy | `PASS_PRIVATE_JWK` changed | Expected after a key change; everyone signs in once |
 | Sign-up says "relation … does not exist" in Logs | `neon-setup.sql` not run | Run step 1.3 |
 | Pengaturan → Sinkronisasi stays "Sinkronisasi tertunda"; Logs show `relation "sync_records" does not exist` | Migration 005 not run | Run `db/migrations/005_device_sync.sql` |
+| Receipt links (`/r/…`) say "Struk tidak ditemukan" right after sharing; Logs show `relation "receipt_shares" does not exist` | Migration 007 not run | Run `db/migrations/007_receipt_shares.sql` |
+| No Email button under the receipt | `RESEND_API_KEY` / `MAIL_FROM` not set (the button needs a signed-in store too) | Set both, redeploy |
 | Sync stays "Sinkronisasi tertunda" after deploying v0.20.1; Logs show `column "auto_name" ... does not exist` | Migration 006 not run | Run `db/migrations/006_device_names.sql` |
 | "{n} data ditolak server" in Sinkronisasi | A record was too large (>1.5 MB) or malformed | Usually a huge product photo; re-save the product with a smaller photo |
 
