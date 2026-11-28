@@ -1,6 +1,7 @@
 import { ArrowLeft, CircleCheck, QrCode, SunMedium } from 'lucide-react';
 import { useEffect } from 'react';
 import { btnPrimary, btnSecondary, inputBase } from '../../../components/ui/styles';
+import { useKeyboardArea } from '../../../hooks/useKeyboardArea';
 import { formatRupiah } from '../../../lib/money';
 import type { PaymentMethod } from '../../../types';
 import { t } from '../../../i18n';
@@ -22,6 +23,8 @@ interface QrisDisplayProps {
  * Static QRIS has no payment callback, so the cashier confirms manually.
  */
 export function QrisDisplay({ method, storeName, amount, reference, onReferenceChange, error, isSubmitting, onPaid, onClose }: QrisDisplayProps) {
+  const keyboard = useKeyboardArea(true);
+
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => event.key === 'Escape' && onClose();
     window.addEventListener('keydown', onKey);
@@ -29,7 +32,14 @@ export function QrisDisplay({ method, storeName, amount, reference, onReferenceC
   }, [onClose]);
 
   return (
-    <div role="dialog" aria-modal="true" aria-label={t('Pembayaran QRIS')} className="animate-rise fixed inset-0 z-50 flex flex-col bg-canvas">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={t('Pembayaran QRIS')}
+      // Typing the reference: stay in the space above the on-screen keyboard (ADR-029).
+      style={keyboard ? { top: keyboard.top, height: keyboard.height, bottom: 'auto' } : undefined}
+      className="animate-rise fixed inset-0 z-50 flex flex-col bg-canvas"
+    >
       <header className="flex items-center gap-2 border-b border-line bg-surface px-3 py-2">
         <button type="button" aria-label={t('Kembali ke pembayaran')} onClick={onClose} className="flex h-11 w-11 items-center justify-center rounded-lg text-ink-soft hover:bg-subtle">
           <ArrowLeft aria-hidden size={20} />

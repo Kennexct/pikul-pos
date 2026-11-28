@@ -1,10 +1,13 @@
 import { Lock } from 'lucide-react';
 import { useState } from 'react';
+import { Keypad } from '../../../components/ui/Keypad';
 import { RupiahInput } from '../../../components/ui/RupiahInput';
 import { SegmentedControl } from '../../../components/ui/SegmentedControl';
 import { Sheet } from '../../../components/ui/Sheet';
-import { btnPrimary, btnSecondary, inputBase, labelBase, option, sectionTitle } from '../../../components/ui/styles';
+import { btnPrimary, btnSecondary, inputBase, keypadTarget, labelBase, option, sectionTitle } from '../../../components/ui/styles';
 import { PERCENT_MAX } from '../../../constants';
+import { useKeypad } from '../../../hooks/useKeypad';
+import { applyKeypadKeyToNumber } from '../../../lib/keypad';
 import { formatRupiah } from '../../../lib/money';
 import type { AppliedDiscount, Discount, DiscountType, Id } from '../../../types';
 import { t } from '../../../i18n';
@@ -31,11 +34,20 @@ export function DiscountSheet({ presets, current, maxPercent, baseAmount, onRequ
   const isCustom = current !== null && current.discountId === null;
   const [type, setType] = useState<DiscountType>(isCustom ? current.type : 'percent');
   const [value, setValue] = useState<number | null>(isCustom ? current.value : null);
+  const pad = useKeypad<'value'>('value');
+  /** Percent takes up to 3 digits (100); Rupiah gets the "000" key. */
+  const isPercent = type === 'percent';
 
   const effectivePercent = type === 'percent' ? (value ?? 0) : baseAmount > 0 ? ((value ?? 0) / baseAmount) * PERCENT_MAX : 0;
   const isOverLimit = maxPercent !== null && effectivePercent > maxPercent;
   const isBadValue = value === null || value <= 0 || (type === 'percent' && value > PERCENT_MAX);
   const isInvalid = isBadValue || isOverLimit;
+
+  const changeType = (next: DiscountType) => {
+    setType(next);
+    pad.setActive('value');
+    pad.restart();
+  };
 
   const applyPreset = (preset: Discount) =>
     onApply({ discountId: preset.id, name: preset.name, type: preset.type, value: preset.value });
@@ -58,15 +70,20 @@ export function DiscountSheet({ presets, current, maxPercent, baseAmount, onRequ
       isOpen
       onClose={onClose}
       footer={
-        <div className="flex gap-2">
-          {current && (
-            <button type="button" onClick={() => onApply(null)} className={btnSecondary}>
-              {t('Hapus diskon')}
-            </button>
+        <div className="flex flex-col gap-3">
+          {pad.active && (
+            <Keypad extraKey={isPercent ? null : '000'} onKey={(key) => setValue(applyKeypadKeyToNumber(value, key, pad.takeFresh(), isPercent ? 3 : 12))} />
           )}
-          <button type="button" disabled={isInvalid} onClick={() => applyCustom()} className={`${btnPrimary} flex-1`}>
-            {t('Terapkan')}
-          </button>
+          <div className="flex gap-2">
+            {current && (
+              <button type="button" onClick={() => onApply(null)} className={btnSecondary}>
+                {t('Hapus diskon')}
+              </button>
+            )}
+            <button type="button" disabled={isInvalid} onClick={() => applyCustom()} className={`${btnPrimary} flex-1`}>
+              {t('Terapkan')}
+            </button>
+          </div>
         </div>
       }
     >
@@ -91,23 +108,23 @@ export function DiscountSheet({ presets, current, maxPercent, baseAmount, onRequ
 
       <section>
         <h3 className={`${sectionTitle} mb-2.5`}>{t('Diskon manual')}</h3>
-        <SegmentedControl label={t('Jenis diskon')} options={TYPE_OPTIONS} value={type} onChange={setType} isFullWidth />
+        <SegmentedControl label={t('Jenis diskon')} options={TYPE_OPTIONS} value={type} onChange={changeType} isFullWidth />
         <div className="mt-3">
           <label htmlFor="discount-value" className={labelBase}>{type === 'percent' ? t('Besar diskon (%)') : t('Besar diskon')}</label>
           {type === 'percent' ? (
             <input
               id="discount-value"
-              inputMode="numeric"
+              {...pad.field('value')}
               value={value ?? ''}
               onChange={(event) => {
                 const parsed = Number(event.target.value.replace(/[^\d]/g, ''));
                 setValue(event.target.value === '' ? null : parsed);
               }}
               placeholder="10"
-              className={`${inputBase} num`}
+              className={`${inputBase} ${keypadTarget} num`}
             />
           ) : (
-            <RupiahInput id="discount-value" value={value} onChange={setValue} />
+            <RupiahInput id="discount-value" value={value} onChange={setValue} keypad={pad.field('value')} />
           )}
         </div>
         {isOverLimit && !isBadValue && (

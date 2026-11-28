@@ -1,10 +1,13 @@
 import { useState } from 'react';
 import toast from 'react-hot-toast';
+import { Keypad } from '../../components/ui/Keypad';
 import { RupiahInput } from '../../components/ui/RupiahInput';
 import { Sheet } from '../../components/ui/Sheet';
 import { Switch } from '../../components/ui/Switch';
 import { btnPrimary, inputBase, labelBase } from '../../components/ui/styles';
 import { CLOSING_NOTE_MAX } from '../../constants';
+import { useKeypad } from '../../hooks/useKeypad';
+import { applyKeypadKeyToNumber } from '../../lib/keypad';
 import { describeDifference, type Drawer } from '../../lib/cashDrawer';
 import { formatBusinessDate } from '../../lib/dateRange';
 import { formatRupiah } from '../../lib/money';
@@ -29,6 +32,7 @@ export function CloseDaySheet({ storeId, actorId, businessDate, shiftNo = null, 
   const [note, setNote] = useState('');
   const [shouldResetSoldOut, setShouldResetSoldOut] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const pad = useKeypad<'counted'>('counted');
   const difference = counted === null ? null : counted - drawer.expectedCash;
 
   const submit = async () => {
@@ -50,9 +54,12 @@ export function CloseDaySheet({ storeId, actorId, businessDate, shiftNo = null, 
       isOpen
       onClose={onClose}
       footer={
-        <button type="button" disabled={isSaving || counted === null} onClick={() => void submit()} className={`${btnPrimary} w-full`}>
-          {shiftNo ? t('Tutup shift {0}', shiftNo) : t('Tutup kasir')}
-        </button>
+        <div className="flex flex-col gap-3">
+          {pad.active && <Keypad onKey={(key) => setCounted(applyKeypadKeyToNumber(counted, key, pad.takeFresh()))} />}
+          <button type="button" disabled={isSaving || counted === null} onClick={() => void submit()} className={`${btnPrimary} w-full`}>
+            {shiftNo ? t('Tutup shift {0}', shiftNo) : t('Tutup kasir')}
+          </button>
+        </div>
       }
     >
       <div className="flex flex-col gap-5">
@@ -62,7 +69,7 @@ export function CloseDaySheet({ storeId, actorId, businessDate, shiftNo = null, 
         </div>
         <div>
           <label htmlFor="counted-cash" className={labelBase}>{t('Uang yang dihitung di laci')}</label>
-          <RupiahInput id="counted-cash" value={counted} onChange={setCounted} autoFocus size="lg" />
+          <RupiahInput id="counted-cash" value={counted} onChange={setCounted} autoFocus size="lg" keypad={pad.field('counted')} />
           <p aria-live="polite" className={`num mt-2 text-[14px] font-semibold ${difference === null ? 'text-muted' : difference === 0 ? 'text-brand-700' : difference < 0 ? 'text-danger-700' : 'text-warn-700'}`}>
             {difference === null ? t('Hitung uang tunai di laci, lalu ketik jumlahnya.') : difference === 0 ? t('Pas, tidak ada selisih.') : t('Selisih: {0}', describeDifference(difference))}
           </p>

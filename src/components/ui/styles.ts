@@ -15,6 +15,8 @@ export const btnIcon =
 
 export const inputBase =
   'h-12 w-full rounded-lg border border-line-input bg-surface px-3.5 text-[15px] text-ink outline-none transition-shadow focus:border-brand-600 focus:ring-[3px] focus:ring-brand-600/15';
+/** Number field the in-app keypad types into (ADR-029): keeps the focus look while a key or chip is pressed. */
+export const keypadTarget = 'data-[keypad=active]:border-brand-600 data-[keypad=active]:ring-[3px] data-[keypad=active]:ring-brand-600/15';
 export const labelBase = 'mb-1.5 block text-[13px] font-semibold text-ink-soft';
 /**
  * Form fields in a settings card (Kenny: "field size is not consistent"): one equal-width column per

@@ -1,10 +1,13 @@
 import { useState } from 'react';
 import toast from 'react-hot-toast';
+import { Keypad } from '../../components/ui/Keypad';
 import { RupiahInput } from '../../components/ui/RupiahInput';
 import { Sheet } from '../../components/ui/Sheet';
 import { Switch } from '../../components/ui/Switch';
 import { btnPrimary, helperText, inputBase, labelBase, option } from '../../components/ui/styles';
 import { EXPENSE_CATEGORIES, EXPENSE_CATEGORY_LABEL, EXPENSE_NOTE_MAX } from '../../constants';
+import { useKeypad } from '../../hooks/useKeypad';
+import { applyKeypadKeyToNumber } from '../../lib/keypad';
 import { formatBusinessDate } from '../../lib/dateRange';
 import { addExpense } from '../../services/expenses';
 import type { BusinessDate, ExpenseCategory, Id } from '../../types';
@@ -24,6 +27,7 @@ export function ExpenseSheet({ storeId, actorId, businessDate, onClose }: Expens
   const [note, setNote] = useState('');
   const [isFromDrawer, setIsFromDrawer] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const pad = useKeypad<'amount'>('amount');
 
   const submit = async () => {
     setIsSaving(true);
@@ -44,15 +48,18 @@ export function ExpenseSheet({ storeId, actorId, businessDate, onClose }: Expens
       isOpen
       onClose={onClose}
       footer={
-        <button type="button" disabled={isSaving || !amount} onClick={() => void submit()} className={`${btnPrimary} w-full`}>
-          {t('Simpan pengeluaran')}
-        </button>
+        <div className="flex flex-col gap-3">
+          {pad.active && <Keypad onKey={(key) => setAmount(applyKeypadKeyToNumber(amount, key, pad.takeFresh()))} />}
+          <button type="button" disabled={isSaving || !amount} onClick={() => void submit()} className={`${btnPrimary} w-full`}>
+            {t('Simpan pengeluaran')}
+          </button>
+        </div>
       }
     >
       <div className="flex flex-col gap-5">
         <div>
           <label htmlFor="expense-amount" className={labelBase}>{t('Jumlah')}</label>
-          <RupiahInput id="expense-amount" value={amount} onChange={setAmount} autoFocus size="lg" />
+          <RupiahInput id="expense-amount" value={amount} onChange={setAmount} autoFocus size="lg" keypad={pad.field('amount')} />
         </div>
         <div>
           <p className={labelBase}>{t('Kategori')}</p>

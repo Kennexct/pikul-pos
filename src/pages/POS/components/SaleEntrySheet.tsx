@@ -1,10 +1,13 @@
 import { Scale } from 'lucide-react';
 import { useState } from 'react';
+import { Keypad } from '../../../components/ui/Keypad';
 import { RupiahInput } from '../../../components/ui/RupiahInput';
 import { SegmentedControl } from '../../../components/ui/SegmentedControl';
 import { Sheet } from '../../../components/ui/Sheet';
-import { btnPrimary, chip, helperText, inputBase, labelBase } from '../../../components/ui/styles';
+import { btnPrimary, chip, helperText, inputBase, keypadTarget, labelBase } from '../../../components/ui/styles';
+import { useKeypad } from '../../../hooks/useKeypad';
 import { t } from '../../../i18n';
+import { applyKeypadKey, applyKeypadKeyToNumber, type KeypadKey } from '../../../lib/keypad';
 import { formatRupiah } from '../../../lib/money';
 import { lineGross } from '../../../lib/pricing';
 import { formatQuantity, isMeasured, parseQuantity, perUnit, quantityForAmount, roundQuantity, UNIT_INFO } from '../../../lib/quantity';
@@ -41,6 +44,7 @@ export function SaleEntrySheet({ name, unit, isPriceEditable, normalPrice, initi
   const [quantityText, setQuantityText] = useState(initial && measured ? formatQuantity(initial.qty, undefined) : '');
   const [amount, setAmount] = useState<Rupiah | null>(null);
   const [price, setPrice] = useState<Rupiah | null>(initial?.unitPrice ?? normalPrice);
+  const pad = useKeypad<'qty' | 'amount' | 'price'>(measured ? 'qty' : isPriceEditable ? 'price' : null);
 
   const unitPrice = isPriceEditable ? price : normalPrice;
   const typed = parseQuantity(quantityText);
@@ -50,6 +54,18 @@ export function SaleEntrySheet({ name, unit, isPriceEditable, normalPrice, initi
   const isValid = unitPrice !== null && qty !== null;
   const total = isValid ? lineGross({ unitPrice, qty }) : null;
   const isPriceChanged = isPriceEditable && price !== null && price !== normalPrice;
+
+  // The in-app keypad types into whichever field was picked last (ADR-029).
+  const onKey = (key: KeypadKey) => {
+    const isFresh = pad.takeFresh();
+    if (pad.active === 'qty') setQuantityText(applyKeypadKey(quantityText, key, isFresh, { isDecimal: true, maxDigits: 5 }));
+    else if (pad.active === 'amount') setAmount(applyKeypadKeyToNumber(amount, key, isFresh));
+    else if (pad.active === 'price') setPrice(applyKeypadKeyToNumber(price, key, isFresh));
+  };
+  const changeMode = (next: EntryMode) => {
+    setMode(next);
+    pad.setActive(next === 'quantity' ? 'qty' : 'amount');
+  };
 
   const submit = () => {
     if (unitPrice !== null && qty !== null) onConfirm({ qty, unitPrice });
@@ -62,10 +78,13 @@ export function SaleEntrySheet({ name, unit, isPriceEditable, normalPrice, initi
       isOpen
       onClose={onClose}
       footer={
-        <button type="button" disabled={!isValid} onClick={submit} className={`${btnPrimary} w-full justify-between! px-5`}>
-          <span>{initial ? t('Simpan perubahan') : t('Tambah ke pesanan')}</span>
-          <span className="num">{total === null ? '' : formatRupiah(total)}</span>
-        </button>
+        <div className="flex flex-col gap-3">
+          {pad.active && <Keypad onKey={onKey} extraKey={pad.active === 'qty' ? ',' : '000'} />}
+          <button type="button" disabled={!isValid} onClick={submit} className={`${btnPrimary} w-full justify-between! px-5`}>
+            <span>{initial ? t('Simpan perubahan') : t('Tambah ke pesanan')}</span>
+            <span className="num">{total === null ? '' : formatRupiah(total)}</span>
+          </button>
+        </div>
       }
     >
       <form
@@ -84,7 +103,7 @@ export function SaleEntrySheet({ name, unit, isPriceEditable, normalPrice, initi
                 { value: 'amount', label: t('Nominal (Rp)') },
               ]}
               value={mode}
-              onChange={setMode}
+              onChange={changeMode}
               isFullWidth
             />
             {mode === 'quantity' ? (
@@ -94,18 +113,22 @@ export function SaleEntrySheet({ name, unit, isPriceEditable, normalPrice, initi
                   <input
                     id="entry-quantity"
                     autoFocus
-                    inputMode="decimal"
+                    {...pad.field('qty')}
                     autoComplete="off"
                     placeholder="0"
                     value={quantityText}
                     onChange={(event) => setQuantityText(event.target.value)}
-                    className={`${inputBase} num h-14 pr-14 text-right text-[22px] font-semibold`}
+                    className={`${inputBase} ${keypadTarget} num h-14 pr-14 text-right text-[22px] font-semibold`}
                   />
                   <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-[15px] font-semibold text-muted">{info.symbol}</span>
                 </div>
                 <div className="mt-2 flex gap-2">
                   {info.quick.map((value) => (
-                    <button key={value} type="button" onClick={() => setQuantityText(formatQuantity(value, undefined))} className={`${chip(parseQuantity(quantityText) === value)} num h-11 flex-1 text-[14px]`}>
+                    <button key={value} type="button" onClick={() => {
+                        setQuantityText(formatQuantity(value, undefined));
+                        pad.setActive('qty');
+                        pad.restart();
+                      }} className={`${chip(parseQuantity(quantityText) === value)} num h-11 flex-1 text-[14px]`}>
                       {formatQuantity(value, unit)}
                     </button>
                   ))}
@@ -114,10 +137,14 @@ export function SaleEntrySheet({ name, unit, isPriceEditable, normalPrice, initi
             ) : (
               <div>
                 <label htmlFor="entry-amount" className={labelBase}>{t('Pembeli minta seharga')}</label>
-                <RupiahInput id="entry-amount" value={amount} onChange={setAmount} autoFocus size="lg" />
+                <RupiahInput id="entry-amount" value={amount} onChange={setAmount} autoFocus size="lg" keypad={pad.field('amount')} />
                 <div className="mt-2 flex gap-2">
                   {QUICK_AMOUNTS.map((value) => (
-                    <button key={value} type="button" onClick={() => setAmount(value)} className={`${chip(amount === value)} num h-11 flex-1 text-[14px]`}>
+                    <button key={value} type="button" onClick={() => {
+                        setAmount(value);
+                        pad.setActive('amount');
+                        pad.restart();
+                      }} className={`${chip(amount === value)} num h-11 flex-1 text-[14px]`}>
                       {formatRupiah(value)}
                     </button>
                   ))}
@@ -145,10 +172,14 @@ export function SaleEntrySheet({ name, unit, isPriceEditable, normalPrice, initi
         {isPriceEditable && (
           <div>
             <label htmlFor="entry-price" className={labelBase}>{measured ? t('Harga per {0}', info.symbol) : t('Harga jual')}</label>
-            <RupiahInput id="entry-price" value={price} onChange={setPrice} autoFocus={!measured} size={measured ? 'md' : 'lg'} />
+            <RupiahInput id="entry-price" value={price} onChange={setPrice} autoFocus={!measured} size={measured ? 'md' : 'lg'} keypad={pad.field('price')} />
             <p className={helperText}>
               {isPriceChanged ? (
-                <button type="button" onClick={() => setPrice(normalPrice)} className="font-semibold text-brand-700 underline-offset-2 hover:underline">
+                <button type="button" onClick={() => {
+                    setPrice(normalPrice);
+                    pad.setActive('price');
+                    pad.restart();
+                  }} className="font-semibold text-brand-700 underline-offset-2 hover:underline">
                   {t('Kembalikan ke harga normal')}
                 </button>
               ) : (

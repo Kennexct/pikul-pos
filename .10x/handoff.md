@@ -1,3 +1,7 @@
+# Handoff — keyboard-safe sheets (2026-11-28)
+
+**Latest:** v0.22.0 on `claude/project-thread-k8yekf` (ADR-029). Number fields in sheets use `components/ui/Keypad.tsx` + `hooks/useKeypad.ts` (rules in `lib/keypad.ts`): spread `pad.field('key')` on the input (or pass `keypad=` to `RupiahInput`), add `keypadTarget` to its class, render `<Keypad>` in the footer above the main button when `pad.active`. `Sheet` and `QrisDisplay` follow `hooks/useKeyboardArea.ts`; any new full-screen overlay with a text field should too. e2e `v26.py` simulates the keyboard by replacing `visualViewport`. Next ADR: 030.
+
 # Handoff — send receipts (2026-11-28)
 
 **Latest:** v0.21.0 on `claude/project-thread-2wvt9b` (ADR-028). Receipt sharing lives in `components/Receipt/ReceiptShareActions.tsx` (used by the POS receipt sheet and Riwayat detail), `EmailReceiptSheet.tsx`, `useReceiptShare.ts`; logic in `services/receiptShare.ts` (token, `markShared`, `queueReceiptEmail`, `flushReceipts` called at the end of `runSync`). The copy is `lib/receiptDoc.ts` (mirror of `server/receiptTypes.ts`; keep both in step), PNG in `lib/receiptImage.ts`. Server: `server/receipts.ts`, `receiptCheck.ts`, `receiptHtml.ts`, `receiptRepos.ts`; `/r/<token>` routed in `scripts/vercel-build.mjs`. Dexie v6 adds `receiptShares` + `receiptEmails` (device-only, not synced). Migration 007 must run before deploy. Email needs Resend (`/api/auth/options` → `receiptEmail`). e2e `v25.py`. Next ADR: 029.

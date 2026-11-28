@@ -1,5 +1,13 @@
 # Status
 
+## The keyboard never covers a sheet (v0.22.0) — In review (2026-11-28)
+Branch `claude/project-thread-k8yekf` from `main` `5e59863`. Kenny (iPad screenshot): the weigh-out sheet hides behind the on-screen keyboard. Plan approved in chat ("Yes build it"). ADR-029, spec `specs/2026-11-28-keyboard-safe-sheets.md`. Next ADR: 030.
+- [x] In-app `Keypad` for weight, price, cash, float, expense, discount (fields `inputMode="none"`, first key replaces, "," / "000" key)
+- [x] `Sheet` fits into the area above the on-screen keyboard (`useKeyboardArea`, visualViewport) and scrolls the focused field into view; QRIS screen too
+- [x] A text field hides the keypad; number fields elsewhere already had inputMode
+- [x] Checks: typecheck, i18n, 322 tests, build; e2e v26 (new), v12, v16, flow, v09, staff, v24 pass on phone + tablet
+- [ ] Kenny: try on the iPad preview, merge
+
 ## Send receipts by WhatsApp and email (v0.21.0) — In review (2026-11-28)
 Branch `claude/project-thread-2wvt9b` from `main` `4046e80`. Kenny: send the receipt as an image by WhatsApp and email, with a web preview link, WhatsApp straight to the customer's number. Brainstorm → Kenny chose "Direct chat + link, image share extra" → "Do it". ADR-028, spec `specs/2026-11-28-send-receipts-design.md`. Next ADR: 029.
 - [x] WhatsApp opens `wa.me/<customer>` with a short message + `/r/<token>` link (offline: full text + link; no account: full text as before)
