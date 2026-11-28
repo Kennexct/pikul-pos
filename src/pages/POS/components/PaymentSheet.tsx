@@ -1,10 +1,13 @@
 import { Banknote } from 'lucide-react';
 import { useState } from 'react';
+import { Keypad } from '../../../components/ui/Keypad';
 import { METHOD_ICON } from '../../../components/ui/paymentIcon';
 import { RupiahInput } from '../../../components/ui/RupiahInput';
 import { Sheet } from '../../../components/ui/Sheet';
 import { btnPrimary, inputBase, labelBase, option, receiptRule, sectionTitle } from '../../../components/ui/styles';
 import { QUICK_CASH_AMOUNTS } from '../../../constants';
+import { useKeypad } from '../../../hooks/useKeypad';
+import { applyKeypadKeyToNumber } from '../../../lib/keypad';
 import { formatRupiah } from '../../../lib/money';
 import { calculateChange } from '../../../lib/pricing';
 import { validatePayment, type PaymentInput } from '../../../services/orders';
@@ -28,6 +31,7 @@ export function PaymentSheet({ total, methods, storeName, isSubmitting, onConfir
   const [reference, setReference] = useState('');
   const [isQrisOpen, setIsQrisOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const pad = useKeypad<'cash'>('cash');
 
   const method = activeMethods.find((m) => m.id === methodId);
   if (!method) {
@@ -55,6 +59,7 @@ export function PaymentSheet({ total, methods, storeName, isSubmitting, onConfir
     setMethodId(next.id);
     setError(null);
     setReference('');
+    if (next.type === 'cash') pad.setActive('cash');
     if (next.type === 'qris') setIsQrisOpen(true);
   };
 
@@ -80,9 +85,12 @@ export function PaymentSheet({ total, methods, storeName, isSubmitting, onConfir
       isOpen
       onClose={onClose}
       footer={
-        <button type="button" disabled={isSubmitting} onClick={isQris ? () => setIsQrisOpen(true) : submit} className={`${btnPrimary} w-full`}>
-          {isQris ? t('Tampilkan QRIS') : isSubmitting ? t('Menyimpan…') : t('Selesaikan pembayaran')}
-        </button>
+        <div className="flex flex-col gap-3">
+          {isCash && pad.active === 'cash' && <Keypad onKey={(key) => setCashReceived(applyKeypadKeyToNumber(cashReceived, key, pad.takeFresh()))} />}
+          <button type="button" disabled={isSubmitting} onClick={isQris ? () => setIsQrisOpen(true) : submit} className={`${btnPrimary} w-full`}>
+            {isQris ? t('Tampilkan QRIS') : isSubmitting ? t('Menyimpan…') : t('Selesaikan pembayaran')}
+          </button>
+        </div>
       }
     >
       <div className={`mb-5 flex items-end justify-between border-b ${receiptRule} pb-4`}>
@@ -110,7 +118,11 @@ export function PaymentSheet({ total, methods, storeName, isSubmitting, onConfir
               <button
                 key={amount}
                 type="button"
-                onClick={() => setCashReceived(amount)}
+                onClick={() => {
+                  setCashReceived(amount);
+                  pad.setActive('cash');
+                  pad.restart();
+                }}
                 className={`${option(cashReceived === amount)} num ${index === 0 ? 'font-semibold' : ''}`}
               >
                 {index === 0 && <Banknote aria-hidden size={17} />}
@@ -120,7 +132,7 @@ export function PaymentSheet({ total, methods, storeName, isSubmitting, onConfir
           </div>
           <div>
             <label htmlFor="cash-received" className={labelBase}>{t('Uang diterima')}</label>
-            <RupiahInput id="cash-received" value={cashReceived} onChange={setCashReceived} size="lg" />
+            <RupiahInput id="cash-received" value={cashReceived} onChange={setCashReceived} size="lg" keypad={pad.field('cash')} />
           </div>
           <div className={`flex items-center justify-between rounded-lg px-4 py-3 ${shortBy > 0 ? 'bg-danger-50 text-danger-700' : 'bg-brand-50 text-brand-800'}`}>
             <span className="text-[14px] font-semibold">{shortBy > 0 ? t('Kurang') : t('Kembalian')}</span>

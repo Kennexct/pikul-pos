@@ -1,5 +1,6 @@
 import { X } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react';
+import { revealFocused, useKeyboardArea } from '../../hooks/useKeyboardArea';
 import { t } from '../../i18n';
 
 interface SheetProps {
@@ -23,6 +24,8 @@ const DISMISS_DISTANCE = 96;
 const DISMISS_VELOCITY = 0.5;
 /** Movement before a press on the header becomes a drag (keeps taps on the close button working). */
 const DRAG_SLOP = 6;
+/** The iOS keyboard slides in for ~250 ms; reveal the field after it has settled. */
+const KEYBOARD_SETTLE_MS = 300;
 
 const FOCUSABLE = 'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
 
@@ -43,7 +46,7 @@ interface Drag {
 
 /**
  * Bottom sheet on phone (slides up from the edge, drag the header down to dismiss), centred dialog on tablet
- * (rises and scales in). Every close — X, backdrop, Escape, swipe — plays the exit before `onClose` runs.
+ * (rises and scales in). With the on-screen keyboard up it fits into the space above the keys. Every close — X, backdrop, Escape, swipe — plays the exit before `onClose` runs.
  */
 export function Sheet({ title, subtitle, isOpen, onClose, children, footer, isWide = false, isFlush = false }: SheetProps) {
   const [isRendered, setIsRendered] = useState(isOpen);
@@ -52,6 +55,12 @@ export function Sheet({ title, subtitle, isOpen, onClose, children, footer, isWi
   const closedByUser = useRef(false);
   const drag = useRef<Drag | null>(null);
   const [id] = useState(() => Symbol('sheet'));
+  const keyboard = useKeyboardArea(isRendered);
+
+  // Keyboard came up or moved: keep the field being typed in visible above it.
+  useEffect(() => {
+    if (keyboard) revealFocused(panelRef.current);
+  }, [keyboard]);
 
   // Parent opened us, or closed us without going through requestClose (e.g. cart → payment).
   if (isOpen && !isRendered) {
@@ -165,7 +174,12 @@ export function Sheet({ title, subtitle, isOpen, onClose, children, footer, isWi
   if (!isRendered) return null;
 
   return (
-    <div role="presentation" className={`fixed inset-0 z-40 flex items-end justify-center md:items-center md:p-6 ${isClosing ? 'pointer-events-none' : ''}`}>
+    <div
+      role="presentation"
+      // With the on-screen keyboard up, the sheet lives in the space above it, main button pinned just over the keys.
+      style={keyboard ? { top: keyboard.top, height: keyboard.height, bottom: 'auto' } : undefined}
+      className={`fixed inset-0 z-40 flex items-end justify-center md:items-center md:p-6 ${keyboard ? 'md:py-3' : ''} ${isClosing ? 'pointer-events-none' : ''}`}
+    >
       {/* Translucent scrim: the sale behind stays visible, just quieter. Fades on its own so the panel never ghosts. */}
       <div
         aria-hidden
@@ -178,10 +192,11 @@ export function Sheet({ title, subtitle, isOpen, onClose, children, footer, isWi
         aria-modal="true"
         aria-label={title}
         tabIndex={-1}
+        onFocus={() => window.setTimeout(() => revealFocused(panelRef.current), KEYBOARD_SETTLE_MS)}
         onAnimationEnd={(event) => {
           if (isClosing && event.target === event.currentTarget) finishClose();
         }}
-        className={`relative flex max-h-[92dvh] w-full flex-col rounded-t-xl bg-surface shadow-pop outline-none md:rounded-xl ${
+        className={`relative flex max-h-[92%] w-full md:max-h-full flex-col rounded-t-xl bg-surface shadow-pop outline-none md:rounded-xl ${
           isClosing ? 'animate-sheet-out md:animate-dialog-out' : 'animate-sheet-in md:animate-dialog-in'
         } ${isWide ? 'md:max-w-2xl' : 'md:max-w-[440px]'}`}
       >

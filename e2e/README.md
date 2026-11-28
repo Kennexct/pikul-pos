@@ -72,3 +72,8 @@ Closing the register and selling again the same day opens the NEXT shift, never 
 python3 e2e/v23.py http://localhost:4173 ./shots   # devices named by browser + system, "Perangkat ini", private-window warning, 7-day inactive flag, rename, remove
 ```
 `v19.py` now expects the headless browser's own name ("Chrome · Linux") in Kas → Semua perangkat instead of "Perangkat 1".
+
+## v0.22: the keyboard never covers a sheet (ADR-029)
+```bash
+python3 e2e/v26.py http://localhost:4173/app ./shots   # keypad on float, weight, price, cash; note field hides it; sheet fits above a simulated on-screen keyboard
+```

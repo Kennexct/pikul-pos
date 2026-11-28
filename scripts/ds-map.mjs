@@ -49,7 +49,7 @@ const tokenByHex = new Map(tokens.map((t) => [t.value, t.name]));
 // 2. Shared pieces and the row group each belongs to
 const GROUPS = {
   Buttons: ['btnPrimary', 'btnSecondary', 'btnGhost', 'btnDanger', 'btnDangerSolid', 'btnIcon'],
-  'Inputs and choices': ['inputBase', 'labelBase', 'helperText', 'option', 'fieldGrid', 'RupiahInput', 'NumberInput', 'SearchInput', 'Select', 'Switch', 'SegmentedControl', 'DateRangeControl'],
+  'Inputs and choices': ['inputBase', 'labelBase', 'helperText', 'option', 'fieldGrid', 'RupiahInput', 'NumberInput', 'SearchInput', 'Select', 'Switch', 'SegmentedControl', 'DateRangeControl', 'Keypad', 'keypadTarget'],
   'Pages, cards and pop-ups': ['Sheet', 'card', 'sectionTitle', 'PageHeader', 'Tabs', 'EmptyState', 'LoadingScreen', 'SidePanel', 'SettingsSection'],
   'Status and money': ['badgeNeutral', 'badgeWarn', 'badgeBrand', 'StatusBadge', 'StatTile', 'receiptRule', 'ProductThumb'],
   Brand: ['Logo', 'LogoMark'],

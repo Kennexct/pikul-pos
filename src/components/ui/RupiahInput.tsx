@@ -1,7 +1,8 @@
 import { useRef } from 'react';
 import { LOCALE } from '../../constants';
 import { parseRupiah } from '../../lib/money';
-import { inputBase } from './styles';
+import type { KeypadField } from '../../hooks/useKeypad';
+import { inputBase, keypadTarget } from './styles';
 
 interface RupiahInputProps {
   id?: string;
@@ -14,6 +15,8 @@ interface RupiahInputProps {
   /** Enter / "next" key on the phone keypad. */
   onEnter?: () => void;
   enterKeyHint?: 'next' | 'done';
+  /** Typed with the in-app keypad instead of the system keyboard (ADR-029). */
+  keypad?: KeypadField;
 }
 
 const groupFormatter = new Intl.NumberFormat(LOCALE, { maximumFractionDigits: 0 });
@@ -24,7 +27,7 @@ const groupFormatter = new Intl.NumberFormat(LOCALE, { maximumFractionDigits: 0 
  * (typing 10.000 used to become 100.000). A zero shows as the grey "0" placeholder; with any other
  * placeholder ("Ikut harga dasar") a typed 0 stays visible because it means something.
  */
-export function RupiahInput({ id, value, onChange, placeholder = '0', autoFocus, ariaLabel, size = 'md', onEnter, enterKeyHint }: RupiahInputProps) {
+export function RupiahInput({ id, value, onChange, placeholder = '0', autoFocus, ariaLabel, size = 'md', onEnter, enterKeyHint, keypad }: RupiahInputProps) {
   /** Safari/iOS collapse the selection on the mouseup that follows focus; skip that one. */
   const justFocused = useRef(false);
   const sizeClass = size === 'lg' ? 'h-14 text-[22px] font-semibold' : 'font-semibold';
@@ -34,7 +37,8 @@ export function RupiahInput({ id, value, onChange, placeholder = '0', autoFocus,
       <input
         id={id}
         aria-label={ariaLabel}
-        inputMode="numeric"
+        inputMode={keypad?.inputMode ?? 'numeric'}
+        data-keypad={keypad?.['data-keypad']}
         autoComplete="off"
         autoFocus={autoFocus}
         placeholder={placeholder}
@@ -43,6 +47,7 @@ export function RupiahInput({ id, value, onChange, placeholder = '0', autoFocus,
         onFocus={(event) => {
           justFocused.current = true;
           event.currentTarget.select();
+          keypad?.onFocus();
         }}
         onMouseUp={(event) => {
           if (justFocused.current) event.preventDefault();
@@ -53,13 +58,14 @@ export function RupiahInput({ id, value, onChange, placeholder = '0', autoFocus,
         }}
         onKeyDown={(event) => {
           justFocused.current = false;
+          keypad?.onKeyDown();
           if (event.key === 'Enter' && onEnter) {
             event.preventDefault();
             onEnter();
           }
         }}
         onChange={(event) => onChange(parseRupiah(event.target.value))}
-        className={`${inputBase} num pl-11 text-right ${sizeClass}`}
+        className={`${inputBase} ${keypadTarget} num pl-11 text-right ${sizeClass}`}
       />
     </div>
   );

@@ -8,6 +8,9 @@ import { formatRupiah } from '../../lib/money';
 import { formatClockTime, shiftNoOf } from '../../lib/shifts';
 import { setOpeningCash } from '../../services/dayClosing';
 import type { BusinessDate, DayClosing, Id } from '../../types';
+import { useKeypad } from '../../hooks/useKeypad';
+import { applyKeypadKeyToNumber } from '../../lib/keypad';
+import { Keypad } from '../ui/Keypad';
 import { RupiahInput } from '../ui/RupiahInput';
 import { Sheet } from '../ui/Sheet';
 import { btnPrimary, btnSecondary, helperText, labelBase } from '../ui/styles';
@@ -39,6 +42,7 @@ export function OpenRegisterSheet(props: OpenRegisterSheetProps) {
   const { storeId, actorId, businessDate, suggested, mode, isYesterdayUnclosed = false, shiftNo = 1, lastClosing = null, timeZone = 'Asia/Jakarta', onDone, onClose } = props;
   const [amount, setAmount] = useState<number | null>(suggested > 0 ? suggested : null);
   const [isSaving, setIsSaving] = useState(false);
+  const pad = useKeypad<'cash'>('cash');
   const isOpening = mode === 'open';
   const isNewShift = isOpening && shiftNo > 1;
   const day = formatBusinessDate(businessDate);
@@ -63,11 +67,14 @@ export function OpenRegisterSheet(props: OpenRegisterSheetProps) {
       isOpen
       onClose={onClose}
       footer={
-        <div className="flex gap-2">
-          {isOpening && <button type="button" onClick={onClose} className={btnSecondary}>{t('Nanti saja')}</button>}
-          <button type="button" disabled={isSaving} onClick={() => void submit()} className={`${btnPrimary} flex-1`}>
-            {isNewShift ? t('Buka shift {0}', shiftNo) : isOpening ? t('Buka kasir') : t('Simpan modal awal')}
-          </button>
+        <div className="flex flex-col gap-3">
+          {pad.active && <Keypad onKey={(key) => setAmount(applyKeypadKeyToNumber(amount, key, pad.takeFresh()))} />}
+          <div className="flex gap-2">
+            {isOpening && <button type="button" onClick={onClose} className={btnSecondary}>{t('Nanti saja')}</button>}
+            <button type="button" disabled={isSaving} onClick={() => void submit()} className={`${btnPrimary} flex-1`}>
+              {isNewShift ? t('Buka shift {0}', shiftNo) : isOpening ? t('Buka kasir') : t('Simpan modal awal')}
+            </button>
+          </div>
         </div>
       }
     >
@@ -94,7 +101,7 @@ export function OpenRegisterSheet(props: OpenRegisterSheetProps) {
         )}
         <div>
           <label htmlFor="opening-cash" className={labelBase}>{isNewShift ? t('Uang di laci saat shift mulai') : t('Uang di laci saat mulai jualan')}</label>
-          <RupiahInput id="opening-cash" value={amount} onChange={setAmount} autoFocus size="lg" />
+          <RupiahInput id="opening-cash" value={amount} onChange={setAmount} autoFocus size="lg" keypad={pad.field('cash')} />
           <p className={helperText}>
             {isNewShift ? t('Terisi dari hitungan shift sebelumnya. Ubah kalau ada uang yang diambil atau ditambah.') : t('Uang kembalian yang sudah ada di laci sebelum penjualan pertama.')}
           </p>

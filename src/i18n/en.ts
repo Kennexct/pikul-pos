@@ -252,6 +252,8 @@ export const EN = {
   'Hanya transaksi lunas yang bisa di-void.': 'Only paid sales can be voided.',
   'Hapus': 'Delete',
   'Hapus angka': 'Delete digit',
+  'Koma': 'Decimal comma',
+  'Papan angka': 'Number pad',
   'Hapus diskon': 'Remove discount',
   'Hapus foto': 'Remove photo',
   'Hapus pelanggan': 'Delete customer',

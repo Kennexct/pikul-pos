@@ -59,11 +59,12 @@ Weights stop at 600: hierarchy comes from size and color. The only heavier type 
 | Sections / categories | `Tabs` (underline, scrolls horizontally) |
 | Pick one or many from a set (variants, quick cash, presets) | `option()` class — bordered square, check icon when selected |
 | Small number (%, days, counts) | `NumberInput`; a 0 shows as the grey placeholder |
+| Number typed inside a sheet (weight, price, cash, float, expense, discount) | `Keypad` in the sheet footer above the main button + `useKeypad` (fields get `inputMode="none"` and `keypadTarget`); the system keyboard never opens (ADR-029) |
 | Fields inside a settings card | `fieldGrid`: every field one equal cell, 2 per row when the card is wide; no per-field max-width |
 | On/off setting | `Switch` (row with label + description) |
 | Sub-menu column (tablet) | `SidePanel` + `sideItem`; folds to an icon strip, choice kept per device |
 | Turning something off for sale (Habis) | `Switch tone="danger"`; sold-out controls and badges use danger-600/50 |
-| Modal / bottom sheet | `Sheet` (grabber on phone, centered on tablet, title + subtitle) |
+| Modal / bottom sheet | `Sheet` (grabber on phone, centered on tablet, title + subtitle); fits above the on-screen keyboard by itself (`useKeyboardArea`), so a full-screen overlay with a text field uses that hook too |
 | Nothing to show | `EmptyState` (icon in bordered square + title + one line) |
 | Search | `SearchInput` |
 | Page chrome | `PageHeader` (title, description, actions, tabs slot) |
