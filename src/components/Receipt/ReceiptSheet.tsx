@@ -1,10 +1,10 @@
-import { CircleCheck, MessageCircle, Printer } from 'lucide-react';
+import { CircleCheck } from 'lucide-react';
 import { useCustomer } from '../../hooks/useCustomers';
 import { formatRupiah } from '../../lib/money';
-import { buildReceiptText, whatsAppShareUrl } from '../../lib/receiptText';
 import type { Order, Store } from '../../types';
 import { Sheet } from '../ui/Sheet';
-import { btnPrimary, btnSecondary } from '../ui/styles';
+import { btnPrimary } from '../ui/styles';
+import { ReceiptShareActions } from './ReceiptShareActions';
 import { ReceiptView } from './ReceiptView';
 import { t } from '../../i18n';
 
@@ -15,11 +15,9 @@ interface ReceiptSheetProps {
   onClose: () => void;
 }
 
-/** M9: success state (change first — the cashier needs it now), then receipt with print/WhatsApp. */
+/** M9: success state (change first — the cashier needs it now), then receipt with print, WhatsApp, email and image (ADR-028). */
 export function ReceiptSheet({ order, store, cashierName, onClose }: ReceiptSheetProps) {
   const customer = useCustomer(order.customerId);
-  const customerPhone = customer && !customer.deletedAt ? customer.phone : undefined;
-  const shareUrl = whatsAppShareUrl(buildReceiptText(order, store), customerPhone);
   const payment = order.payments[0];
   const change = payment?.change ?? 0;
 
@@ -30,14 +28,9 @@ export function ReceiptSheet({ order, store, cashierName, onClose }: ReceiptShee
       isOpen
       onClose={onClose}
       footer={
-        <div className="grid grid-cols-2 gap-2">
-          <button type="button" onClick={() => window.print()} className={btnSecondary}>
-            <Printer aria-hidden size={18} /> {t('Cetak')}
-          </button>
-          <a href={shareUrl} target="_blank" rel="noopener noreferrer" title={customerPhone ? t('Kirim struk ke WhatsApp pelanggan') : t('Bagikan struk lewat WhatsApp')} className={btnSecondary}>
-            <MessageCircle aria-hidden size={18} /> {t('WhatsApp')}
-          </a>
-          <button type="button" autoFocus onClick={onClose} className={`${btnPrimary} col-span-2`}>
+        <div className="flex flex-col gap-2">
+          <ReceiptShareActions order={order} store={store} cashierName={cashierName} customer={customer} printLabel={t('Cetak')} />
+          <button type="button" autoFocus onClick={onClose} className={btnPrimary}>
             {t('Transaksi baru')}
           </button>
         </div>

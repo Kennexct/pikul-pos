@@ -23,7 +23,8 @@ export async function depsFromEnv(env: Env): Promise<Deps> {
   const emailEnabled = Boolean(env.RESEND_API_KEY && env.MAIL_FROM);
   return {
     repo: env.DATABASE_URL ? neonRepo(env.DATABASE_URL) : (devRepo ??= memoryRepo()),
-    mailer: emailEnabled ? resendMailer(env.RESEND_API_KEY!, env.MAIL_FROM!) : consoleMailer,
+    // Receipt email only with Resend, or in dev where it is printed (ADR-028).
+    mailer: emailEnabled ? resendMailer(env.RESEND_API_KEY!, env.MAIL_FROM!) : dev ? consoleMailer : { sendLoginCode: consoleMailer.sendLoginCode },
     signer: signerCache.signer,
     google: env.GOOGLE_CLIENT_ID ? googleVerifier(env.GOOGLE_CLIENT_ID) : null,
     now: Date.now,

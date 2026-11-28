@@ -20,7 +20,7 @@ export function neonSetupSql() {
     'commit;',
     '',
     '-- Check: should list accounts, account_grants, admin_audit, admin_sessions, campaigns, images, login_codes,',
-    '-- merchant_daily, payments, plans, rate_events, refresh_tokens, site_content, account_store, sync_devices, sync_records.',
+    '-- merchant_daily, payments, plans, rate_events, refresh_tokens, site_content, account_store, sync_devices, sync_records, receipt_shares.',
     "select table_name from information_schema.tables where table_schema = 'public' order by table_name;",
     '',
   ].join('\n');

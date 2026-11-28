@@ -1,11 +1,11 @@
-import { Ban, Lock, MessageCircle, Printer, Undo2 } from 'lucide-react';
+import { Ban, Lock, Undo2 } from 'lucide-react';
+import { ReceiptShareActions } from '../../components/Receipt/ReceiptShareActions';
 import { ReceiptView } from '../../components/Receipt/ReceiptView';
 import { Sheet } from '../../components/ui/Sheet';
 import { StatusBadge } from '../../components/ui/StatusBadge';
 import { btnDanger, btnSecondary } from '../../components/ui/styles';
 import { useCustomer } from '../../hooks/useCustomers';
 import { formatRupiah } from '../../lib/money';
-import { buildReceiptText, whatsAppShareUrl } from '../../lib/receiptText';
 import { totalRefunded } from '../../lib/refunds';
 import type { Eligibility } from '../../services/refunds';
 import type { Order, Refund, Store } from '../../types';
@@ -30,7 +30,6 @@ const dateTime = new Intl.DateTimeFormat(DATE_LOCALE, { dateStyle: 'medium', tim
 export function OrderDetailSheet(props: OrderDetailSheetProps) {
   const { order, refunds, store, cashierName, voidEligibility, refundEligibility, onVoid, onRefund, onClose } = props;
   const customer = useCustomer(order.customerId);
-  const customerPhone = customer && !customer.deletedAt ? customer.phone : undefined;
   const refunded = totalRefunded(refunds.filter((r) => r.kind === 'refund'));
   const canAct = (e: Eligibility): boolean => e.ok || e.needsOwnerPin === true;
   const needsPin = (e: Eligibility): boolean => !e.ok && e.needsOwnerPin === true;
@@ -48,14 +47,7 @@ export function OrderDetailSheet(props: OrderDetailSheetProps) {
       onClose={onClose}
       footer={
         <div className="flex flex-col gap-2">
-          <div className="grid grid-cols-2 gap-2">
-            <button type="button" onClick={() => window.print()} className={btnSecondary}>
-              <Printer aria-hidden size={18} /> {t('Cetak ulang')}
-            </button>
-            <a href={whatsAppShareUrl(buildReceiptText(order, store), customerPhone)} target="_blank" rel="noopener noreferrer" className={btnSecondary}>
-              <MessageCircle aria-hidden size={18} /> {t('WhatsApp')}
-            </a>
-          </div>
+          <ReceiptShareActions order={order} store={store} cashierName={cashierName} refunds={refunds} customer={customer} printLabel={t('Cetak ulang')} />
           {isAnyActionable && (
             <div className="grid grid-cols-2 gap-2">
               <button type="button" disabled={!canAct(refundEligibility)} onClick={onRefund} className={btnSecondary}>

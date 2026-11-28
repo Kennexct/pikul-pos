@@ -1,5 +1,16 @@
 # Status
 
+## Send receipts by WhatsApp and email (v0.21.0) — In review (2026-11-28)
+Branch `claude/project-thread-2wvt9b` from `main` `4046e80`. Kenny: send the receipt as an image by WhatsApp and email, with a web preview link, WhatsApp straight to the customer's number. Brainstorm → Kenny chose "Direct chat + link, image share extra" → "Do it". ADR-028, spec `specs/2026-11-28-send-receipts-design.md`. Next ADR: 029.
+- [x] WhatsApp opens `wa.me/<customer>` with a short message + `/r/<token>` link (offline: full text + link; no account: full text as before)
+- [x] `/r/<token>` web receipt (escaped, noindex, og:image = receipt PNG, "Unduh gambar", "Dibatalkan"/"Dikembalikan" banner), 90-day expiry
+- [x] Receipt PNG drawn on the device (`lib/receiptImage.ts`); "Bagikan gambar" (share sheet) / "Simpan gambar" (download)
+- [x] Email via Resend: `"<toko> via Pikul"`, reply-to owner, PNG attached + link, queued offline, 100/store/day; customer `email` field
+- [x] Upload after each sync and each share, never on the sell path; void/refund re-uploads
+- [x] Migration `007_receipt_shares.sql` (in `neon-setup.sql`), runbook updated: run before deploy
+- [x] Checks: typecheck, i18n, 311 tests, build:vercel; e2e v25 (new), v19, customers, flow pass on phone + tablet (history.py fails at the same step on main, unchanged)
+- [ ] Kenny: run migration 007 on Neon, set RESEND_API_KEY + MAIL_FROM for Email, try the preview, merge
+
 ## Polish pass: stop looking AI-generated (v0.20.2) — In review (2026-11-26)
 Branch `claude/project-thread-3shxpg` from `main` `9ccb30d`. Kenny: "unslop, polish, clean up the entire system". Audit found light slop only, so a polish pass; palette, layout, features unchanged. No ADR. Next ADR: 028.
 - [x] Uppercase tracked labels → sentence case (section titles, sub-menu titles, table headers, admin sidebar, landing)

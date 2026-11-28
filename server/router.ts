@@ -6,6 +6,8 @@ import { adminMerchantSummary, adminReport } from './analytics';
 import { DAILY_BODY_LIMIT, postDaily } from './daily';
 import { syncClaim, syncDevices, syncPull, syncPush, syncRemoveDevice, syncRenameDevice, syncReplace, syncStore } from './sync';
 import { PUSH_BODY_LIMIT } from './syncCheck';
+import { RECEIPT_BODY_LIMIT } from './receiptCheck';
+import { emailReceipt, receiptImageRoute, receiptPageRoute, shareReceipt } from './receipts';
 import { adminTempPassword, authOptions, changePassword, passwordLogin, resetPassword, signUp } from './signup';
 import { adminContent, adminSaveContent } from './siteContent';
 import { adminCancelPayment, adminGrant, adminMerchant, adminMerchants, adminOverview, adminPayments, adminRecordPayment } from './merchants';
@@ -22,6 +24,7 @@ function bodyLimit(method: string, path: string): number {
   if (path === '/api/admin/images') return Math.ceil((MAX_IMAGE_BYTES * 4) / 3) + 1_024;
   if (path === '/api/merchant/daily') return DAILY_BODY_LIMIT;
   if (path === '/api/sync/push') return PUSH_BODY_LIMIT;
+  if (path === '/api/receipts/share') return RECEIPT_BODY_LIMIT;
   return MAX_BODY;
 }
 
@@ -92,6 +95,10 @@ export async function route(deps: Deps, method: string, path: string, auth: stri
       return syncRenameDevice(deps, auth, body);
     case 'POST /api/sync/devices/remove':
       return syncRemoveDevice(deps, auth, body);
+    case 'POST /api/receipts/share':
+      return shareReceipt(deps, auth, body);
+    case 'POST /api/receipts/email':
+      return emailReceipt(deps, auth, body);
     case 'GET /api/admin/report':
       return adminReport(deps, auth, ctx);
     case 'GET /api/admin/content':
@@ -111,6 +118,8 @@ export async function route(deps: Deps, method: string, path: string, auth: stri
     case 'POST /api/admin/campaigns':
       return adminSaveCampaign(deps, auth, null, body);
   }
+  const receipt = /^GET \/r\/([A-Za-z0-9_-]{22})(\.png)?$/.exec(key);
+  if (receipt?.[1]) return receipt[2] ? receiptImageRoute(deps, receipt[1]) : receiptPageRoute(deps, receipt[1]);
   const img = new RegExp(`^GET /api/public/images/${UUID}$`).exec(key);
   if (img?.[1]) return publicImage(deps, img[1]);
   const m = new RegExp(`^(GET|POST) /api/admin/merchants/${UUID}(/payments|/grants|/summary|/temp-password)?$`).exec(key);

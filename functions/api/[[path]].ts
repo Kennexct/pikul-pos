@@ -26,7 +26,7 @@ async function deps(env: Env): Promise<Deps> {
   if (signerCache?.jwk !== env.PASS_PRIVATE_JWK) signerCache = { jwk: env.PASS_PRIVATE_JWK, signer: await passSigner(JSON.parse(env.PASS_PRIVATE_JWK)) };
   return {
     repo: env.DATABASE_URL ? neonRepo(env.DATABASE_URL) : (devRepo ??= memoryRepo()),
-    mailer: env.RESEND_API_KEY && env.MAIL_FROM ? resendMailer(env.RESEND_API_KEY, env.MAIL_FROM) : consoleMailer,
+    mailer: env.RESEND_API_KEY && env.MAIL_FROM ? resendMailer(env.RESEND_API_KEY, env.MAIL_FROM) : dev ? consoleMailer : { sendLoginCode: consoleMailer.sendLoginCode },
     signer: signerCache.signer,
     google: env.GOOGLE_CLIENT_ID ? googleVerifier(env.GOOGLE_CLIENT_ID) : null,
     now: Date.now,

@@ -1,6 +1,6 @@
 # ADR-028: Receipts go out as a WhatsApp chat with a web link, an image share, and email
 
-**Status:** Proposed — direction chosen by Kenny (2026-11-28), waiting for "build it"
+**Status:** Accepted — Kenny chose "Direct chat + link, image share extra", then "Do it" (2026-11-28)
 **Date:** 2026-11-28
 **Feature:** send-receipts
 **Author:** 10x-Team (Architect + PM)

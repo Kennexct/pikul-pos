@@ -92,7 +92,7 @@ export interface SignUpInput {
   phone: string;
   city: string;
 }
-export const authOptions = () => api<{ emailReset: boolean; google: boolean }>('GET', '/api/auth/options');
+export const authOptions = () => api<{ emailReset: boolean; google: boolean; receiptEmail?: boolean }>('GET', '/api/auth/options');
 export async function signUp(input: SignUpInput): Promise<PassClaims> {
   const claims = await keep(await api<SessionBody>('POST', '/api/auth/signup', input));
   write(K.signupStore, input.storeName.trim());

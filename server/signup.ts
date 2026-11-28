@@ -44,7 +44,7 @@ export function checkProfile(b: Record<string, unknown>): { ok: true; value: Mer
   return { ok: true, value: { ownerName, storeName, phone, city } };
 }
 
-export const authOptions = (deps: Deps): ApiResponse => ({ status: 200, body: { emailReset: deps.emailEnabled, google: deps.google !== null } });
+export const authOptions = (deps: Deps): ApiResponse => ({ status: 200, body: { emailReset: deps.emailEnabled, google: deps.google !== null, receiptEmail: Boolean(deps.mailer.sendReceipt) } });
 
 export async function signUp(deps: Deps, body: unknown, ctx: RequestCtx): Promise<ApiResponse> {
   const b = (body ?? {}) as Record<string, unknown>;

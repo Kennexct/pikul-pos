@@ -1,5 +1,5 @@
 import { localDb } from '../db/localDb';
-import { normalizePhone } from '../lib/customers';
+import { normalizeEmail, normalizePhone } from '../lib/customers';
 import { nowIso } from '../lib/id';
 import type { Customer, Id } from '../types';
 import { newMeta } from './catalog';
@@ -15,6 +15,8 @@ export interface CustomerInput {
   name: string;
   /** Raw user input; empty = no phone. */
   phone: string;
+  /** Raw user input; empty = no email. Absent = keep the saved one. */
+  email?: string;
   note: string;
 }
 
@@ -42,18 +44,33 @@ export async function saveCustomer(storeId: Id, input: CustomerInput): Promise<C
   const existing = input.id ? await localDb.customers.get(input.id) : undefined;
   if (input.id && (!existing || existing.deletedAt)) throw new Error(t('Pelanggan tidak ditemukan.'));
 
-  const customer: Customer = { ...(existing ?? newMeta(storeId)), name, phone, note: note || undefined, updatedAt: nowIso() };
+  let email = existing?.email;
+  if (input.email !== undefined) {
+    const typed = input.email.trim();
+    email = typed === '' ? undefined : (normalizeEmail(typed) ?? undefined);
+    if (typed !== '' && !email) throw new Error(t('Alamat email tidak valid. Contoh: nama@email.com.'));
+  }
+
+  const customer: Customer = { ...(existing ?? newMeta(storeId)), name, phone, email, note: note || undefined, updatedAt: nowIso() };
   await saveAndQueue('customers', customer);
   return customer;
 }
 
+/** Saves the address the cashier typed when emailing a receipt (ADR-028). */
+export async function setCustomerEmail(customerId: Id, email: string): Promise<void> {
+  const customer = await localDb.customers.get(customerId);
+  const normalized = normalizeEmail(email);
+  if (!customer || customer.deletedAt || !normalized || customer.email === normalized) return;
+  await saveAndQueue('customers', { ...customer, email: normalized, updatedAt: nowIso() });
+}
+
 /**
- * Removes a customer from the list and erases their contact data (phone, note).
+ * Removes a customer from the list and erases their contact data (phone, email, note).
  * Their name stays on past receipts as part of the transaction record.
  */
 export async function deleteCustomer(customerId: Id): Promise<void> {
   const customer = await localDb.customers.get(customerId);
   if (!customer || customer.deletedAt) throw new Error(t('Pelanggan tidak ditemukan.'));
   const now = nowIso();
-  await saveAndQueue('customers', { ...customer, phone: undefined, note: undefined, deletedAt: now, updatedAt: now });
+  await saveAndQueue('customers', { ...customer, phone: undefined, email: undefined, note: undefined, deletedAt: now, updatedAt: now });
 }

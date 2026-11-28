@@ -53,6 +53,12 @@ Set `CHROME=/path/to/chrome` to pick the browser. `v14.py` and `v15.py` used ema
 python3 e2e/v20.py http://localhost:4173/app ./shots   # pending category created on save, price replaces 0, save & add another, variants quick fill
 ```
 
+## v0.21: send receipts (ADR-028)
+Against the Vercel output (`DEV_MODE=1`, console mailer prints the receipt email to the API log):
+```bash
+python3 e2e/v25.py http://localhost:4173 ./shots /tmp/api.log   # customer with email → sale → WhatsApp href to the customer with /r/<token> link → web page + PNG → Email sent → image download → void → page says Dibatalkan
+```
+
 ## v0.19.5: admin shows the latest shop profile
 ```bash
 python3 e2e/v21.py http://localhost:4173 ./shots admin-kata-sandi-panjang   # merchant edits Toko & Struk + syncs → console list and sheet show the new name, WhatsApp, address
