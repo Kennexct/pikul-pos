@@ -1,0 +1,315 @@
+<title>Pikul design system map</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;800&display=swap" rel="stylesheet">
+<style>
+/* VOICE work: an engineering reference for Kenny and AI agents changing Pikul's UI
+   IDEA an impact checker: pick a shared piece or a screen and see what a change reaches
+   PICTURE the impact grid (piece x screen), clickable both ways, then the token -> piece -> screen graph
+   COLOUR Pikul's own tokens: canvas, surface, ink; pandan green only for the current selection and heavy pieces
+   TYPE Plus Jakarta Sans, weights up to 600 (logo 800)
+   LAYOUT laptop: finding, impact panel + grid full width, graph, tokens, rules/edit, drift; phone: same order, grid becomes a list */
+:root{color-scheme:light dark;--bg:light-dark(#f7f9f8,#0f1513);--surface:light-dark(#fff,#161e1b);--subtle:light-dark(#f2f5f3,#1c2622);--line:light-dark(#e2e7e4,#2a3531);--line2:light-dark(#c9d1cd,#3a4741);--ink:light-dark(#14201b,#e8efec);--soft:light-dark(#36423d,#c3cdc8);--muted:light-dark(#5e6a65,#93a09a);--dot:light-dark(#8a9590,#6f7c76);--b6:light-dark(#0b7a5a,#2fb48a);--b7:light-dark(#08654a,#5fd0aa);--b50:light-dark(#ebf7f2,#12302a);--d7:light-dark(#a31f16,#ff8a80);--d50:light-dark(#fef3f2,#3a1714);--w7:light-dark(#9a5b05,#f2b45a);--w50:light-dark(#fff8eb,#33260e)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.55 'Plus Jakarta Sans',system-ui,sans-serif;margin:0;overflow-x:clip}
+.band{padding-block:clamp(20px,3vw,40px);padding-left:max(5vw,16px,env(safe-area-inset-left,0px));padding-right:max(5vw,16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1240px;margin:0 auto}
+h1{font-size:clamp(30px,4vw,44px);line-height:1.08;letter-spacing:-.02em;font-weight:600;margin:0;max-width:24ch}
+h2{font-size:20px;letter-spacing:-.01em;font-weight:600;margin:0}
+p{margin:0}
+.sub{color:var(--muted);font-size:14px;margin-top:4px;max-width:70ch}
+.mark{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:-.03em;font-size:18px;margin-bottom:18px}
+.mark span{font-weight:500;letter-spacing:0;font-size:14px;color:var(--muted)}
+.lede{color:var(--soft);margin-top:12px;max-width:70ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+code{font:12.5px ui-monospace,Menlo,monospace;background:var(--subtle);padding:1px 4px;border-radius:4px;overflow-wrap:anywhere}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid var(--b6);outline-offset:2px;border-radius:6px}
+a{color:var(--b7)}
+.impact{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px 20px;align-items:start;padding:16px 18px;margin-top:20px;border-color:var(--line2)}
+.impact b{font-weight:600}
+.impact .what{font-size:17px}
+.impact .reach{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.tag{display:inline-flex;align-items:center;height:28px;padding:0 9px;border-radius:6px;border:1px solid var(--line2);background:var(--surface);font-size:13px;font-weight:500;white-space:nowrap}
+.tag.on{border-color:var(--b6);background:var(--b50);color:var(--b7)}
+.clear{height:44px;padding:0 14px;border-radius:10px;border:1px solid var(--line2);background:var(--surface);font-size:14px;font-weight:600}
+.clear[hidden]{display:none}
+.more{width:100%;margin-top:12px}
+.gridwrap{margin-top:12px;overflow-x:auto}
+table.mx{border-collapse:collapse;width:100%;font-size:13px}
+.mx th,.mx td{border-bottom:1px solid var(--line);padding:0;text-align:center}
+.mx thead th{position:sticky;top:0;background:var(--surface);z-index:1}
+.mx thead button{width:100%;min-height:44px;border:0;background:none;padding:6px 2px;font-size:12px;font-weight:600;color:var(--muted);line-height:1.2}
+.mx thead th.sel button{color:var(--b7)}
+.mx tbody th{text-align:left;background:var(--surface)}
+.mx tbody th button{width:100%;min-height:36px;border:0;background:none;text-align:left;padding:0 10px;display:flex;align-items:center;gap:8px;font-size:14px;font-weight:500;white-space:nowrap}
+.mx tbody th small{color:var(--muted);font-weight:500;font-size:12px}
+.mx tr.grp th{padding:14px 10px 6px;font-size:13px;font-weight:600;color:var(--muted);text-align:left;border-bottom:1px solid var(--line2)}
+.mx td.cell{width:6.2%}
+.mx td.cell span{display:block;width:14px;height:14px;margin:auto;border-radius:4px;background:var(--subtle)}
+.mx td.cell.y span{background:var(--dot)}
+.mx .sel td.cell.y span,.mx td.cell.y.colsel span{background:var(--b6)}
+.mx tr.sel th button{color:var(--b7);font-weight:600}
+.mx tr.sel,.mx td.colsel{background:var(--b50)}
+.mx td.n{width:44px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--muted)}
+.mx td.n.hot{color:var(--b7)}
+.mx tr.dim th button,.mx tr.dim td{opacity:.35}
+.list{display:none}
+.filters{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-top:12px}
+.filters button{flex:none;height:36px;padding:0 12px;border-radius:8px;border:1px solid var(--line2);background:var(--surface);font-size:13px;font-weight:600}
+.filters button[aria-pressed=true]{border-color:var(--b6);background:var(--b50);color:var(--b7)}
+.li{display:block;width:100%;text-align:left;border:0;border-bottom:1px solid var(--line);background:none;padding:10px 4px}
+.li .top{display:flex;justify-content:space-between;gap:12px;font-weight:600;font-size:15px}
+.li .top em{font-style:normal;font-variant-numeric:tabular-nums;color:var(--muted)}
+.li .top em.hot{color:var(--b7)}
+.li .areas{display:none;font-size:13px;color:var(--muted);margin-top:2px}
+.li[aria-pressed=true] .areas{display:block}
+.li[aria-pressed=true]{background:var(--b50)}
+.lg{font-size:13px;font-weight:600;color:var(--muted);padding:16px 4px 4px;border-bottom:1px solid var(--line2)}
+.fig{position:relative;height:var(--h,680px);margin-top:12px}
+.fig svg{position:absolute;inset:0;width:100%;height:100%}
+.fig text{font:13px 'Plus Jakarta Sans',system-ui,sans-serif;fill:var(--soft)}
+.fig g.node text{paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round}
+.fig .col{font-weight:600;fill:var(--muted)}
+.fig path{fill:none;stroke:var(--line2);stroke-width:1;opacity:.55}
+.fig path.on{stroke:var(--b6);stroke-width:1.6;opacity:1}
+.fig g.node{cursor:pointer}
+.fig g.node.on text{fill:var(--b7);font-weight:600}
+.fig circle{fill:var(--surface);stroke:var(--dot);stroke-width:1.5}
+.fig g.node.on circle{fill:var(--b6);stroke:var(--b6)}
+.narrow{display:none;font-size:14px;color:var(--muted);margin-top:12px}
+.key{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:14px}
+.sw{padding:14px}
+.sw i{display:block;height:56px;border-radius:8px;border:1px solid var(--line2);margin-bottom:10px}
+.sw b{font-weight:600;display:block}
+.sw span{font-size:13px;color:var(--muted)}
+details{margin-top:14px}
+summary{cursor:pointer;font-weight:600;font-size:15px;min-height:44px;display:flex;align-items:center}
+.all{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px 12px;margin-top:8px}
+.all div{display:flex;align-items:center;gap:8px;font-size:13px}
+.all i{width:22px;height:22px;border-radius:5px;border:1px solid var(--line2);flex:none}
+.all small{color:var(--muted)}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px}
+.two .card{padding:16px 18px}
+.rules{margin:10px 0 0;padding-left:20px;font-size:14px;color:var(--soft)}
+.rules li{margin-bottom:4px}
+table.edit{width:100%;font-size:14px;border-collapse:collapse;margin-top:6px}
+.edit td{text-align:left;vertical-align:top;padding:8px 6px;border-bottom:1px solid var(--line)}
+.edit td:first-child{font-weight:600;white-space:nowrap;padding-left:0}
+.drift{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-top:14px}
+.dc{padding:14px 16px}
+.kind{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 8px;border-radius:6px;font-size:12px;font-weight:600}
+.kind.r{background:var(--d50);color:var(--d7)}
+.kind.a{background:var(--w50);color:var(--w7)}
+.dc a{display:block;font:13px ui-monospace,Menlo,monospace;margin-top:8px;overflow-wrap:anywhere}
+.dc p{font-size:14px;color:var(--soft);margin-top:6px}
+.chips{display:flex;flex-wrap:wrap;gap:4px 10px;margin-top:8px;font-size:12px;color:var(--muted)}
+.chips i{display:inline-block;width:12px;height:12px;border-radius:3px;border:1px solid var(--line2);vertical-align:-2px;margin-right:4px}
+.foot{font-size:13px;color:var(--muted)}
+@media(max-width:760px){.two{grid-template-columns:minmax(0,1fr)}.impact{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:700px){.key{gap:8px}.sw{display:grid;grid-template-columns:44px minmax(0,1fr);gap:4px 12px;padding:10px 12px}.sw i{grid-row:span 2;height:44px;margin:0}.rules{padding-left:18px}.gridwrap{display:none}.list{display:block}.fig{display:none}.narrow{display:block}}
+</style>
+
+<section class="band"><div class="wrap">
+  <div class="mark"><svg width="28" height="28" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14.4" fill="#0b7a5a"/><g transform="translate(7.86 10.13) scale(0.7543)"><circle cx="32" cy="14" r="6.5" fill="#f2a93b"/><path d="M7 32Q32 22 57 32" fill="none" stroke="#f6f1e7" stroke-width="6" stroke-linecap="round"/><rect x="13" y="29" width="4" height="11" fill="#f6f1e7"/><rect x="47" y="29" width="4" height="11" fill="#f6f1e7"/><path d="M4 39.5h22a11 11 0 0 1-22 0z" fill="#f6f1e7"/><path d="M38 39.5h22a11 11 0 0 1-22 0z" fill="#f6f1e7"/></g></svg>Pikul <span>Design system map</span></div>
+  <h1 id="finding">What a change to a shared piece reaches</h1>
+  <p class="lede" id="finding-sub"></p>
+
+  <div class="card impact" aria-live="polite">
+    <div>
+      <p class="what" id="what">Pick a piece or a screen to see what a change reaches.</p>
+      <div class="reach" id="reach"></div>
+    </div>
+    <button type="button" class="clear" id="clear" hidden>Clear</button>
+  </div>
+
+  <div class="card gridwrap"><table class="mx" id="mx"></table></div>
+  <div class="list">
+    <div class="filters" id="filters" role="group" aria-label="Show pieces used on a screen"></div>
+    <div id="list"></div>
+  </div>
+</div></section>
+
+<section class="band" style="padding-top:0"><div class="wrap">
+  <h2>How a token reaches a screen</h2>
+  <p class="sub">Left: colour token families. Middle: the shared pieces whose own code uses them. Right: the screen areas that import each piece. Pick any node to trace its links. Built from the same import links graphify extracts.</p>
+  <div class="card fig" id="graph"><svg id="gsvg" role="img" aria-label="Graph of colour tokens, shared pieces and screens"></svg></div>
+  <p class="narrow">The graph needs a wider screen. The list above shows the same piece-to-screen links.</p>
+</div></section>
+
+<section class="band" style="padding-top:0"><div class="wrap">
+  <h2>The tokens you will change</h2>
+  <p class="sub">Defined in <code>src/index.css</code> as <code>--color-*</code>. Tailwind names: <code>bg-brand-600</code>, <code>text-muted</code>, <code>border-line</code>.</p>
+  <div class="key" id="key"></div>
+  <details>
+    <summary id="all-sum">All colour tokens, radius, shadow and motion</summary>
+    <div class="all" id="all"></div>
+    <p class="sub" style="margin-top:12px">Radius sm 6, md 8, lg 10, xl 14. Shadows xs (cards), pop (sheets, toasts, cart bar), bar. Eases out-quart (enter), in-quart (exit). Utilities <code>num</code>, <code>animate-sheet-in/out</code>, <code>animate-dialog-*</code>, <code>scroll-x</code>.</p>
+  </details>
+</div></section>
+
+<section class="band" style="padding-top:0"><div class="wrap two">
+  <div class="card">
+    <h2>Rules</h2>
+    <p class="sub">Full text in <code>design-system/MASTER.md</code>.</p>
+    <ul class="rules">
+      <li>Speed over decoration: 44px targets, 48px for primary actions.</li>
+      <li>Borders give structure; only sheets, toasts and the cart bar float.</li>
+      <li>One accent, pandan green. Status colours only for a real status.</li>
+      <li>The product photo is the only colour on a tile.</li>
+      <li>A dashed receipt rule sits above every money total, nowhere else.</li>
+      <li>Every amount uses <code>num</code> so Rupiah columns align.</li>
+      <li>Weights up to 600, sentence case labels, no pills, emoji or loops.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h2>Where to edit</h2>
+    <table class="edit" id="edit"></table>
+  </div>
+</div></section>
+
+<section class="band" style="padding-top:0"><div class="wrap">
+  <h2>Drift to know about</h2>
+  <p class="sub">Places that do not follow the tokens. They will not change when <code>index.css</code> does.</p>
+  <div class="drift" id="drift"></div>
+  <p class="foot" style="margin-top:20px" id="foot"></p>
+</div></section>
+
+<script id="ds-data" type="application/json">{"version":"0.20.2","commit":"977d1d9","repo":"https://github.com/Kennexct/pikul-pos/blob","date":"2026-11-27","areas":[{"id":"pages/POS","label":"Kasir"},{"id":"pages/History","label":"Riwayat"},{"id":"pages/Cash","label":"Kas"},{"id":"pages/OpenOrders","label":"Pesanan"},{"id":"pages/Products","label":"Produk"},{"id":"pages/Customers","label":"Pelanggan"},{"id":"pages/Reports","label":"Laporan"},{"id":"pages/Settings","label":"Pengaturan"},{"id":"pages/Auth","label":"Masuk"},{"id":"pages/Onboarding","label":"Onboarding"},{"id":"pages/Help","label":"Bantuan"},{"id":"pages/More","label":"Akun"},{"id":"components","label":"Shared pop-ups"},{"id":"admin","label":"Admin"}],"tokens":[{"name":"brand-50","value":"#ebf7f2"},{"name":"brand-100","value":"#cfede1"},{"name":"brand-200","value":"#9fdac4"},{"name":"brand-300","value":"#67c2a2"},{"name":"brand-500","value":"#12906a"},{"name":"brand-600","value":"#0b7a5a"},{"name":"brand-700","value":"#08654a"},{"name":"brand-800","value":"#06503b"},{"name":"brand-900","value":"#053e2e"},{"name":"kunyit","value":"#f2a93b"},{"name":"santan","value":"#f6f1e7"},{"name":"canvas","value":"#f7f9f8"},{"name":"surface","value":"#ffffff"},{"name":"subtle","value":"#f2f5f3"},{"name":"line","value":"#e2e7e4"},{"name":"line-strong","value":"#c9d1cd"},{"name":"line-input","value":"#8a9590"},{"name":"ink","value":"#14201b"},{"name":"ink-soft","value":"#36423d"},{"name":"muted","value":"#5e6a65"},{"name":"faint","value":"#8a9590"},{"name":"danger-50","value":"#fef3f2"},{"name":"danger-200","value":"#fecdca"},{"name":"danger-600","value":"#c2281d"},{"name":"danger-700","value":"#a31f16"},{"name":"warn-50","value":"#fff8eb"},{"name":"warn-200","value":"#fcdda4"},{"name":"warn-700","value":"#9a5b05"}],"tokenUse":[{"family":"brand","areas":["pages/POS","pages/History","pages/Cash","pages/Products","pages/Reports","pages/Settings","pages/Auth","pages/Onboarding","components","admin"]},{"family":"ink","areas":["pages/POS","pages/History","pages/Cash","pages/OpenOrders","pages/Products","pages/Customers","pages/Reports","pages/Settings","pages/Auth","pages/Onboarding","pages/More","components","admin"]},{"family":"muted","areas":["pages/POS","pages/History","pages/Cash","pages/OpenOrders","pages/Products","pages/Customers","pages/Reports","pages/Settings","pages/Auth","pages/Onboarding","pages/Help","pages/More","components","admin"]},{"family":"faint","areas":["pages/POS","pages/History","pages/Cash","pages/Products","pages/Customers","pages/Settings","pages/More","components","admin"]},{"family":"line","areas":["pages/POS","pages/History","pages/Cash","pages/Products","pages/Customers","pages/Reports","pages/Settings","pages/Auth","pages/Onboarding","pages/Help","pages/More","components","admin"]},{"family":"surface","areas":["pages/POS","pages/History","pages/Products","pages/Reports","pages/Settings","pages/Auth","pages/Onboarding","components","admin"]},{"family":"canvas","areas":["pages/POS","pages/Settings","pages/Auth","pages/Onboarding","components","admin"]},{"family":"subtle","areas":["pages/POS","pages/History","pages/Cash","pages/OpenOrders","pages/Products","pages/Customers","pages/Reports","pages/Settings","pages/Onboarding","pages/Help","pages/More","components","admin"]},{"family":"danger","areas":["pages/POS","pages/History","pages/Cash","pages/Products","pages/Reports","pages/Settings","pages/Auth","components","admin"]},{"family":"warn","areas":["pages/POS","pages/History","pages/Cash","pages/OpenOrders","pages/Customers","pages/Reports","pages/Settings","components","admin"]}],"pieces":[{"name":"btnPrimary","kind":"class","group":"Buttons","file":"src/components/ui/styles.ts","tokens":["brand"],"areas":["pages/POS","pages/History","pages/Cash","pages/OpenOrders","pages/Products","pages/Customers","pages/Reports","pages/Settings","pages/Auth","pages/Onboarding","pages/Help","components","admin"]},{"name":"btnSecondary","kind":"class","group":"Buttons","file":"src/components/ui/styles.ts","tokens":["ink","line","surface","subtle"],"areas":["pages/POS","pages/History","pages/Cash","pages/OpenOrders","pages/Products","pages/Customers","pages/Reports","pages/Settings","pages/Onboarding","pages/Help","pages/More","components","admin"]},{"name":"btnGhost","kind":"class","group":"Buttons","file":"src/components/ui/styles.ts","tokens":["ink","subtle"],"areas":["pages/POS","pages/Cash","pages/Products","pages/Customers","pages/Settings","pages/Auth","pages/Onboarding","components","admin"]},{"name":"btnDanger","kind":"class","group":"Buttons","file":"src/components/ui/styles.ts","tokens":["surface","danger"],"areas":["pages/History","pages/OpenOrders","pages/Products","pages/Customers","pages/Settings","admin"]},{"name":"btnDangerSolid","kind":"class","group":"Buttons","file":"src/components/ui/styles.ts","tokens":["danger"],"areas":["pages/History","pages/Cash","pages/OpenOrders","pages/Products","pages/Customers","pages/Settings"]},{"name":"btnIcon","kind":"class","group":"Buttons","file":"src/components/ui/styles.ts","tokens":["ink","line","surface","subtle"],"areas":["pages/POS","pages/History","pages/Products","pages/Settings","components","admin"]},{"name":"inputBase","kind":"class","group":"Inputs and choices","file":"src/components/ui/styles.ts","tokens":["brand","ink","line","surface"],"areas":["pages/POS","pages/History","pages/Cash","pages/OpenOrders","pages/Products","pages/Settings","pages/Auth","pages/Onboarding","components","admin"]},{"name":"labelBase","kind":"class","group":"Inputs and choices","file":"src/components/ui/styles.ts","tokens":["ink"],"areas":["pages/POS","pages/History","pages/Cash","pages/OpenOrders","pages/Products","pages/Reports","pages/Settings","pages/Auth","pages/Onboarding","components","admin"]},{"name":"helperText","kind":"class","group":"Inputs and choices","file":"src/components/ui/styles.ts","tokens":["muted"],"areas":["pages/POS","pages/Cash","pages/Products","pages/Settings","pages/Auth","pages/Onboarding","components","admin"]},{"name":"option()","kind":"class","group":"Inputs and choices","file":"src/components/ui/styles.ts","tokens":["brand","ink","line","surface","subtle"],"areas":["pages/POS","pages/History","pages/Cash","pages/OpenOrders","pages/Products","pages/Reports","pages/Settings","components","admin"]},{"name":"fieldGrid","kind":"class","group":"Inputs and choices","file":"src/components/ui/styles.ts","tokens":[],"areas":["pages/Settings"]},{"name":"RupiahInput","kind":"component","group":"Inputs and choices","file":"src/components/ui/RupiahInput.tsx","tokens":["muted"],"areas":["pages/POS","pages/Cash","pages/Products","components","admin"]},{"name":"NumberInput","kind":"component","group":"Inputs and choices","file":"src/components/ui/NumberInput.tsx","tokens":[],"areas":["pages/Products","pages/Settings"]},{"name":"SearchInput","kind":"component","group":"Inputs and choices","file":"src/components/ui/SearchInput.tsx","tokens":["brand","ink","muted","faint","line","surface","subtle"],"areas":["pages/POS","pages/History","pages/Products","pages/Customers","pages/Help","admin"]},{"name":"Select","kind":"component","group":"Inputs and choices","file":"src/components/ui/Select.tsx","tokens":["brand","ink","muted","line","surface","subtle"],"areas":["pages/History"]},{"name":"Switch","kind":"component","group":"Inputs and choices","file":"src/components/ui/Switch.tsx","tokens":["brand","ink","muted","line","danger"],"areas":["pages/POS","pages/Cash","pages/Products","pages/Settings","pages/Onboarding","admin"]},{"name":"SegmentedControl","kind":"component","group":"Inputs and choices","file":"src/components/ui/SegmentedControl.tsx","tokens":["ink","muted","line","surface","subtle"],"areas":["pages/POS","pages/Products","pages/Reports","pages/Settings","pages/Auth","admin"]},{"name":"DateRangeControl","kind":"component","group":"Inputs and choices","file":"src/components/ui/DateRangeControl.tsx","tokens":["ink","muted","danger"],"areas":["pages/History","pages/Cash","pages/Reports"]},{"name":"Sheet","kind":"component","group":"Pages, cards and pop-ups","file":"src/components/ui/Sheet.tsx","tokens":["ink","muted","line","surface","subtle"],"areas":["pages/POS","pages/History","pages/Cash","pages/OpenOrders","pages/Products","pages/Customers","pages/Reports","pages/Settings","pages/Help","components","admin"]},{"name":"card","kind":"class","group":"Pages, cards and pop-ups","file":"src/components/ui/styles.ts","tokens":["line","surface"],"areas":["pages/History","pages/Cash","pages/OpenOrders","pages/Products","pages/Customers","pages/Reports","pages/Settings","pages/Auth","pages/Onboarding","pages/Help","pages/More","components","admin"]},{"name":"sectionTitle","kind":"class","group":"Pages, cards and pop-ups","file":"src/components/ui/styles.ts","tokens":["muted"],"areas":["pages/POS","pages/History","pages/Cash","pages/Products","pages/Customers","components","admin"]},{"name":"PageHeader","kind":"component","group":"Pages, cards and pop-ups","file":"src/components/Layout/PageHeader.tsx","tokens":["muted","line","surface"],"areas":["pages/History","pages/Cash","pages/OpenOrders","pages/Products","pages/Customers","pages/Reports","pages/Settings","pages/Help","pages/More"]},{"name":"Tabs","kind":"component","group":"Pages, cards and pop-ups","file":"src/components/ui/Tabs.tsx","tokens":["brand","ink","muted","subtle"],"areas":["pages/POS","pages/Cash","pages/Products","pages/Customers","pages/Settings","admin"]},{"name":"EmptyState","kind":"component","group":"Pages, cards and pop-ups","file":"src/components/ui/EmptyState.tsx","tokens":["ink","muted","line","surface"],"areas":["pages/POS","pages/History","pages/Cash","pages/OpenOrders","pages/Products","pages/Customers","pages/Reports","pages/Settings","pages/Help","admin"]},{"name":"LoadingScreen","kind":"component","group":"Pages, cards and pop-ups","file":"src/components/ui/LoadingScreen.tsx","tokens":["muted"],"areas":["pages/POS","pages/History","pages/Cash","pages/Products","pages/Customers","pages/Reports","pages/Settings","admin"]},{"name":"SidePanel","kind":"component","group":"Pages, cards and pop-ups","file":"src/components/Layout/SidePanel.tsx","tokens":["brand","ink","muted","line","surface","subtle"],"areas":["pages/Settings"]},{"name":"SettingsSection","kind":"component","group":"Pages, cards and pop-ups","file":"src/pages/Settings/SettingsSection.tsx","tokens":["muted","line","subtle"],"areas":["pages/Settings"]},{"name":"badgeNeutral","kind":"class","group":"Status and money","file":"src/components/ui/styles.ts","tokens":["ink","subtle"],"areas":["pages/Cash","pages/Products","pages/Settings","admin"]},{"name":"badgeWarn","kind":"class","group":"Status and money","file":"src/components/ui/styles.ts","tokens":["warn"],"areas":["pages/Products","pages/Customers","pages/Settings","admin"]},{"name":"badgeBrand","kind":"class","group":"Status and money","file":"src/components/ui/styles.ts","tokens":["brand"],"areas":["pages/Products","pages/Reports","pages/Settings","admin"]},{"name":"StatusBadge","kind":"component","group":"Status and money","file":"src/components/ui/StatusBadge.tsx","tokens":["brand","ink","muted","subtle","danger","warn"],"areas":["pages/History","pages/Customers"]},{"name":"StatTile","kind":"component","group":"Status and money","file":"src/components/ui/StatTile.tsx","tokens":["brand","ink","muted"],"areas":["pages/History","pages/Reports","admin"]},{"name":"receiptRule","kind":"class","group":"Status and money","file":"src/components/ui/styles.ts","tokens":["line"],"areas":["pages/POS","pages/Cash"]},{"name":"ProductThumb","kind":"component","group":"Status and money","file":"src/components/ui/ProductThumb.tsx","tokens":["muted","subtle"],"areas":["pages/POS","pages/Products"]},{"name":"Logo","kind":"component","group":"Brand","file":"src/components/Brand/Logo.tsx","tokens":["ink"],"areas":["pages/Auth","pages/Onboarding","pages/More","components"]},{"name":"LogoMark","kind":"component","group":"Brand","file":"src/components/Brand/Logo.tsx","tokens":["ink"],"areas":["admin"]}],"drift":[{"kind":"Wrong colours","file":"src/landing/live.ts","line":39,"values":[{"hex":"#0b7a5a","line":39,"token":"brand-600"},{"hex":"#0f1a16","line":40,"token":null},{"hex":"#3d4a44","line":41,"token":null},{"hex":"#5b6862","line":42,"token":null},{"hex":"#e3e8e5","line":65,"token":null},{"hex":"#e7f4ee","line":70,"token":null},{"hex":"#075c44","line":70,"token":null},{"hex":"#f1f4f2","line":70,"token":null},{"hex":"#c9d2cd","line":86,"token":null}],"note":"8 of 9 colours match no token"},{"kind":"Wrong colours","file":"landing/index.dc.html","line":12,"values":[{"hex":"#0b7a5a","line":12,"token":"brand-600"},{"hex":"#f6f8f7","line":14,"token":null},{"hex":"#0f1a16","line":14,"token":null},{"hex":"#e3e8e5","line":15,"token":null},{"hex":"#f2a93b","line":17,"token":"kunyit"},{"hex":"#f6f1e7","line":17,"token":"santan"},{"hex":"#3d4a44","line":18,"token":null},{"hex":"#e7f4ee","line":28,"token":null},{"hex":"#075c44","line":28,"token":null},{"hex":"#c9d2cd","line":33,"token":null},{"hex":"#5b6862","line":62,"token":null},{"hex":"#f1f4f2","line":96,"token":null},{"hex":"#0a3d2e","line":117,"token":null},{"hex":"#c6e3d6","line":121,"token":null}],"note":"11 of 14 colours match no token"},{"kind":"Copied by hand","file":"src/App.tsx","line":68,"values":[{"hex":"#0b7a5a","line":68,"token":"brand-600"},{"hex":"#ffffff","line":68,"token":"surface"},{"hex":"#c2281d","line":69,"token":"danger-600"}],"note":"3 colours match tokens but are typed in, so they will not follow a token change"},{"kind":"Copied by hand","file":"src/lib/export/pdf.ts","line":11,"values":[{"hex":"#0b7a5a","line":11,"token":"brand-600"},{"hex":"#14201b","line":12,"token":"ink"},{"hex":"#5e6a65","line":13,"token":"muted"},{"hex":"#e2e7e4","line":31,"token":"line"},{"hex":"#f2f5f3","line":32,"token":"subtle"},{"hex":"#ebf7f2","line":75,"token":"brand-50"}],"note":"6 colours match tokens but are typed in, so they will not follow a token change"},{"kind":"Copied by hand","file":"src/pages/Reports/BarChartCard.tsx","line":28,"values":[{"hex":"#0b7a5a","line":28,"token":"brand-600"},{"hex":"#e2e7e4","line":29,"token":"line"},{"hex":"#5e6a65","line":30,"token":"muted"}],"note":"3 colours match tokens but are typed in, so they will not follow a token change"},{"kind":"Docs out of date","file":"design-system/MASTER.md","line":101,"values":[],"note":"MASTER.md says Transaksi (Pesanan, Riwayat, Kas); the menu is Riwayat · Kas · Pesanan"}]}</script>
+<script>
+{
+const D = JSON.parse(document.getElementById('ds-data').textContent || '{}');
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+const $ = (id) => document.getElementById(id);
+const A = D.areas || [], P = D.pieces || [], TU = D.tokenUse || [], TK = D.tokens || [], DR = D.drift || [];
+const label = Object.fromEntries(A.map((a) => [a.id, a.label]));
+const HOT = 8;
+const groups = [...new Set(P.map((p) => p.group))];
+let sel = null; // {type:'piece'|'area'|'token', id}
+let showAll = false; // phone list: only heavy pieces until asked
+
+// Finding
+const top = [...P].sort((a, b) => b.areas.length - a.areas.length);
+const hot = top.filter((p) => p.areas.length >= HOT);
+const colourDrift = DR.filter((d) => d.values.length);
+$('finding').textContent = `${top[0]?.name} reaches ${top[0]?.areas.length} of ${A.length} screen areas. ${colourDrift.length} files type colours by hand.`;
+$('finding-sub').textContent = `Check the ${hot.length} pieces used in ${HOT} or more areas first: ${hot.map((p) => p.name).join(', ')}. Generated from the code at v${D.version} (${D.commit}), ${D.date}.`;
+
+// Impact panel
+const piecesIn = (areaId) => P.filter((p) => p.areas.includes(areaId));
+function renderImpact() {
+  $('clear').hidden = !sel;
+  if (!sel) { $('what').textContent = 'Pick a piece or a screen to see what a change reaches.'; $('reach').innerHTML = ''; return; }
+  if (sel.type === 'piece') {
+    const p = P.find((x) => x.name === sel.id);
+    $('what').innerHTML = `Changing <b>${esc(p.name)}</b> (${p.kind}, <code>${esc(p.file)}</code>) reaches <b>${p.areas.length}</b> of ${A.length} areas.`;
+    $('reach').innerHTML = p.areas.map((a) => `<span class="tag on">${esc(label[a])}</span>`).join('') + (p.tokens.length ? `<span class="tag">Tokens: ${esc(p.tokens.join(', '))}</span>` : '');
+  } else if (sel.type === 'area') {
+    const ps = piecesIn(sel.id);
+    $('what').innerHTML = `<b>${esc(label[sel.id])}</b> uses ${ps.length} shared pieces.`;
+    $('reach').innerHTML = ps.map((p) => `<span class="tag${p.areas.length >= HOT ? ' on' : ''}">${esc(p.name)}</span>`).join('');
+  } else {
+    const ps = P.filter((p) => p.tokens.includes(sel.id));
+    const t = TU.find((x) => x.family === sel.id);
+    $('what').innerHTML = `Token family <b>${esc(sel.id)}</b> is used directly in ${t ? t.areas.length : 0} areas and inside ${ps.length} shared pieces.`;
+    $('reach').innerHTML = ps.map((p) => `<span class="tag">${esc(p.name)}</span>`).join('');
+  }
+}
+
+// Grid (tablet and laptop)
+function renderGrid() {
+  const head = `<thead><tr><th><span class="sr">Shared piece</span></th>${A.map((a) => `<th class="${sel?.type === 'area' && sel.id === a.id ? 'sel' : ''}"><button type="button" data-area="${esc(a.id)}" aria-pressed="${sel?.type === 'area' && sel.id === a.id}">${esc(a.label)}</button></th>`).join('')}<th><span class="sr">Areas</span></th></tr></thead>`;
+  const body = groups.map((g) => `<tr class="grp"><th colspan="${A.length + 2}">${esc(g)}</th></tr>` + P.filter((p) => p.group === g).map((p) => {
+    const isSel = sel?.type === 'piece' && sel.id === p.name;
+    const dim = sel?.type === 'area' && !p.areas.includes(sel.id);
+    return `<tr class="${isSel ? 'sel' : ''}${dim ? ' dim' : ''}"><th><button type="button" data-piece="${esc(p.name)}" aria-pressed="${isSel}">${esc(p.name)}<small>${p.kind}</small></button></th>${A.map((a) => {
+      const y = p.areas.includes(a.id);
+      const col = sel?.type === 'area' && sel.id === a.id;
+      return `<td class="cell${y ? ' y' : ''}${col ? ' colsel' : ''}"><span aria-hidden="true"></span><span class="sr">${esc(a.label)}: ${y ? 'used' : 'not used'}</span></td>`;
+    }).join('')}<td class="n${p.areas.length >= HOT ? ' hot' : ''}">${p.areas.length}</td></tr>`;
+  }).join('')).join('');
+  $('mx').innerHTML = head + `<tbody>${body}</tbody>`;
+}
+
+// List (phone)
+function renderList() {
+  const fa = sel?.type === 'area' ? sel.id : null;
+  $('filters').innerHTML = `<button type="button" data-area="" aria-pressed="${!fa}">All screens</button>` + A.map((a) => `<button type="button" data-area="${esc(a.id)}" aria-pressed="${fa === a.id}">${esc(a.label)}</button>`).join('');
+  $('list').innerHTML = groups.map((g) => {
+    const ps = P.filter((p) => p.group === g && (fa ? p.areas.includes(fa) : showAll || p.areas.length >= HOT || (sel?.type === 'piece' && sel.id === p.name)));
+    if (!ps.length) return '';
+    return `<div class="lg">${esc(g)}</div>` + ps.map((p) => `<button type="button" class="li" data-piece="${esc(p.name)}" aria-pressed="${sel?.type === 'piece' && sel.id === p.name}"><span class="top"><span>${esc(p.name)}</span><em class="${p.areas.length >= HOT ? 'hot' : ''}">${p.areas.length} of ${A.length}</em></span><span class="areas">${esc(p.areas.map((a) => label[a]).join(', ') || 'Not used yet')}</span></button>`).join('');
+  }).join('') + (!fa && !showAll ? `<button type="button" class="clear more" id="more">Show all ${P.length} pieces</button>` : '');
+}
+
+// Graph: token families -> pieces -> areas
+const gbox = $('graph'), gsvg = $('gsvg');
+function drawGraph() {
+  const W = gbox.clientWidth;
+  if (W < 600) return;
+  const rowsP = P.length, H = Math.max(520, rowsP * 22 + 70);
+  gbox.style.setProperty('--h', `${H}px`);
+  const fams = TU.map((t) => t.family);
+  const x0 = 16, x1 = Math.round(W * 0.42), x2 = W - 150;
+  const yOf = (i, n) => 50 + (i + 0.5) * ((H - 66) / n);
+  const posF = Object.fromEntries(fams.map((f, i) => [f, yOf(i, fams.length)]));
+  const posP = Object.fromEntries(P.map((p, i) => [p.name, yOf(i, rowsP)]));
+  const posA = Object.fromEntries(A.map((a, i) => [a.id, yOf(i, A.length)]));
+  const on = (type, id) => sel && sel.type === type && sel.id === id;
+  const pieceLit = (p) => sel && ((sel.type === 'piece' && sel.id === p.name) || (sel.type === 'area' && p.areas.includes(sel.id)) || (sel.type === 'token' && p.tokens.includes(sel.id)));
+  const curve = (xa, ya, xb, yb) => `M${xa},${ya}C${(xa + xb) / 2},${ya} ${(xa + xb) / 2},${yb} ${xb},${yb}`;
+  let s = `<text class="col" x="${x0}" y="24">Token family</text><text class="col" x="${x1 - 8}" y="24" text-anchor="end">Shared piece</text><text class="col" x="${x2 + 10}" y="24">Screen</text>`;
+  const fx = x0 + 70, ax = x2;
+  for (const p of P) {
+    const lit = pieceLit(p);
+    for (const f of p.tokens) s += `<path class="${lit || on('token', f) ? 'on' : ''}" d="${curve(fx, posF[f], x1, posP[p.name])}"/>`;
+    for (const a of p.areas) s += `<path class="${(lit && (sel.type !== 'area' || sel.id === a)) || on('area', a) && p.areas.includes(a) ? 'on' : ''}" d="${curve(x1, posP[p.name], ax, posA[a])}"/>`;
+  }
+  s += fams.map((f) => `<g class="node${on('token', f) || P.some((p) => pieceLit(p) && p.tokens.includes(f) && sel.type === 'piece') ? ' on' : ''}" data-token="${esc(f)}" tabindex="0" role="button" aria-label="Token ${esc(f)}"><circle cx="${fx}" cy="${posF[f]}" r="5"/><text x="${fx - 10}" y="${posF[f] + 4}" text-anchor="end">${esc(f)}</text></g>`).join('');
+  s += P.map((p) => `<g class="node${pieceLit(p) ? ' on' : ''}" data-piece="${esc(p.name)}" tabindex="0" role="button" aria-label="Piece ${esc(p.name)}"><circle cx="${x1}" cy="${posP[p.name]}" r="${p.areas.length >= HOT ? 6 : 4}"/><text x="${x1 - 10}" y="${posP[p.name] + 4}" text-anchor="end">${esc(p.name)}</text></g>`).join('');
+  s += A.map((a) => `<g class="node${on('area', a.id) || (sel?.type === 'piece' && P.find((p) => p.name === sel.id)?.areas.includes(a.id)) ? ' on' : ''}" data-area="${esc(a.id)}" tabindex="0" role="button" aria-label="Screen ${esc(a.label)}"><circle cx="${ax}" cy="${posA[a.id]}" r="5"/><text x="${ax + 10}" y="${posA[a.id] + 4}">${esc(a.label)}</text></g>`).join('');
+  gsvg.innerHTML = s;
+}
+const graphObserver = new ResizeObserver(drawGraph);
+graphObserver.observe(gbox);
+
+function render() { renderImpact(); renderGrid(); renderList(); drawGraph(); }
+function pick(el) {
+  const piece = el.closest('[data-piece]')?.dataset.piece, area = el.closest('[data-area]')?.dataset.area, token = el.closest('[data-token]')?.dataset.token;
+  const next = piece ? { type: 'piece', id: piece } : area ? { type: 'area', id: area } : token ? { type: 'token', id: token } : area === '' ? null : undefined;
+  if (next === undefined) return;
+  sel = next && sel && sel.type === next.type && sel.id === next.id ? null : next;
+  render();
+}
+document.addEventListener('click', (e) => { if (e.target.closest('[data-piece],[data-area],[data-token]')) pick(e.target); });
+gsvg.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key === ' ') && e.target.closest('[data-piece],[data-area],[data-token]')) { e.preventDefault(); pick(e.target); } });
+$('clear').addEventListener('click', () => { sel = null; render(); });
+$('list').addEventListener('click', (e) => { if (e.target.id === 'more') { showAll = true; renderList(); } });
+
+// Tokens: the five you change, the rest folded
+const KEY = [['brand-600', 'Primary buttons, active states'], ['brand-700', 'Active nav and tab text, links'], ['ink', 'Main text'], ['muted', 'Helper text, labels; the lightest text allowed'], ['line', 'Card borders and dividers']];
+const famOf = (n) => n.split('-')[0];
+$('key').innerHTML = KEY.map(([n, use]) => {
+  const t = TK.find((x) => x.name === n); const u = TU.find((x) => x.family === famOf(n));
+  return t ? `<div class="card sw"><i style="background:${esc(t.value)}"></i><b>${esc(n)} <code>${esc(t.value)}</code></b><span>${esc(use)}. ${famOf(n)} family used in ${u ? u.areas.length : 0} areas.</span></div>` : '';
+}).join('');
+$('all-sum').textContent = `All ${TK.length} colour tokens, radius, shadow and motion`;
+$('all').innerHTML = TK.map((t) => `<div><i style="background:${esc(t.value)}"></i><span>${esc(t.name)}<br><small>${esc(t.value)}</small></span></div>`).join('');
+
+// Where to edit
+const E = [['A colour', '<code>--color-*</code> in <code>src/index.css</code>, then the files listed under drift'], ['Buttons', '<code>btnBase</code>, <code>btn*</code> in <code>components/ui/styles.ts</code>'], ['Inputs', '<code>inputBase</code>, <code>labelBase</code>, <code>helperText</code>; RupiahInput, NumberInput, SearchInput and Select have their own markup'], ['Pop-ups', '<code>components/ui/Sheet.tsx</code> and the sheet keyframes in <code>index.css</code>'], ['Menu', '<code>Layout/navItems.ts</code> (groups), <code>Layout/GroupNav.tsx</code> (rail, tab bar)'], ['Page titles', '<code>Layout/PageHeader.tsx</code>'], ['Settings forms', '<code>fieldGrid</code> in <code>pages/Settings/SettingsSection.tsx</code>'], ['Money totals', '<code>receiptRule</code> + <code>border-t</code>, <code>num</code> on the amount'], ['Logo', '<code>Brand/Logo.tsx</code> only']];
+$('edit').innerHTML = E.map((e) => `<tr><td>${e[0]}</td><td>${e[1]}</td></tr>`).join('');
+
+// Drift
+$('drift').innerHTML = DR.map((d) => {
+  const url = `${D.repo}/${D.commit}/${d.file}#L${d.line}`;
+  const vals = d.values.slice(0, 8).map((v) => `<span><i style="background:${esc(v.hex)}"></i>${esc(v.hex)}${v.token ? ` = ${esc(v.token)}` : ''}</span>`).join('') + (d.values.length > 8 ? `<span>+${d.values.length - 8} more</span>` : '');
+  return `<div class="card dc"><span class="kind ${d.kind === 'Wrong colours' ? 'r' : 'a'}">${esc(d.kind)}</span><a href="${esc(url)}">${esc(d.file)}:${d.line}</a><p>${esc(d.note)}.</p>${vals ? `<div class="chips">${vals}</div>` : ''}</div>`;
+}).join('');
+$('foot').innerHTML = `Rebuild this page and the tables in <code>design-system/MEMORY.md</code> with <code>node scripts/ds-map.mjs</code>; add <code>--check</code> to fail when they are out of date. The full graphify graph (1,950 nodes) is in the project files under <code>design-system-graph/</code>.`;
+
+render();
+}
+</script>

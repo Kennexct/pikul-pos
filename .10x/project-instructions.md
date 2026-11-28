@@ -12,7 +12,7 @@ Paste the block below into the project's instructions. Refreshed 2026-11-20 from
 - Selling must work offline. The POS reads and writes only Dexie; never add an online check to the sell path.
 - Money is integer Rupiah. IDs are client UUIDv7. Orders are append-only; voids and refunds are linked records with audit events.
 - Interface text is Indonesian first: `t('Kalimat {0}', v)` plus the English entry in `src/i18n/en.ts`; `npm run i18n:check` must pass.
-- Use the design system in `design-system/MASTER.md` (semantic tokens, shared components). Files under 400 lines, no `any`, no `console.log`.
+- Use the design system in `design-system/MASTER.md` (semantic tokens, shared components). Files under 400 lines, no `any`, no `console.log`. Read `design-system/MEMORY.md` first: it is the one-page map of that system.
 - Secrets never in the repo or the client. Only the public access-pass JWK ships in the app.
 
 **How we work (10x-Team).** Every feature goes brainstorm → spec → ADR → plan → build → QA + security review → runbook. State lives in `.10x/` (`status.md`, `handoff.md`, `decisions/<role>/`, `adrs/`, `specs/`, `reviews/`); read `status.md` and `handoff.md` first and update them at each phase. Next ADR number: 019. Branches `feat/<slug>`, commits `feat(...)` / `fix(...)` / `state(<phase>): ...`.
